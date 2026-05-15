@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOWER 2</title>
+<style>
+html,body{
+  margin:0; width:100%; height:100%; overflow:hidden; background:#050607; color:white;
+  font-family:Georgia,serif;
+}
+body{
+  display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255,255,255,0.18), transparent 28%),
+    radial-gradient(circle at 30% 70%, rgba(120,170,255,0.14), transparent 35%),
+    linear-gradient(180deg,#050607,#11131a 55%,#030304);
+}
+.room{
+  width:min(760px,84vw); min-height:430px; padding:42px 46px; box-sizing:border-box;
+  border:1px solid rgba(255,255,255,0.22); border-radius:28px;
+  background:rgba(0,0,0,0.34); box-shadow:0 0 70px rgba(170,210,255,0.18);
+  text-align:center; position:relative;
+}
+.mark{
+  width:110px; height:110px; border-radius:50%; margin:0 auto 24px;
+  background:radial-gradient(circle, rgba(255,255,255,0.96), rgba(190,220,255,0.36) 44%, transparent 70%);
+  filter:blur(1px);
+}
+h1{ margin:0 0 18px; font-size:38px; letter-spacing:0.12em; font-weight:normal; }
+p{ font-size:19px; line-height:1.55; color:rgba(255,255,255,0.82); }
+.back{
+  display:inline-block; margin-top:28px; padding:11px 22px; border-radius:999px;
+  border:1px solid rgba(255,255,255,0.28); color:white; text-decoration:none;
+  background:rgba(255,255,255,0.08); letter-spacing:0.08em; font-size:13px;
+}
+.back:hover{ background:rgba(255,255,255,0.18); }
+</style>
+</head>
+<body>
+  <main class="room">
+    <div class="mark"></div>
+    <h1>TOWER 2</h1>
+    <p>The second tower is open. Here the palace can keep warmth, meeting, and light.</p>
+    <a class="back" href="../index.html">RETURN TO PALACE</a>
+  </main>
+</body>
+</html>
