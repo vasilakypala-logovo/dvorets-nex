@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concert Hall of Nex</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050302;font-family:Georgia,serif;}
+#hall{position:relative;width:100%;height:100%;background-image:url('concert_hall.png');background-size:cover;background-position:center;}
+#softShade{position:absolute;inset:0;background:radial-gradient(circle at 50% 52%,rgba(255,220,160,.04),transparent 34%),linear-gradient(to bottom,rgba(0,0,0,.08),rgba(0,0,0,.26));pointer-events:none;}
+.zone{position:absolute;cursor:pointer;border-radius:42%;z-index:20;}
+#pianoZone{left:39%;top:47%;width:18%;height:22%;}
+#backZone{left:1.5%;top:2.5%;width:9%;height:12%;}
+#balconyZone{left:56.5%;top:31%;width:9.5%;height:42%;border-radius:34%;}
+.show-hotspots .zone{background:rgba(255,225,120,.22);outline:2px solid rgba(255,255,255,.65);box-shadow:0 0 25px rgba(255,210,90,.45);}
+#musicPanel{position:absolute;left:50%;bottom:5%;transform:translateX(-50%) translateY(26px);width:min(760px,90vw);max-height:62vh;overflow:auto;padding:18px 20px 16px;z-index:35;color:rgba(255,238,205,.96);background:rgba(18,9,5,.78);border:1px solid rgba(255,215,145,.42);box-shadow:0 0 50px rgba(0,0,0,.70),inset 0 0 32px rgba(255,190,90,.07);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .45s ease,transform .45s ease;}
+#musicPanel.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+.panelTop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.panelTitle{font-size:17px;letter-spacing:.15em;text-transform:uppercase;}
+.closeBtn{background:transparent;color:rgba(255,238,205,.9);border:1px solid rgba(255,215,145,.38);border-radius:50%;width:31px;height:31px;cursor:pointer;font-size:18px;}
+.archive{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;}
+.trackBtn{padding:10px 9px;min-height:42px;background:rgba(255,215,150,.08);color:rgba(255,238,205,.94);border:1px solid rgba(255,215,145,.25);cursor:pointer;font-family:Georgia,serif;letter-spacing:.04em;text-align:center;}
+.trackBtn:hover,.trackBtn.active{background:rgba(255,215,150,.20);box-shadow:inset 0 0 18px rgba(255,210,120,.07);}
+audio{width:100%;margin-top:8px;}
+.hint{margin-top:10px;font-size:12px;opacity:.72;letter-spacing:.08em;text-align:center;line-height:1.45;}
+.small{font-size:11px;opacity:.58;margin-top:8px;text-align:center;}
+@media (max-width:760px){.archive{grid-template-columns:1fr;}#musicPanel{bottom:3%;}}
+</style>
+</head>
+<body>
+<div id="hall">
+  <div id="softShade"></div>
+
+  <div class="zone" id="backZone" title="Back to Vestibule" onclick="window.location.href='../vestibul/vestibul.html'"></div>
+  <div class="zone" id="pianoZone" title="Open music archive" onclick="openPlayer()"></div>
+  <div class="zone" id="balconyZone" title="Go to Balcony" onclick="goBalcony()"></div>
+
+ 
+ <div id="musicPanel">
+    <div class="panelTop">
+      
+<div class="panelTitle">Music Archive</div>
+      
+
+<button class="closeBtn" onclick="closePlayer()">×</button>
+    </div>
+
+    
+<div class="archive">
+
+  <button class="trackBtn" onclick="loadTrack('audio/Childhood.mp3','Childhood')">
+    Childhood
+  </button>
+
+  
+<button class="trackBtn" onclick="loadTrack('audio/Elise.mp3','Elise')">
+    Elise
+  </button>
+
+  <button class="trackBtn" onclick="loadTrack
+('audio/King.mp3','King')">
+   King
+  </button>
+ 
+<button class="trackBtn" onclick="loadTrack('audio/Bloom.mp3','Bloom')">
+    Bloom
+  </button>
+
+  <button class="trackBtn" onclick="loadTrack('audio/Stream.mp3','Stream')">
+    Stream
+  </button>
+
+</div>
+  <audio id="player" controls loop preload="auto"></audio>
+    <div class="hint" id="nowPlaying">Click the piano, choose a piece, and let the hall play.</div>
+  
+
+</div>
+  </div>
+</div>
+
+<script>
+const panel = document.getElementById('musicPanel');
+
+
+
+const player = document.getElementById('player');
+const nowPlaying = document.getElementById('nowPlaying');
+const archiveList = document.getElementById('archiveList');
+let currentButton = null;
+
+const fallbackTracks = [
+  { title:'Mozart Piece', file:'audio/mozart_piece.mp3' }
+];
+
+function openPlayer(){ panel.classList.add('open'); }
+function closePlayer(){ panel.classList.remove('open'); }
+
+function renderArchive(tracks){
+  archiveList.innerHTML = '';
+  tracks.forEach((track)=>{
+    const btn = document.createElement('button');
+    btn.className = 'trackBtn';
+    btn.textContent = track.title;
+    btn.onclick = () => loadTrack(track.file, track.title, btn);
+    archiveList.appendChild(btn);
+  });
+}
+
+function loadTrack(src, title, btn){
+  if(currentButton) currentButton.classList.remove('active');
+  currentButton = btn || null;
+  if(currentButton) currentButton.classList.add('active');
+  player.src = src;
+  player.loop = true;
+  player.volume = 0.85;
+  nowPlaying.textContent = 'Now playing: ' + title;
+  try{ localStorage.setItem('nexHallTrack', src); localStorage.setItem('nexHallTrackTitle', title); }catch(e){}
+  const p = player.play();
+  if(p !== undefined){ p.catch(()=>{}); }
+}
+
+fetch('playlist.json', {cache:'no-store'})
+  .then(r => r.ok ? r.json() : fallbackTracks)
+  .then(tracks => renderArchive(Array.isArray(tracks) && tracks.length ? tracks : fallbackTracks))
+  .catch(() => renderArchive(fallbackTracks));
+
+
+function goBalcony(){
+  try{
+    if(player && player.src){
+      localStorage.setItem('nexHallTrack', player.getAttribute('src') || player.src);
+      localStorage.setItem('nexHallTrackTitle', nowPlaying.textContent.replace('Now playing: ','') || 'Hall music');
+      localStorage.setItem('nexHallTrackTime', String(player.currentTime || 0));
+    }
+  }catch(e){}
+  window.location.href='balcony.html';
+}
+
+document.addEventListener('keydown',(e)=>{
+  if(e.key.toLowerCase()==='h') document.body.classList.toggle('show-hotspots');
+  if(e.key==='Escape') closePlayer();
+});
+</script>
+</body>
+</html>
