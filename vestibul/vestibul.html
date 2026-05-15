@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ВЕСТИБЮЛЬ ДВОРЦА</title>
+
+<style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:black;
+}
+
+body{
+  font-family:Georgia,serif;
+}
+
+#vestibul{
+  position:relative;
+  width:100%;
+  height:100%;
+  background-image:url('VESTIBUL.png');
+  background-size:cover;
+  background-position:center;
+}
+
+#fog{
+  position:absolute;
+  inset:-10%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05), transparent 35%),
+    radial-gradient(circle at 70% 50%, rgba(180,220,255,0.05), transparent 35%),
+    radial-gradient(circle at 50% 80%, rgba(255,255,255,0.03), transparent 40%);
+  animation:fogMove 35s linear infinite alternate;
+  pointer-events:none;
+}
+
+@keyframes fogMove{
+  from{ transform:translateX(-2%) translateY(-1%); }
+  to{ transform:translateX(2%) translateY(1%); }
+}
+
+.zone{
+  position:absolute;
+  cursor:pointer;
+  border-radius:42%;
+}
+
+/* Нажать H — показать / скрыть активные пятна */
+.show-hotspots .zone{
+  background:rgba(255,225,90,0.28);
+  outline:2px solid rgba(255,255,255,0.65);
+  box-shadow:0 0 25px rgba(255,210,90,0.45);
+}
+
+/* 1. М.Некс — НЕ ТРОГАЛ */
+#miniNex{
+  left:15%;
+  top:42%;
+  width:12%;
+  height:40%;
+}
+
+/* 2. Шкатулка — НЕ ТРОГАЛ */
+#box{
+  left:1%;
+  bottom:3%;
+  width:14%;
+  height:22%;
+}
+
+/* 3. Центральные двери нижнего зала */
+#centerDoor{
+  left:39%;
+  top:33%;
+  width:22%;
+  height:49%;
+}
+
+/* 4. Левая верхняя дверь с мишенью — ДОБАВЛЕНА */
+#doorTarget{
+  left:12%;
+  top:8%;
+  width:10%;
+  height:20%;
+}
+
+/* 5. Левая верхняя дверь с сердцем — ДОБАВЛЕНА */
+#doorHeart{
+  left:22%;
+  top:8%;
+  width:10%;
+  height:20%;
+}
+
+/* 6-9. Остальные двери/зоны — оставил как в последнем удачном варианте */
+#doorLowerLeft{
+  left:66%;
+  top:46%;
+  width:8%;
+  height:20%;
+}
+
+#doorLowerRight{
+  left:74%;
+  top:46%;
+  width:8%;
+  height:20%;
+}
+
+#doorUpperRightSun{
+  left:67%;
+  top:8%;
+  width:8%;
+  height:20%;
+}
+
+#doorUpperRightMoon{
+  left:81%;
+  top:8%;
+  width:8%;
+  height:20%;
+}
+
+/* Часы — НЕ ТРОГАЛ */
+#clock{
+  left:45%;
+  top:1%;
+  width:12%;
+  height:18%;
+}
+
+/* Белая планетка — оставил как в последнем варианте */
+#planet{
+  left:56%;
+  top:3%;
+  width:7%;
+  height:13%;
+}
+</style>
+</head>
+
+<body>
+<audio id="mozartLoop" src="9999.mp3" preload="auto" loop></audio>
+<div id="vestibul">
+  <div id="fog"></div>
+
+  <div class="zone" id="miniNex" onclick="go('mini_nex.html')" title="М.Некс"></div>
+  <div class="zone" id="box" onclick="go('box.html')" title="Шкатулка"></div>
+  <div class="zone" id="centerDoor" onclick="go('lower_hall.html')" title="Центральные двери нижнего зала"></div>
+
+  <div class="zone" id="doorTarget" onclick="go('seas/hall1.html')" title="Дверь с мишенью">
+
+</div>
+  <div class="zone" id="doorHeart" 
+onclick="go('seas/hall1.html')" title="Дверь с сердцем">
+
+</div>
+
+  <div class="zone" id="doorLowerLeft" onclick="go('guest_lower_left.html')" title="Нижняя левая гостиная">
+
+</div>
+  <div class="zone" id="doorLowerRight" onclick="go('guest_lower_right.html')" title="Нижняя правая гостиная">
+
+</div>
+  <div class="zone" id="doorUpperRightSun" onclick="go('seas/hall1.html')" title="Дверь с солнцем">
+
+</div>
+  <div class="zone" id="doorUpperRightMoon" onclick="go('seas/hall1.html')" title="Дверь с луной">
+
+</div>
+
+  <div class="zone" id="clock" onclick="go('concert_nex/index.html')" title="Concert Hall of Nex">
+</div>
+  <div class="zone" id="planet" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/'" title="White Planet — LOGOVO"></div>
+</div>
+
+<script>
+/* MOZART LOOP / МУЗЫКА ВЕСТИБЮЛЯ
+   Браузер может запретить автозапуск, поэтому музыка запускается
+   автоматически при возможности или с первого клика/касания.
+   loop в теге audio заставляет фрагмент повторяться бесконечно. */
+const mozart = document.getElementById('mozartLoop');
+let mozartStarted = false;
+
+function startMozart(){
+  if(mozartStarted) return;
+  mozart.volume = 0.85;
+  mozart.loop = true;
+
+  const playPromise = mozart.play();
+  if(playPromise !== undefined){
+    playPromise.then(()=>{
+      mozartStarted = true;
+    }).catch(()=>{
+      // Если браузер заблокировал автозапуск, первый реальный клик включит музыку.
+    });
+  }
+}
+
+// Пытаемся включить сразу при открытии страницы.
+window.addEventListener('load', startMozart);
+
+// Надежный запуск с первого действия мышкой или пальцем.
+document.addEventListener('pointerdown', startMozart, {capture:true});
+document.addEventListener('click', startMozart, {capture:true});
+
+function go(link){
+  startMozart();
+  window.location.href = link;
+}
+
+document.addEventListener('keydown',(e)=>{
+  if(e.key.toLowerCase()==='h'){
+    document.body.classList.toggle('show-hotspots');
+  }
+});
+</script>
+
+</body>
+</html>
