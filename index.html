@@ -189,16 +189,26 @@ const states=[
   document.getElementById('night')
 ];
 
-let current=0;
+function setStateByRealTime(){
+  const minute = new Date().getMinutes();
 
-function switchState(){
-  states[current].classList.remove('active');
-  current++;
-  if(current>=states.length){ current=0; }
+  let current;
+  if(minute < 15){
+    current = 0; // DAY
+  }else if(minute < 30){
+    current = 1; // SUNSET
+  }else if(minute < 45){
+    current = 2; // NIGHT
+  }else{
+    current = 1; // SUNSET
+  }
+
+  states.forEach(state => state.classList.remove('active'));
   states[current].classList.add('active');
 }
 
-setInterval(switchState,900000);
+setStateByRealTime();
+setInterval(setStateByRealTime,60000);
 
 /* ВХОД В ВЕСТИБЮЛЬ */
 
