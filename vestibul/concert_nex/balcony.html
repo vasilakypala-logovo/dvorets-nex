@@ -105,37 +105,84 @@ audio{display:none;}
 const echo = document.getElementById('echo');
 const hint = document.getElementById('musicHint');
 const flyingPainting = document.getElementById('flyingPainting');
+const flyingImg = flyingPainting.querySelector('img');
+
+const flyingImages = [
+  'HIT1.jpg',
+  'HIT2.jpg',
+  'HIT3.jpg',
+  'HIT4.jpg',
+  'HIT5.jpg'
+];
+
+let currentPainting = 0;
+
+function nextPainting(){
+  currentPainting++;
+  if(currentPainting >= flyingImages.length){
+    currentPainting = 0;
+  }
+  flyingImg.src = flyingImages[currentPainting];
+}
 
 function launchFlyingPainting(){
   if(!flyingPainting) return;
+
   flyingPainting.classList.remove('fly');
   void flyingPainting.offsetWidth;
+
+  flyingImg.src = flyingImages[currentPainting];
+
   flyingPainting.classList.add('fly');
+}
+
+function startFlyingLoop(){
+  launchFlyingPainting();
+
+  setInterval(()=>{
+    nextPainting();
+    launchFlyingPainting();
+  },46000);
 }
 
 function startEcho(){
   try{
     const src = localStorage.getItem('nexHallTrack') || 'audio/Childhood.mp3';
     const t = parseFloat(localStorage.getItem('nexHallTrackTime') || '0');
+
     echo.src = src;
     echo.volume = 0.22;
     echo.currentTime = isFinite(t) ? Math.max(0,t) : 0;
+
     const p = echo.play();
-    if(p !== undefined){ p.catch(()=>{ hint.classList.add('show'); }); }
-  }catch(e){ hint.classList.add('show'); }
+
+    if(p !== undefined){
+      p.catch(()=>{
+        hint.classList.add('show');
+      });
+    }
+
+  }catch(e){
+    hint.classList.add('show');
+  }
 }
 
 startEcho();
+startFlyingLoop();
 
 document.addEventListener('click',()=>{
   if(echo.paused) startEcho();
-  launchFlyingPainting();
   hint.classList.remove('show');
 },{once:false});
 
 document.addEventListener('keydown',(e)=>{
-  if(e.key.toLowerCase()==='h') document.body.classList.toggle('show-hotspots');
-  if(e.key==='Escape') window.location.href='index.html';
+  if(e.key.toLowerCase()==='h'){
+    document.body.classList.toggle('show-hotspots');
+  }
+
+  if(e.key==='Escape'){
+    window.location.href='index.html';
+  }
 });
 </script>
 </body>
