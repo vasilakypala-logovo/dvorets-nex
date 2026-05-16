@@ -254,6 +254,68 @@ html, body {
     cursor:pointer;
 }
 
+#seaBreathTitle{
+    position:absolute;
+    left:50%;
+    top:6.5%;
+    transform:translate(-50%, 18px);
+
+    color:rgba(224,246,255,0);
+    font-family:Georgia, 'Times New Roman', serif;
+    font-size:clamp(24px, 3.2vw, 54px);
+    font-weight:400;
+    letter-spacing:0.08em;
+    white-space:nowrap;
+
+    text-shadow:
+        0 0 10px rgba(145,220,255,0),
+        0 0 26px rgba(95,190,255,0),
+        0 0 52px rgba(45,135,255,0);
+
+    pointer-events:none;
+    z-index:40;
+
+    animation:seaBreathFloat 9s ease-in-out infinite;
+}
+
+@keyframes seaBreathFloat{
+    0%{
+        opacity:0;
+        transform:translate(-50%, 24px);
+        color:rgba(224,246,255,0);
+        text-shadow:
+            0 0 10px rgba(145,220,255,0),
+            0 0 26px rgba(95,190,255,0),
+            0 0 52px rgba(45,135,255,0);
+    }
+    22%{
+        opacity:1;
+        transform:translate(-50%, 0);
+        color:rgba(232,250,255,0.92);
+        text-shadow:
+            0 0 10px rgba(180,235,255,0.88),
+            0 0 28px rgba(95,205,255,0.64),
+            0 0 58px rgba(45,145,255,0.46);
+    }
+    68%{
+        opacity:1;
+        transform:translate(-50%, -6px);
+        color:rgba(232,250,255,0.96);
+        text-shadow:
+            0 0 14px rgba(205,245,255,0.95),
+            0 0 34px rgba(110,215,255,0.72),
+            0 0 70px rgba(45,150,255,0.52);
+    }
+    100%{
+        opacity:0;
+        transform:translate(-50%, -18px);
+        color:rgba(224,246,255,0);
+        text-shadow:
+            0 0 10px rgba(145,220,255,0),
+            0 0 26px rgba(95,190,255,0),
+            0 0 52px rgba(45,135,255,0);
+    }
+}
 
 </style>
 </head>
@@ -262,6 +324,8 @@ html, body {
 
 <div id="stage">
     <div id="room"></div>
+
+    <div id="seaBreathTitle">Breath of Sensitive Seas</div>
 
     <div class="zone" id="z1" onclick="openWork(1)"></div>
     <div class="zone" id="z2" onclick="openWork(2)"></div>
