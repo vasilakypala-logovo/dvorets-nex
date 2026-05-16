@@ -101,7 +101,6 @@ audio{display:none;}
   <div id="musicHint">click anywhere — the hall music will breathe quietly here</div>
   <audio id="echo" loop preload="auto"></audio>
 </div>
-
 <script>
 const echo = document.getElementById('echo');
 const hint = document.getElementById('musicHint');
@@ -117,6 +116,7 @@ const flyingImages = [
 ];
 
 let currentPainting = 0;
+let flyingTimer = null;
 
 function launchFlyingPainting(){
   flyingImg.src = flyingImages[currentPainting];
@@ -124,15 +124,17 @@ function launchFlyingPainting(){
   flyingPainting.classList.remove('fly');
   void flyingPainting.offsetWidth;
   flyingPainting.classList.add('fly');
-}
 
-flyingPainting.addEventListener('animationend',()=>{
-  currentPainting++;
-  if(currentPainting >= flyingImages.length){
-    currentPainting = 0;
-  }
-  launchFlyingPainting();
-});
+  clearTimeout(flyingTimer);
+
+  flyingTimer = setTimeout(()=>{
+    currentPainting++;
+    if(currentPainting >= flyingImages.length){
+      currentPainting = 0;
+    }
+    launchFlyingPainting();
+  }, 36000);
+}
 
 function startEcho(){
   try{
@@ -159,5 +161,6 @@ document.addEventListener('keydown',(e)=>{
   if(e.key==='Escape') window.location.href='index.html';
 });
 </script>
+
 </body>
 </html>
