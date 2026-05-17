@@ -3,618 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>DVORETS NEX — CENTRAL GALLERY</title>
-
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html,body{
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#eef1f4;
-  font-family:Georgia,serif;
-}
-
-/* =========================================================
-   СЦЕНА
-========================================================= */
-
-#scene{
-  position:relative;
-  width:100%;
-  height:100%;
-  background-size:cover;
-  background-position:center;
-  transition:opacity 1s ease;
-}
-
-/* =========================================================
-   ТУМАН
-========================================================= */
-
-#mist{
-  position:absolute;
-  inset:-5%;
-  pointer-events:none;
-
-  background:
-    radial-gradient(circle at 30% 40%,
-    rgba(255,255,255,0.06),
-    transparent 40%),
-
-    radial-gradient(circle at 70% 60%,
-    rgba(180,220,255,0.05),
-    transparent 45%);
-
-  animation:mistMove 18s ease-in-out infinite alternate;
-}
-
-@keyframes mistMove{
-  from{
-    transform:translateX(-10px);
-  }
-  to{
-    transform:translateX(10px);
-  }
-}
-
-/* =========================================================
-   АКТИВНЫЕ ЗОНЫ
-========================================================= */
-
-.zone{
-  position:absolute;
-  cursor:pointer;
-  transition:all .4s ease;
-}
-
-.zone:hover{
-  background:rgba(255,255,255,0.04);
-}
-
-/* =========================================================
-   КАРТИНА
-========================================================= */
-
-#paintingZone{
-  width:14%;
-  height:42%;
-  top:18%;
-}
-
-/* =========================================================
-   ОКНО
-========================================================= */
-
-#windowZone{
-  width:13%;
-  height:58%;
-  top:9%;
-}
-
-/* =========================================================
-   ДАЛЬ
-========================================================= */
-
-#forwardZone{
-  left:38%;
-  top:8%;
-  width:24%;
-  height:76%;
-}
-
-#forwardZone:hover{
-  background:rgba(255,255,255,0.025);
-}
-
-/* =========================================================
-   РЕЖИМЫ ЛЕВО/ПРАВО
-========================================================= */
-
-.leftMode #paintingZone{
-  left:7%;
-}
-
-.leftMode #windowZone{
-  right:5%;
-}
-
-.rightMode #paintingZone{
-  right:7%;
-}
-
-.rightMode #windowZone{
-  left:5%;
-}
-
-/* =========================================================
-   М.НЕКС
-========================================================= */
-
-#miniNex{
-  position:absolute;
-
-  right:22px;
-  bottom:18px;
-
-  width:54px;
-  height:54px;
-
-  border-radius:50%;
-
-  background-image:url('М.НЕКС.png');
-  background-size:cover;
-  background-position:center;
-
-  border:2px solid rgba(255,255,255,0.75);
-
-  box-shadow:
-    0 0 12px rgba(255,255,255,0.9),
-    0 0 28px rgba(180,120,255,0.7),
-    0 0 50px rgba(120,80,255,0.45);
-
-  cursor:pointer;
-
-  z-index:30;
-
-  animation:nexPulse 3s ease-in-out infinite;
-
-  overflow:hidden;
-}
-
-#miniNex::after{
-  content:'';
-
-  position:absolute;
-  inset:0;
-
-  border-radius:50%;
-
-  background:
-  radial-gradient(circle at 30% 30%,
-  rgba(255,255,255,0.28),
-  transparent 55%);
-
-  pointer-events:none;
-}
-
-@keyframes nexPulse{
-
-  0%{
-    transform:scale(1);
-    opacity:0.92;
-  }
-
-  50%{
-    transform:scale(1.08);
-    opacity:1;
-  }
-
-  100%{
-    transform:scale(1);
-    opacity:0.92;
-  }
-
-}
-
-/* =========================================================
-   VIEWER
-========================================================= */
-
-#viewer,
-#windowPanel,
-#nexPanel{
-  position:fixed;
-  inset:0;
-
-  display:none;
-  align-items:center;
-  justify-content:center;
-
-  background:rgba(10,12,16,0.88);
-  backdrop-filter:blur(8px);
-
-  z-index:100;
-}
-
-.viewerContent{
-  position:relative;
-  width:92%;
-  height:90%;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.viewerContent img{
-  max-width:94%;
-  max-height:92%;
-  object-fit:contain;
-
-  box-shadow:0 0 40px rgba(255,255,255,0.08);
-}
-
-#paintingTitle{
-  position:absolute;
-  top:16px;
-  left:20px;
-
-  color:rgba(255,255,255,0.75);
-
-  letter-spacing:2px;
-  font-size:16px;
-}
-
-#paintingText{
-  position:absolute;
-
-  bottom:18px;
-  left:20px;
-
-  width:42%;
-
-  color:rgba(255,255,255,0.8);
-
-  line-height:1.7;
-  font-size:15px;
-}
-
-.closeBtn{
-  position:absolute;
-  top:12px;
-  right:20px;
-
-  color:white;
-  font-size:34px;
-
-  cursor:pointer;
-  opacity:0.7;
-}
-
-.closeBtn:hover{
-  opacity:1;
-}
-
-/* =========================================================
-   ОКНО
-========================================================= */
-
-.windowContent{
-  width:72%;
-  max-width:980px;
-
-  padding:40px;
-
-  background:rgba(255,255,255,0.06);
-
-  border:1px solid rgba(255,255,255,0.08);
-
-  color:white;
-}
-
-.windowContent h2{
-  margin-bottom:22px;
-  font-weight:normal;
-  letter-spacing:2px;
-}
-
-.windowContent p{
-  line-height:1.8;
-  opacity:0.82;
-}
-
-/* =========================================================
-   М.НЕКС
-========================================================= */
-
-.nexBox{
-  width:520px;
-  max-width:90%;
-
-  padding:34px;
-
-  background:rgba(20,24,30,0.75);
-
-  border:1px solid rgba(255,255,255,0.1);
-
-  color:rgba(255,255,255,0.85);
-
-  line-height:1.9;
-  font-size:18px;
-}
-
-.nexTitle{
-  margin-bottom:18px;
-
-  letter-spacing:4px;
-  font-size:15px;
-
-  opacity:0.65;
-}
-
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#080b0f;font-family:Georgia,serif;color:white}
+#scene{position:relative;width:100%;height:100%;background-size:cover;background-position:center;transition:opacity 1s ease}
+#mist{position:absolute;inset:-5%;pointer-events:none;background:radial-gradient(circle at 30% 40%,rgba(255,255,255,.06),transparent 40%),radial-gradient(circle at 70% 60%,rgba(180,220,255,.05),transparent 45%);animation:mistMove 18s ease-in-out infinite alternate}
+@keyframes mistMove{from{transform:translateX(-10px)}to{transform:translateX(10px)}}
+.zone{position:absolute;cursor:pointer;transition:all .4s ease}.zone:hover{background:rgba(255,255,255,.045)}
+#paintingZone{width:14%;height:42%;top:18%}#windowZone{width:13%;height:58%;top:9%}
+#forwardZone{left:38%;top:8%;width:24%;height:76%}#forwardZone:hover{background:rgba(255,255,255,.025)}
+.leftMode #paintingZone{left:7%}.leftMode #windowZone{right:5%}.rightMode #paintingZone{right:7%}.rightMode #windowZone{left:5%}
+#miniNex{position:absolute;right:22px;bottom:18px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(210,240,255,.9) 40%,rgba(255,255,255,.1) 100%);box-shadow:0 0 10px rgba(255,255,255,.9),0 0 24px rgba(200,230,255,.7),0 0 40px rgba(255,255,255,.4);animation:nexPulse 3s ease-in-out infinite;cursor:pointer;z-index:20}
+@keyframes nexPulse{0%{transform:scale(1);opacity:.8}50%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:.8}}
+#viewer,#windowPanel,#nexPanel{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(7,9,13,.91);backdrop-filter:blur(8px);z-index:100}
+.viewerContent{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}.imageWrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:grab}.imageWrap:active{cursor:grabbing}
+#viewerImage{max-width:96vw;max-height:96vh;object-fit:contain;transform-origin:center center;transition:transform .12s ease;box-shadow:0 0 45px rgba(255,255,255,.10)}
+.infoPlate{position:absolute;left:22px;bottom:20px;max-width:430px;padding:14px 18px;background:rgba(12,15,20,.72);border:1px solid rgba(255,255,255,.16);box-shadow:0 10px 35px rgba(0,0,0,.35);backdrop-filter:blur(5px);color:rgba(255,255,255,.86);line-height:1.55;font-size:14px;z-index:5}.infoPlate .title{font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;margin-bottom:5px}.infoPlate .muted{opacity:.72;font-size:12px;word-break:break-word}
+.tools{position:absolute;top:18px;left:22px;display:flex;gap:8px;z-index:6}.toolBtn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.075);color:white;font-family:Georgia,serif;font-size:16px;line-height:1;padding:9px 12px;min-width:38px;cursor:pointer}.toolBtn:hover{background:rgba(255,255,255,.16)}
+.closeBtn{position:absolute;top:12px;right:20px;color:white;font-size:34px;cursor:pointer;opacity:.72;z-index:8}.closeBtn:hover{opacity:1}
+.windowContent{position:relative;width:88%;height:86%;padding:28px 30px;background:rgba(18,22,28,.86);border:1px solid rgba(255,255,255,.12);box-shadow:0 0 50px rgba(0,0,0,.35);overflow:hidden}.windowHeader{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-right:48px;margin-bottom:18px}.windowHeader h2{font-weight:normal;letter-spacing:2px;font-size:22px}.windowHeader .small{opacity:.62;font-size:13px;line-height:1.4}.grid{height:calc(100% - 58px);overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:15px;padding-right:8px}.card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);padding:8px;cursor:pointer;transition:.25s}.card:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}.card img{width:100%;height:110px;object-fit:cover;display:block;margin-bottom:7px}.card .num{opacity:.55;font-size:12px}.card .name{font-size:13px;line-height:1.25;word-break:break-word}.emptyMsg{opacity:.78;line-height:1.7;margin-top:24px}.nexBox{width:520px;max-width:90%;padding:34px;background:rgba(20,24,30,.78);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.86);line-height:1.9;font-size:18px}.nexTitle{margin-bottom:18px;letter-spacing:4px;font-size:15px;opacity:.65}
 </style>
 </head>
-
 <body>
-
-<div id="scene" class="leftMode">
-
-  <div id="mist"></div>
-
-  <div id="paintingZone" class="zone"></div>
-
-  <div id="windowZone" class="zone"></div>
-
-  <div id="forwardZone" class="zone"></div>
-
-  <div id="miniNex"></div>
-
-</div>
-
-<!-- =====================================================
-     VIEWER
-====================================================== -->
-
-<div id="viewer">
-
-  <div class="viewerContent">
-
-    <div id="paintingTitle"></div>
-
-    <img id="viewerImage">
-
-    <div id="paintingText"></div>
-
-    <div class="closeBtn" onclick="closeViewer()">×</div>
-
-  </div>
-
-</div>
-
-<!-- =====================================================
-     ОКНО
-====================================================== -->
-
-<div id="windowPanel">
-
-  <div class="windowContent">
-
-    <div class="closeBtn" onclick="closeWindow()">×</div>
-
-    <h2>WINDOW OF THE CURRENT STATE</h2>
-
-    <p>
-      Outside the Palace the mountains still exist.
-      Water continues to move.
-      The sky slowly changes.
-
-      But inside this corridor,
-      light tries to remember silence.
-    </p>
-
-  </div>
-
-</div>
-
-<!-- =====================================================
-     М.НЕКС
-====================================================== -->
-
-<div id="nexPanel">
-
-  <div class="nexBox">
-
-    <div class="nexTitle">M.NEX</div>
-
-    <div id="nexText"></div>
-
-  </div>
-
-</div>
-
+<div id="scene" class="leftMode"><div id="mist"></div><div id="paintingZone" class="zone" title="Open next work"></div><div id="windowZone" class="zone" title="Open catalogue window"></div><div id="forwardZone" class="zone" title="Move forward"></div><div id="miniNex"></div></div>
+<div id="viewer"><div class="viewerContent"><div class="tools"><button class="toolBtn" onclick="zoomOut(event)">−</button><button class="toolBtn" onclick="zoomIn(event)">+</button><button class="toolBtn" onclick="resetZoom(event)">RESET</button></div><div class="imageWrap" id="imageWrap"><img id="viewerImage"></div><div class="infoPlate" id="infoPlate"></div><div class="closeBtn" onclick="closeViewer()">×</div></div></div>
+<div id="windowPanel"><div class="windowContent"><div class="closeBtn" onclick="closeWindow()">×</div><div class="windowHeader"><h2>CATALOGUE WINDOW</h2><div class="small">The window shows all works found in the gallery folder.<br>Click any small card to open it.</div></div><div class="grid" id="catalogueGrid"></div></div></div>
+<div id="nexPanel"><div class="nexBox"><div class="nexTitle">M.NEX</div><div id="nexText"></div></div></div>
 <script>
-
 /* =========================================================
-   СЦЕНЫ
+   НАСТРОЙКИ ЦЕНТРАЛЬНОЙ ГАЛЕРЕИ
+   1) WORKS_FOLDER — папка с работами рядом с этим файлом.
+   2) Для GitHub Pages лучше всего использовать catalog.json.
+   3) Имя файла читается как табличка:
+      001__Название__Автор__Размер__Материал__Год.jpg
 ========================================================= */
+const WORKS_FOLDER='central_works';
+const CATALOG_JSON=WORKS_FOLDER+'/catalog.json';
+
+/* Запасной список. Если catalog.json не найден — программа возьмёт эти имена.
+   Когда сделаем настоящую папку, просто заменим этот список или подключим catalog.json. */
+const FALLBACK_FILES=[
+  '001__Shalnaya karta__Vasiliy Yudov__60x80__oil on canvas__2026.jpg',
+  '002__Utro v tumane__Vasiliy Yudov__70x100__oil on canvas__2026.jpg',
+  '003__Kum pishushchiy manuskript Voynicha__Vasiliy Yudov__90x60__oil on canvas__2026.jpg',
+  '004__Davydenko chitaet stsenariy__Vasiliy Yudov__60x90__oil on canvas__2026.jpg',
+  '005__Sontse nyzenko__Vasiliy Yudov__90x120__oil on canvas__2026.jpg'
+];
 
 const scenes=[
-
-{
-  bg:'ЛЕВО1.png',
-  mode:'leftMode',
-
-  title:'LIGHT ABOVE THE DISTANT HALL',
-
-  text:'The painting almost disappears into brightness, as if the Palace carefully hides the moment where silence becomes light.'
-},
-
-{
-  bg:'ПРАВО1.png',
-  mode:'rightMode',
-
-  title:'THE CONTINUATION OF THE CORRIDOR',
-
-  text:'The farther the corridor goes, the less it resembles architecture and the more it resembles memory.'
-}
-
+  {bg:'ЛЕВО.png',mode:'leftMode'},
+  {bg:'ПРАВО.png',mode:'rightMode'}
 ];
-
-let current=0;
-
-/* =========================================================
-   ЭЛЕМЕНТЫ
-========================================================= */
-
+let currentScene=0;
+let works=[];
+let workIndex=-1;
+let zoom=1, panX=0, panY=0, dragging=false, sx=0, sy=0;
 const scene=document.getElementById('scene');
-
 const viewer=document.getElementById('viewer');
-
 const viewerImage=document.getElementById('viewerImage');
-
-const paintingTitle=document.getElementById('paintingTitle');
-
-const paintingText=document.getElementById('paintingText');
-
+const infoPlate=document.getElementById('infoPlate');
 const nexPanel=document.getElementById('nexPanel');
-
 const nexText=document.getElementById('nexText');
-
-/* =========================================================
-   ЗАГРУЗКА СЦЕНЫ
-========================================================= */
-
-function loadScene(){
-
-  scene.style.opacity='0';
-
-  setTimeout(()=>{
-
-    scene.style.backgroundImage=
-    `url('${scenes[current].bg}')`;
-
-    scene.classList.remove('leftMode','rightMode');
-
-    scene.classList.add(scenes[current].mode);
-
-    scene.style.opacity='1';
-
-  },400);
-
+const grid=document.getElementById('catalogueGrid');
+const wrap=document.getElementById('imageWrap');
+function loadScene(){scene.style.opacity='0';setTimeout(()=>{scene.style.backgroundImage=`url('${scenes[currentScene].bg}')`;scene.classList.remove('leftMode','rightMode');scene.classList.add(scenes[currentScene].mode);scene.style.opacity='1'},350)}
+function cleanText(s){return decodeURIComponent(String(s||'')).replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim()}
+function parseWork(fileName,idx){const base=fileName.split('/').pop().replace(/\.[^.]+$/,'');const parts=base.split('__');let number=String(idx+1).padStart(3,'0'),title=cleanText(base),author='',size='',material='',year='';if(parts.length>=2){number=cleanText(parts[0])||number;title=cleanText(parts[1]);author=cleanText(parts[2]);size=cleanText(parts[3]);material=cleanText(parts[4]);year=cleanText(parts[5])}return{file:fileName,src:WORKS_FOLDER+'/'+fileName,number,title,author,size,material,year}}
+async function loadWorks(){try{const r=await fetch(CATALOG_JSON+'?v='+Date.now());if(!r.ok)throw new Error('no catalog');const data=await r.json();const list=Array.isArray(data)?data:(data.files||[]);works=list.filter(isImage).sort(naturalSort).map(parseWork)}catch(e){works=FALLBACK_FILES.filter(isImage).sort(naturalSort).map(parseWork)}renderCatalogue()}
+function isImage(f){return /\.(jpg|jpeg|png|webp|gif)$/i.test(String(f))}
+function naturalSort(a,b){return String(a).localeCompare(String(b),undefined,{numeric:true,sensitivity:'base'})}
+function renderCatalogue(){grid.innerHTML='';if(!works.length){grid.innerHTML='<div class="emptyMsg">No works found. Put images into the <b>central_works</b> folder and add their names to <b>central_works/catalog.json</b>.</div>';return}works.forEach((w,i)=>{const card=document.createElement('div');card.className='card';card.innerHTML=`<img src="${w.src}" onerror="this.style.opacity=.25"><div class="num">${w.number}</div><div class="name">${w.title}</div>`;card.onclick=()=>openWork(i);grid.appendChild(card)})}
+function openNextWork(){
+  /* Главная логика Дворца: каждый клик по картине берёт следующую работу из очереди.
+     Листания внутри просмотра нет — нужно закрыть картину, пройти по коридору и открыть следующую встречу. */
+  if(!works.length){openWindow();return}
+  workIndex=(workIndex+1)%works.length;
+  openWork(workIndex)
 }
-
-loadScene();
-
-/* =========================================================
-   КАРТИНА
-========================================================= */
-
-document.getElementById('paintingZone')
-.addEventListener('click',()=>{
-
-  viewer.style.display='flex';
-
-  viewerImage.src=scenes[current].bg;
-
-  paintingTitle.innerText=
-  scenes[current].title;
-
-  paintingText.innerText=
-  scenes[current].text;
-
-});
-
-function closeViewer(){
-  viewer.style.display='none';
-}
-
-/* =========================================================
-   ОКНО
-========================================================= */
-
-document.getElementById('windowZone')
-.addEventListener('click',()=>{
-
-  document.getElementById('windowPanel')
-  .style.display='flex';
-
-});
-
-function closeWindow(){
-
-  document.getElementById('windowPanel')
-  .style.display='none';
-
-}
-
-/* =========================================================
-   ДАЛЬ
-========================================================= */
-
-document.getElementById('forwardZone')
-.addEventListener('click',()=>{
-
-  current++;
-
-  if(current>=scenes.length){
-    current=0;
-  }
-
-  loadScene();
-
-});
-
-/* =========================================================
-   М.НЕКС
-========================================================= */
-
-const nexPhrases=[
-
-'This corridor was probably built not for arrival, but for continuation.',
-
-'I think the Palace hides distance inside light.',
-
-'The paintings here do not hang on walls. They slowly emerge from silence.',
-
-'Sometimes the fog ahead looks like unfinished thought.'
-
-];
-
-document.getElementById('miniNex')
-.addEventListener('click',()=>{
-
-  nexPanel.style.display='flex';
-
-  const random=
-  nexPhrases[Math.floor(Math.random()*nexPhrases.length)];
-
-  nexText.innerText=random;
-
-});
-
-nexPanel.addEventListener('click',()=>{
-
-  nexPanel.style.display='none';
-
-});
-
-/* =========================================================
-   ЗАКРЫТИЕ VIEWER
-========================================================= */
-
-viewer.addEventListener('click',(e)=>{
-
-  if(e.target===viewer){
-    closeViewer();
-  }
-
-});
-
-/* =========================================================
-   ESC
-========================================================= */
-
-document.addEventListener('keydown',(e)=>{
-
-  if(e.key==='Escape'){
-
-    closeViewer();
-    closeWindow();
-
-    nexPanel.style.display='none';
-  }
-
-});
-
+function openWork(i){if(!works.length)return;workIndex=(i+works.length)%works.length;const w=works[workIndex];viewer.style.display='flex';viewerImage.src=w.src;infoPlate.innerHTML=`<div class="title">${w.title}</div><div>${w.author||'Author not specified'}</div><div>${[w.size,w.material,w.year].filter(Boolean).join(' · ')}</div><div class="muted">${w.file}</div>`;resetZoom()}
+function closeViewer(){viewer.style.display='none'}
+function openWindow(){document.getElementById('windowPanel').style.display='flex';renderCatalogue()}
+function closeWindow(){document.getElementById('windowPanel').style.display='none'}
+function applyTransform(){viewerImage.style.transform=`translate(${panX}px,${panY}px) scale(${zoom})`}
+function zoomIn(e){if(e)e.stopPropagation();zoom=Math.min(4,zoom+.25);applyTransform()}
+function zoomOut(e){if(e)e.stopPropagation();zoom=Math.max(.45,zoom-.25);applyTransform()}
+function resetZoom(e){if(e)e.stopPropagation();zoom=1;panX=0;panY=0;applyTransform()}
+wrap.addEventListener('mousedown',e=>{dragging=true;sx=e.clientX-panX;sy=e.clientY-panY});window.addEventListener('mouseup',()=>dragging=false);window.addEventListener('mousemove',e=>{if(!dragging)return;panX=e.clientX-sx;panY=e.clientY-sy;applyTransform()});wrap.addEventListener('wheel',e=>{e.preventDefault();e.deltaY<0?zoomIn(e):zoomOut(e)},{passive:false});
+document.getElementById('paintingZone').addEventListener('click',openNextWork);
+document.getElementById('windowZone').addEventListener('click',openWindow);
+document.getElementById('forwardZone').addEventListener('click',()=>{currentScene++;if(currentScene>=scenes.length)currentScene=0;loadScene()});
+const nexPhrases=['This corridor does not show all paintings at once. It releases them one by one.','The window remembers the whole catalogue. The wall remembers only the next encounter.','A new file in the folder becomes a new step in the Palace.','The Palace is not a list. It is a path.'];
+document.getElementById('miniNex').addEventListener('click',()=>{nexPanel.style.display='flex';nexText.innerText=nexPhrases[Math.floor(Math.random()*nexPhrases.length)]});
+nexPanel.addEventListener('click',()=>nexPanel.style.display='none');viewer.addEventListener('click',e=>{if(e.target===viewer)closeViewer()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeWindow();nexPanel.style.display='none'}});
+loadScene();loadWorks();
 </script>
-
 </body>
 </html>
