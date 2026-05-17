@@ -140,45 +140,68 @@ html,body{
 
 #miniNex{
   position:absolute;
+
   right:22px;
   bottom:18px;
 
-  width:22px;
-  height:22px;
+  width:54px;
+  height:54px;
+
+  border-radius:50%;
+
+  background-image:url('М.НЕКС.png');
+  background-size:cover;
+  background-position:center;
+
+  border:2px solid rgba(255,255,255,0.75);
+
+  box-shadow:
+    0 0 12px rgba(255,255,255,0.9),
+    0 0 28px rgba(180,120,255,0.7),
+    0 0 50px rgba(120,80,255,0.45);
+
+  cursor:pointer;
+
+  z-index:30;
+
+  animation:nexPulse 3s ease-in-out infinite;
+
+  overflow:hidden;
+}
+
+#miniNex::after{
+  content:'';
+
+  position:absolute;
+  inset:0;
 
   border-radius:50%;
 
   background:
-  radial-gradient(circle,
-  rgba(255,255,255,1) 0%,
-  rgba(210,240,255,0.9) 40%,
-  rgba(255,255,255,0.1) 100%);
+  radial-gradient(circle at 30% 30%,
+  rgba(255,255,255,0.28),
+  transparent 55%);
 
-  box-shadow:
-  0 0 10px rgba(255,255,255,0.9),
-  0 0 24px rgba(200,230,255,0.7),
-  0 0 40px rgba(255,255,255,0.4);
-
-  animation:nexPulse 3s ease-in-out infinite;
-  cursor:pointer;
-  z-index:20;
+  pointer-events:none;
 }
 
 @keyframes nexPulse{
+
   0%{
     transform:scale(1);
-    opacity:0.8;
+    opacity:0.92;
   }
 
   50%{
-    transform:scale(1.18);
+    transform:scale(1.08);
     opacity:1;
   }
 
   100%{
     transform:scale(1);
-    opacity:0.8;
+    opacity:0.92;
   }
+
 }
 
 /* =========================================================
