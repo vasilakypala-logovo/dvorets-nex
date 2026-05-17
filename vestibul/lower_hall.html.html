@@ -90,9 +90,27 @@ function zoomIn(e){if(e)e.stopPropagation();zoom=Math.min(4,zoom+.25);applyTrans
 function zoomOut(e){if(e)e.stopPropagation();zoom=Math.max(.45,zoom-.25);applyTransform()}
 function resetZoom(e){if(e)e.stopPropagation();zoom=1;panX=0;panY=0;applyTransform()}
 wrap.addEventListener('mousedown',e=>{dragging=true;sx=e.clientX-panX;sy=e.clientY-panY});window.addEventListener('mouseup',()=>dragging=false);window.addEventListener('mousemove',e=>{if(!dragging)return;panX=e.clientX-sx;panY=e.clientY-sy;applyTransform()});wrap.addEventListener('wheel',e=>{e.preventDefault();e.deltaY<0?zoomIn(e):zoomOut(e)},{passive:false});
-document.getElementById('paintingZone').addEventListener('click',openNextWork);
+document.getElementById('paintingZone').addEventListener('click',()=>{
+  openArtwork(artworkIndex);
+});
+   
 document.getElementById('windowZone').addEventListener('click',openWindow);
-document.getElementById('forwardZone').addEventListener('click',()=>{currentScene++;if(currentScene>=scenes.length)currentScene=0;loadScene()});
+   
+document.getElementById('forwardZone').addEventListener('click',()=>{
+
+  current++;
+  if(current>=scenes.length){
+    current=0;
+  }
+
+  artworkIndex++;
+  if(artworkIndex>=artworks.length){
+    artworkIndex=0;
+  }
+
+  loadScene();
+
+});
 const nexPhrases=['This corridor does not show all paintings at once. It releases them one by one.','The window remembers the whole catalogue. The wall remembers only the next encounter.','A new file in the folder becomes a new step in the Palace.','The Palace is not a list. It is a path.'];
 document.getElementById('miniNex').addEventListener('click',()=>{nexPanel.style.display='flex';nexText.innerText=nexPhrases[Math.floor(Math.random()*nexPhrases.length)]});
 nexPanel.addEventListener('click',()=>nexPanel.style.display='none');viewer.addEventListener('click',e=>{if(e.target===viewer)closeViewer()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeWindow();nexPanel.style.display='none'}});
