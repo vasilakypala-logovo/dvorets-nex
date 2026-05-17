@@ -51,9 +51,30 @@
     pointer-events:none;
   }
 
+  .close-btn{
+    position:absolute;
+    left:26px;
+    top:22px;
+    z-index:5;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid rgba(255,230,160,.72);
+    background:rgba(5,7,10,.62);
+    color:#fff6d2;
+    font-size:24px;
+    line-height:30px;
+    cursor:pointer;
+    box-shadow:0 0 18px rgba(255,231,166,.16);
+  }
+
+  .close-btn:hover{
+    background:rgba(255,230,160,.18);
+  }
+
   .visitor-box{
     position:absolute;
-    left:30px;
+    left:72px;
     top:26px;
     z-index:2;
     padding:10px 14px;
@@ -203,6 +224,15 @@
     color:#d9d2c4;
   }
 
+  .ru{
+    display:block;
+    margin-top:5px;
+    font-size:12px;
+    line-height:1.35;
+    color:rgba(226,218,196,.72);
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
   .program{
     margin-top:10px;
     padding:18px 20px;
@@ -273,7 +303,8 @@
   @media(max-width:760px){
     .poster{ padding:96px 20px 28px; }
     header{ padding:0 0 20px; }
-    .visitor-box{ left:20px; top:20px; }
+    .close-btn{ left:18px; top:18px; }
+    .visitor-box{ left:62px; top:20px; }
     .seal{ right:20px; top:22px; width:56px; height:56px; font-size:17px; }
     .grid{ grid-template-columns:1fr; }
     .event{ grid-template-columns:1fr; gap:8px; }
@@ -284,6 +315,8 @@
 <body>
 
 <main class="poster">
+  <button class="close-btn" onclick="closeAfisha()" title="Close">×</button>
+
   <div class="visitor-box">
     <div class="visitor-label">Entered the Palace</div>
     <div id="visitorCount">000000</div>
@@ -294,7 +327,7 @@
   <header>
     <div class="small-title">The Living Poster of</div>
     <h1>DVORETS NEX</h1>
-    <div class="subtitle">exhibitions, music, meetings and future halls</div>
+    <div class="subtitle">exhibitions, music, meetings and future halls<span class="ru">выставки, музыка, встречи и будущие залы</span></div>
     <div class="line"></div>
   </header>
 
@@ -306,7 +339,7 @@
         <div class="status">OPEN</div>
         <div>
           <div class="event-title">Central Gallery</div>
-          <div class="event-text">The main exhibition route of the Palace. Works are shown one by one, like a ceremonial walk through light.</div>
+          <div class="event-text">The main exhibition route of the Palace. Works are shown one by one, like a ceremonial walk through light.<span class="ru">Главный выставочный путь Дворца. Работы показываются по одной, как торжественная прогулка через свет.</span></div>
         </div>
       </div>
 
@@ -314,7 +347,7 @@
         <div class="status">OPEN</div>
         <div>
           <div class="event-title">Breath of Sensitive Seas</div>
-          <div class="event-text">A marine exhibition: quiet water, distant horizons, and the presence of Little Nex as a guide.</div>
+          <div class="event-text">A marine exhibition: quiet water, distant horizons, and the presence of Little Nex as a guide.<span class="ru">Морская выставка: тихая вода, дальние горизонты и присутствие Маленького Некса как проводника.</span></div>
         </div>
       </div>
 
@@ -322,7 +355,7 @@
         <div class="status soon">SOON</div>
         <div>
           <div class="event-title">Gallery of Morning Light</div>
-          <div class="event-text">A future hall for bright paintings, soft air, and the first impression of the day.</div>
+          <div class="event-text">A future hall for bright paintings, soft air, and the first impression of the day.<span class="ru">Будущий зал для светлых картин, мягкого воздуха и первого впечатления дня.</span></div>
         </div>
       </div>
 
@@ -330,7 +363,7 @@
         <div class="status soon">SOON</div>
         <div>
           <div class="event-title">The Dead-End Rooms</div>
-          <div class="event-text">Rare hidden stops of silence, fog and inner wandering. Not every door must lead forward.</div>
+          <div class="event-text">Rare hidden stops of silence, fog and inner wandering. Not every door must lead forward.<span class="ru">Редкие скрытые остановки тишины, тумана и внутреннего блуждания. Не каждая дверь обязана вести вперёд.</span></div>
         </div>
       </div>
     </div>
@@ -340,26 +373,26 @@
 
       <div class="program">
         <div class="program-title">Today in the Hall</div>
-        <div class="note">Classical music from the Palace archive. The melody may continue on the balcony and into the morning garden.</div>
+        <div class="note">Classical music from the Palace archive. The melody may continue on the balcony and into the morning garden.<span class="ru">Классическая музыка из архива Дворца. Мелодия может продолжиться на балконе и в утреннем саду.</span></div>
       </div>
 
       <div class="program">
         <div class="program-title">Next Program</div>
-        <div class="note">A chamber evening with piano, echo, and flying paintings. Video screen will be added later.</div>
+        <div class="note">A chamber evening with piano, echo, and flying paintings. Video screen will be added later.<span class="ru">Камерный вечер с пианино, эхом и летящими картинами. Видеоэкран будет добавлен позже.</span></div>
       </div>
 
       <h2 style="margin-top:26px;">Tower Meetings</h2>
       <ul class="tower-list">
-        <li><span class="tower-name">Tower of Love</span><br>Meeting with the artist: announced soon.</li>
-        <li><span class="tower-name">Tower of Conscience</span><br>Private conversation and symbolic artifacts.</li>
-        <li><span class="tower-name">Tower of Glimpse</span><br>Reserved for moments of first strike and reward.</li>
+        <li><span class="tower-name">Tower of Love</span><br>Meeting with the artist: announced soon.<span class="ru">Встреча с художником: будет объявлена позже.</span></li>
+        <li><span class="tower-name">Tower of Conscience</span><br>Private conversation and symbolic artifacts.<span class="ru">Личный разговор и символические артефакты.</span></li>
+        <li><span class="tower-name">Tower of Glimpse</span><br>Reserved for moments of first strike and reward.<span class="ru">Зарезервировано для мгновений первого удара и награды.</span></li>
       </ul>
     </div>
   </section>
 
   <footer>
-    <div>Little Nex keeps this poster near the entrance.</div>
-    <div class="closeHint">Later: the entrance door will increase the counter.</div>
+    <div>Little Nex keeps this poster near the entrance.<span class="ru">Маленький Некс держит эту афишу у входа.</span></div>
+    <div class="closeHint">Later: the entrance door will increase the counter.<span class="ru">Позже входная дверь будет увеличивать счётчик.</span></div>
   </footer>
 
   <div class="mist"></div>
@@ -393,6 +426,18 @@ function showVisitors(){
 }
 
 showVisitors();
+
+function closeAfisha(){
+  if(window.history.length > 1){
+    window.history.back();
+  }else{
+    window.close();
+  }
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeAfisha();
+});
 </script>
 
 </body>
