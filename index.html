@@ -216,6 +216,13 @@ const entrance=document.getElementById('entrance-zone');
 const fade=document.getElementById('fade');
 
 entrance.addEventListener('click',()=>{
+  /* СЧЁТЧИК ВХОДА ВО ДВОРЕЦ */
+
+let count = localStorage.getItem('dvorets_entered_count') || 0;
+
+count = parseInt(count,10) + 1;
+
+localStorage.setItem('dvorets_entered_count', count);
   const doorSound=document.getElementById('door-sound');
   if(doorSound){
     doorSound.currentTime=0;
