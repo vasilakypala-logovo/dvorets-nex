@@ -26,6 +26,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#080b0f;font-family:
 </style>
 </head>
 <body>
+<audio id="bgMusic" src="99999.mp3" loop preload="auto"></audio>
 <div id="scene" class="leftMode"><div id="mist"></div><div id="paintingZone" class="zone" title="Open next work"></div><div id="windowZone" class="zone" title="Open catalogue window"></div><div id="forwardZone" class="zone" title="Move forward"></div><div id="miniNex"></div></div>
 <div id="viewer"><div class="viewerContent"><div class="tools"><button class="toolBtn" onclick="zoomOut(event)">−</button><button class="toolBtn" onclick="zoomIn(event)">+</button><button class="toolBtn" onclick="resetZoom(event)">RESET</button></div><div class="imageWrap" id="imageWrap"><img id="viewerImage"></div><div class="infoPlate" id="infoPlate"></div><div class="closeBtn" onclick="closeViewer()">×</div></div></div>
 <div id="windowPanel"><div class="windowContent"><div class="closeBtn" onclick="closeWindow()">×</div><div class="windowHeader"><h2>CATALOGUE WINDOW</h2><div class="small">The window shows all works found in the gallery folder.<br>Click any small card to open it.</div></div><div class="grid" id="catalogueGrid"></div></div></div>
@@ -88,7 +89,29 @@ function advanceWork(){
   workIndex++;
   if(workIndex>=works.length){workIndex=0}
 }
-function openWork(i){if(!works.length)return;workIndex=(i+works.length)%works.length;const w=works[workIndex];viewer.style.display='flex';viewerImage.src=w.src;infoPlate.innerHTML=`<div class="title">${w.title}</div><div>${w.author||'Author not specified'}</div><div>${[w.size,w.material,w.year].filter(Boolean).join(' · ')}</div><div class="muted">${w.file}</div>`;resetZoom()}
+function openWork(i){
+
+  stopBgMusic();
+
+  if(!works.length)return;
+
+  workIndex=(i+works.length)%works.length;
+
+  const w=works[workIndex];
+
+  viewer.style.display='flex';
+
+  viewerImage.src=w.src;
+
+  infoPlate.innerHTML=`
+    <div class="title">${w.title}</div>
+    <div>${w.author||'Author not specified'}</div>
+    <div>${[w.size,w.material,w.year].filter(Boolean).join(' · ')}</div>
+    <div class="muted">${w.file}</div>
+  `;
+
+  resetZoom();
+}
 function closeViewer(){viewer.style.display='none'}
 function openWindow(){document.getElementById('windowPanel').style.display='flex';renderCatalogue()}
 function closeWindow(){document.getElementById('windowPanel').style.display='none'}
@@ -104,6 +127,34 @@ const nexPhrases=['This corridor does not show all paintings at once. It release
 document.getElementById('miniNex').addEventListener('click',()=>{nexPanel.style.display='flex';nexText.innerText=nexPhrases[Math.floor(Math.random()*nexPhrases.length)]});
 nexPanel.addEventListener('click',()=>nexPanel.style.display='none');viewer.addEventListener('click',e=>{if(e.target===viewer)closeViewer()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeWindow();nexPanel.style.display='none'}});
 loadScene();loadWorks();
+
+/* =========================
+   МУЗЫКА ДВОРЦА
+========================= */
+
+const bgMusic=document.getElementById('bgMusic');
+
+function startBgMusic(){
+  if(!bgMusic)return;
+
+  bgMusic.volume=0.22;
+
+  bgMusic.play().catch(()=>{});
+}
+
+function stopBgMusic(){
+  if(!bgMusic)return;
+
+  bgMusic.pause();
+  bgMusic.currentTime=0;
+}
+
+window.addEventListener('load',startBgMusic);
+
+document.addEventListener('click',()=>{
+  startBgMusic();
+},{once:true});
+
 </script>
 </body>
 </html>
