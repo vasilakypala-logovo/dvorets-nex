@@ -161,10 +161,9 @@ audio{display:none;}
 <script>
 const echo = document.getElementById('echo');
 const hint = document.getElementById('musicHint');
-const flyingPainting = document.getElementById('flyingPainting');
-const flyingImg = flyingPainting.querySelector('img');
+const floatingGallery = document.getElementById('floatingGallery');
 
-const flyingImages = [
+const balconyPictures = [
   'HIT1.jpg',
   'HIT2.jpg',
   'HIT3.jpg',
@@ -172,25 +171,33 @@ const flyingImages = [
   'HIT5.jpg'
 ];
 
-let currentPainting = 0;
-let flyingTimer = null;
+let balconyIndex = 0;
 
-function launchFlyingPainting(){
-  flyingImg.src = flyingImages[currentPainting];
+function launchBalconyPicture(){
+  const frame = document.createElement('div');
+  frame.className = 'floatArt';
 
-  flyingPainting.classList.remove('fly');
-  void flyingPainting.offsetWidth;
-  flyingPainting.classList.add('fly');
+  const img = document.createElement('img');
+  img.src = balconyPictures[balconyIndex];
 
-  clearTimeout(flyingTimer);
+  frame.appendChild(img);
 
-  flyingTimer = setTimeout(()=>{
-    currentPainting++;
-    if(currentPainting >= flyingImages.length){
-      currentPainting = 0;
-    }
-    launchFlyingPainting();
-  }, 29000);
+  const top = 18 + Math.random() * 42;
+  frame.style.top = top + '%';
+
+  const size = 180 + Math.random() * 70;
+  frame.style.width = size + 'px';
+
+  floatingGallery.appendChild(frame);
+
+  balconyIndex++;
+  if(balconyIndex >= balconyPictures.length){
+    balconyIndex = 0;
+  }
+
+  setTimeout(()=>{
+    frame.remove();
+  },19000);
 }
 
 function startEcho(){
@@ -206,7 +213,8 @@ function startEcho(){
 }
 
 startEcho();
-launchFlyingPainting();
+launchBalconyPicture();
+setInterval(launchBalconyPicture,5200);
 
 document.addEventListener('click',()=>{
   if(echo.paused) startEcho();
