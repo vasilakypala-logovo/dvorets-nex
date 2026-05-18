@@ -103,12 +103,7 @@ function openWork(i){
 
   viewerImage.src=w.src;
 
-  infoPlate.innerHTML=`
-    <div class="title">${w.title}</div>
-    <div>${w.author||'Author not specified'}</div>
-    <div>${[w.size,w.material,w.year].filter(Boolean).join(' · ')}</div>
-    <div class="muted">${w.file}</div>
-  `;
+  infoPlate.innerHTML=`<div class="title">${w.title}</div><div>${w.author||'Author not specified'}</div><div>${[w.size,w.material,w.year].filter(Boolean).join(' · ')}</div><div class="muted">${w.file}</div>`;
 
   resetZoom();
 }
@@ -129,31 +124,44 @@ nexPanel.addEventListener('click',()=>nexPanel.style.display='none');viewer.addE
 loadScene();loadWorks();
 
 /* =========================
-   МУЗЫКА ДВОРЦА
+   МУЗЫКА ДВОРЦА — 9999.mp3
 ========================= */
 
 const bgMusic=document.getElementById('bgMusic');
+let bgMusicStoppedByWork=false;
 
 function startBgMusic(){
-  if(!bgMusic)return;
+  if(!bgMusic || bgMusicStoppedByWork)return;
 
-  bgMusic.volume=0.22;
+  bgMusic.volume=0.24;
 
-  bgMusic.play().catch(()=>{});
+  if(bgMusic.paused){
+    bgMusic.play().catch(()=>{});
+  }
 }
 
 function stopBgMusic(){
   if(!bgMusic)return;
 
+  bgMusicStoppedByWork=true;
   bgMusic.pause();
   bgMusic.currentTime=0;
 }
 
-window.addEventListener('load',startBgMusic);
+/* Браузер может запретить автозапуск — пробуем тихо */
+window.addEventListener('load',()=>{
+  setTimeout(startBgMusic,300);
+});
 
-document.addEventListener('click',()=>{
+/* Первый живой клик запускает музыку.
+   Но если клик сразу по картине — музыка не запускается, потому что картину нужно смотреть в тишине. */
+function unlockPalaceMusic(e){
+  if(e && e.target && e.target.closest && e.target.closest('#paintingZone'))return;
   startBgMusic();
-},{once:true});
+}
+
+document.addEventListener('pointerdown',unlockPalaceMusic,{capture:true});
+document.addEventListener('click',unlockPalaceMusic,{capture:true});
 
 </script>
 </body>
