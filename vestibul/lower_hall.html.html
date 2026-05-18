@@ -14,8 +14,69 @@ html,body{width:100%;height:100%;overflow:hidden;background:#080b0f;font-family:
 #paintingZone{width:14%;height:42%;top:18%}#windowZone{width:13%;height:58%;top:9%}
 #forwardZone{left:38%;top:8%;width:24%;height:76%}#forwardZone:hover{background:rgba(255,255,255,.025)}
 .leftMode #paintingZone{left:7%}.leftMode #windowZone{right:5%}.rightMode #paintingZone{right:7%}.rightMode #windowZone{left:5%}
-#miniNex{position:absolute;right:22px;bottom:18px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(210,240,255,.9) 40%,rgba(255,255,255,.1) 100%);box-shadow:0 0 10px rgba(255,255,255,.9),0 0 24px rgba(200,230,255,.7),0 0 40px rgba(255,255,255,.4);animation:nexPulse 3s ease-in-out infinite;cursor:pointer;z-index:20}
-@keyframes nexPulse{0%{transform:scale(1);opacity:.8}50%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:.8}}
+#miniNex{
+    position:absolute;
+    right:22px;
+    bottom:18px;
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background-color:rgba(255,255,255,0.05);
+    background-image:url("mNex.png?v=1");
+    background-size:cover;
+    background-position:center;
+    border:2px solid rgba(255,255,255,0.38);
+    cursor:pointer;
+    z-index:30;
+    box-shadow:
+        0 0 10px rgba(255,255,255,0.45),
+        0 0 24px rgba(255,255,255,0.22),
+        0 0 42px rgba(255,255,255,0.10);
+    transition:0.25s;
+}
+#miniNex:hover{
+    transform:scale(1.08);
+    box-shadow:
+        0 0 16px rgba(255,255,255,0.72),
+        0 0 36px rgba(255,255,255,0.34),
+        0 0 60px rgba(255,255,255,0.14);
+}
+#nexHelp{
+    position:fixed;
+    right:20px;
+    bottom:86px;
+    width:340px;
+    background:rgba(12,14,18,0.92);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:18px;
+    padding:22px;
+    color:rgba(255,255,255,0.88);
+    line-height:1.62;
+    display:none;
+    z-index:320;
+    box-shadow:0 0 40px rgba(0,0,0,0.45);
+    backdrop-filter:blur(8px);
+}
+#nexHelp h2{
+    margin:0 0 14px 0;
+    font-family:Georgia,serif;
+    font-weight:normal;
+    letter-spacing:2px;
+    font-size:22px;
+}
+#nexHelp p{
+    margin:10px 0;
+    font-size:15px;
+}
+#nexClose{
+    position:absolute;
+    top:10px;
+    right:14px;
+    font-size:24px;
+    cursor:pointer;
+    opacity:.75;
+}
+#nexClose:hover{opacity:1}
 #viewer,#windowPanel,#nexPanel{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(7,9,13,.91);backdrop-filter:blur(8px);z-index:100}
 .viewerContent{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}.imageWrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:grab}.imageWrap:active{cursor:grabbing}
 #viewerImage{max-width:96vw;max-height:96vh;object-fit:contain;transform-origin:center center;transition:transform .12s ease;box-shadow:0 0 45px rgba(255,255,255,.10)}
@@ -26,11 +87,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:#080b0f;font-family:
 </style>
 </head>
 <body>
-<audio id="bgMusic" src="9999.mp3" loop preload="auto"></audio>
 <div id="scene" class="leftMode"><div id="mist"></div><div id="paintingZone" class="zone" title="Open next work"></div><div id="windowZone" class="zone" title="Open catalogue window"></div><div id="forwardZone" class="zone" title="Move forward"></div><div id="miniNex"></div></div>
 <div id="viewer"><div class="viewerContent"><div class="tools"><button class="toolBtn" onclick="zoomOut(event)">−</button><button class="toolBtn" onclick="zoomIn(event)">+</button><button class="toolBtn" onclick="resetZoom(event)">RESET</button></div><div class="imageWrap" id="imageWrap"><img id="viewerImage"></div><div class="infoPlate" id="infoPlate"></div><div class="closeBtn" onclick="closeViewer()">×</div></div></div>
 <div id="windowPanel"><div class="windowContent"><div class="closeBtn" onclick="closeWindow()">×</div><div class="windowHeader"><h2>CATALOGUE WINDOW</h2><div class="small">The window shows all works found in the gallery folder.<br>Click any small card to open it.</div></div><div class="grid" id="catalogueGrid"></div></div></div>
-<div id="nexPanel"><div class="nexBox"><div class="nexTitle">M.NEX</div><div id="nexText"></div></div></div>
+<div id="nexHelp">
+    <div id="nexClose" onclick="closeNexHelp()">×</div>
+
+    <h2>LITTLE NEX</h2>
+
+    <p>
+    Welcome to the Central Gallery of Dvorets Nex.
+    </p>
+
+    <p>
+    Click the painting zone to open the current work.
+    Use the forward passage to move through the corridor.
+    </p>
+
+    <p>
+    The catalogue window shows all works from the gallery folder.
+    </p>
+
+    <p>
+    Some paintings love silence.
+    </p>
+</div>
 <script>
 /* =========================================================
    НАСТРОЙКИ ЦЕНТРАЛЬНОЙ ГАЛЕРЕИ
@@ -64,8 +145,6 @@ const scene=document.getElementById('scene');
 const viewer=document.getElementById('viewer');
 const viewerImage=document.getElementById('viewerImage');
 const infoPlate=document.getElementById('infoPlate');
-const nexPanel=document.getElementById('nexPanel');
-const nexText=document.getElementById('nexText');
 const grid=document.getElementById('catalogueGrid');
 const wrap=document.getElementById('imageWrap');
 function loadScene(){scene.style.opacity='0';setTimeout(()=>{scene.style.backgroundImage=`url('${scenes[currentScene].bg}')`;scene.classList.remove('leftMode','rightMode');scene.classList.add(scenes[currentScene].mode);scene.style.opacity='1'},350)}
@@ -89,24 +168,7 @@ function advanceWork(){
   workIndex++;
   if(workIndex>=works.length){workIndex=0}
 }
-function openWork(i){
-
-  stopBgMusic();
-
-  if(!works.length)return;
-
-  workIndex=(i+works.length)%works.length;
-
-  const w=works[workIndex];
-
-  viewer.style.display='flex';
-
-  viewerImage.src=w.src;
-
-  infoPlate.innerHTML=`<div class="title">${w.title}</div><div>${w.author||'Author not specified'}</div><div>${[w.size,w.material,w.year].filter(Boolean).join(' · ')}</div><div class="muted">${w.file}</div>`;
-
-  resetZoom();
-}
+function openWork(i){if(!works.length)return;workIndex=(i+works.length)%works.length;const w=works[workIndex];viewer.style.display='flex';viewerImage.src=w.src;infoPlate.innerHTML=`<div class="title">${w.title}</div><div>${w.author||'Author not specified'}</div><div>${[w.size,w.material,w.year].filter(Boolean).join(' · ')}</div><div class="muted">${w.file}</div>`;resetZoom()}
 function closeViewer(){viewer.style.display='none'}
 function openWindow(){document.getElementById('windowPanel').style.display='flex';renderCatalogue()}
 function closeWindow(){document.getElementById('windowPanel').style.display='none'}
@@ -118,51 +180,15 @@ wrap.addEventListener('mousedown',e=>{dragging=true;sx=e.clientX-panX;sy=e.clien
 document.getElementById('paintingZone').addEventListener('click',openCurrentWork);
 document.getElementById('windowZone').addEventListener('click',openWindow);
 document.getElementById('forwardZone').addEventListener('click',()=>{currentScene++;if(currentScene>=scenes.length)currentScene=0;advanceWork();loadScene()});
-const nexPhrases=['This corridor does not show all paintings at once. It releases them one by one.','The window remembers the whole catalogue. The wall remembers the current encounter until you walk farther.','A new file in the folder becomes a new step in the Palace.','The Palace is not a list. It is a path.'];
-document.getElementById('miniNex').addEventListener('click',()=>{nexPanel.style.display='flex';nexText.innerText=nexPhrases[Math.floor(Math.random()*nexPhrases.length)]});
-nexPanel.addEventListener('click',()=>nexPanel.style.display='none');viewer.addEventListener('click',e=>{if(e.target===viewer)closeViewer()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeWindow();nexPanel.style.display='none'}});
+function openNexHelp(){
+  document.getElementById('nexHelp').style.display='block';
+}
+function closeNexHelp(){
+  document.getElementById('nexHelp').style.display='none';
+}
+document.getElementById('miniNex').addEventListener('click',openNexHelp);
+viewer.addEventListener('click',e=>{if(e.target===viewer)closeViewer()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeWindow();closeNexHelp()}});
 loadScene();loadWorks();
-
-/* =========================
-   МУЗЫКА ДВОРЦА — 9999.mp3
-========================= */
-
-const bgMusic=document.getElementById('bgMusic');
-let bgMusicStoppedByWork=false;
-
-function startBgMusic(){
-  if(!bgMusic || bgMusicStoppedByWork)return;
-
-  bgMusic.volume=0.24;
-
-  if(bgMusic.paused){
-    bgMusic.play().catch(()=>{});
-  }
-}
-
-function stopBgMusic(){
-  if(!bgMusic)return;
-
-  bgMusicStoppedByWork=true;
-  bgMusic.pause();
-  bgMusic.currentTime=0;
-}
-
-/* Браузер может запретить автозапуск — пробуем тихо */
-window.addEventListener('load',()=>{
-  setTimeout(startBgMusic,300);
-});
-
-/* Первый живой клик запускает музыку.
-   Но если клик сразу по картине — музыка не запускается, потому что картину нужно смотреть в тишине. */
-function unlockPalaceMusic(e){
-  if(e && e.target && e.target.closest && e.target.closest('#paintingZone'))return;
-  startBgMusic();
-}
-
-document.addEventListener('pointerdown',unlockPalaceMusic,{capture:true});
-document.addEventListener('click',unlockPalaceMusic,{capture:true});
-
 </script>
 </body>
 </html>
