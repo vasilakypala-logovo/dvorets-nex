@@ -352,6 +352,7 @@ html, body {
 </head>
 
 <body>
+<audio id="bgMusic" src="9999.mp3" loop preload="auto"></audio>
 
 <div id="stage">
     <div id="room"></div>
@@ -419,6 +420,8 @@ const TITLES = {};
 const TEXTS = {};
 
 function openWork(n) {
+    stopBgMusic();
+
     const big = document.getElementById("big");
     const viewer = document.getElementById("viewer");
 
@@ -486,6 +489,47 @@ document.addEventListener("keydown", function(e) {
 
 Object.assign(TITLES, JSON.parse(localStorage.getItem("titles") || "{}"));
 Object.assign(TEXTS, JSON.parse(localStorage.getItem("texts") || "{}"));
+
+/* =========================
+   МУЗЫКА ГОСТИНОЙ МОРЯ — 9999.mp3
+========================= */
+
+const bgMusic = document.getElementById("bgMusic");
+let bgMusicStoppedByWork = false;
+
+function startBgMusic(){
+    if(!bgMusic || bgMusicStoppedByWork) return;
+
+    bgMusic.volume = 0.24;
+
+    if(bgMusic.paused){
+        bgMusic.play().catch(()=>{});
+    }
+}
+
+function stopBgMusic(){
+    if(!bgMusic) return;
+
+    bgMusicStoppedByWork = true;
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+}
+
+/* Браузер может запретить автозапуск, поэтому пробуем после загрузки */
+window.addEventListener("load", function(){
+    setTimeout(startBgMusic, 300);
+});
+
+/* Первый живой клик запускает музыку.
+   Но если клик сразу по картине — не запускаем: картина любит тишину. */
+function unlockSeaRoomMusic(e){
+    if(e && e.target && e.target.closest && e.target.closest(".zone")) return;
+    startBgMusic();
+}
+
+document.addEventListener("pointerdown", unlockSeaRoomMusic, {capture:true});
+document.addEventListener("click", unlockSeaRoomMusic, {capture:true});
+
 </script>
 
 </body>
