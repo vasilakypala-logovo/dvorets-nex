@@ -11,6 +11,7 @@
 </head>
 <body>
 <div class="scene">
+  <div id="globePortal" title="В вестибюль"></div>
   <div class="velvet-field"><div id="bookGrid" class="book-grid"></div></div>
   <div class="balls" aria-label="выбор иконок">
     <button class="ball b1" data-icon="001.png" title="Поставить иконку 001"></button>
@@ -36,6 +37,17 @@ function loadShelf(){
 function saveShelf(){localStorage.setItem(STORAGE_KEY, JSON.stringify(shelf));}
 function message(t){flash.textContent=t;flash.classList.add('show');setTimeout(()=>flash.classList.remove('show'),1500)}
 
+  #globePortal{
+  position:absolute;
+  left:6%;
+  top:58%;
+  width:12%;
+  height:22%;
+  border-radius:50%;
+  cursor:pointer;
+  z-index:20;
+  background:transparent;
+}
 function addBook(icon){
   if(shelf.length >= MAX_BOOKS){ message('Витрина заполнена'); return; }
   shelf.push({icon, title:'', file:''});
@@ -95,7 +107,9 @@ function render(){
 document.querySelectorAll('.ball').forEach(btn=>{
   btn.addEventListener('click',()=>addBook(btn.dataset.icon));
 });
-
+document.getElementById('globePortal').addEventListener('click',()=>{
+  window.location.href = '../vestibul/vestibul.html';
+});
 render();
 </script>
 </body>
