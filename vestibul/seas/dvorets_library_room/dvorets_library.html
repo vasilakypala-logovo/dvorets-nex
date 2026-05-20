@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Библиотека ДВОРЦА НЕКСА</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#090603;font-family:Georgia,'Times New Roman',serif;color:#f7ead0}
+  body{background:#050301}
+  .stage{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    background:#070402;
+  }
+
+  /*
+    ВАЖНО: фон теперь работает как дворцовая сцена, а не как вставленная картинка.
+    .artboard сохраняет пропорции самого изображения и масштабируется по COVER.
+    На широком экране низ может уходить за край — зато стена, двери и картины раскрываются на всё окно.
+  */
+  .artboard{
+    position:absolute;
+    top:0;
+    left:50%;
+    width:max(100vw, calc(100vh * 1.333333));
+    height:calc(max(100vw, calc(100vh * 1.333333)) / 1.333333);
+    transform:translateX(-50%);
+    overflow:visible;
+    box-shadow:0 0 55px rgba(0,0,0,.92);
+  }
+  .stage img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
+
+  .zone{position:absolute;border-radius:18px;cursor:pointer;z-index:5;background:rgba(255,255,255,0);transition:.25s ease}
+  .zone:hover{background:rgba(255,224,154,.08);box-shadow:0 0 28px rgba(255,216,143,.38), inset 0 0 25px rgba(255,245,210,.14)}
+  .door:hover{background:rgba(255,255,255,.055);box-shadow:0 0 34px rgba(255,244,210,.42), inset 0 0 35px rgba(255,255,255,.12)}
+
+  #leftDoor{left:0.7%;top:9%;width:13.5%;height:73%}
+  #rightDoor{left:88.2%;top:9%;width:11.1%;height:73%}
+  #pic1{left:14.7%;top:8.4%;width:22.8%;height:35.3%}
+  #pic2{left:36.8%;top:8.2%;width:31.5%;height:33.8%}
+  #pic3{left:68.3%;top:8.4%;width:23.8%;height:35.5%}
+  #bookcase{left:38.3%;top:43.1%;width:27.2%;height:40.6%}
+
+  .metsu-sign{
+    position:absolute;z-index:4;left:70.1%;top:50.4%;width:20.8%;height:7%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;
+    color:rgba(255,236,184,.96);font-size:clamp(12px,1.55vw,23px);line-height:1.22;letter-spacing:.08em;
+    text-shadow:0 0 7px rgba(255,243,204,.95),0 0 18px rgba(255,193,92,.66),0 0 34px rgba(255,169,48,.34);
+    opacity:.96;
+  }
+  .metsu-sign .name{font-size:1.05em;text-transform:uppercase;letter-spacing:.12em}
+  .metsu-sign .small{font-size:.78em;letter-spacing:.16em;color:rgba(255,245,214,.88)}
+
+  .hint{
+    position:absolute;z-index:6;left:50%;bottom:18px;transform:translateX(-50%);
+    padding:8px 18px;border:1px solid rgba(255,221,150,.22);border-radius:999px;
+    color:rgba(255,239,202,.62);background:rgba(22,12,4,.28);backdrop-filter:blur(3px);
+    font-size:13px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;
+  }
+
+  .modal{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(3,2,1,.86);padding:34px}
+  .modal.open{display:flex}
+  .frame{position:relative;max-width:94vw;max-height:92vh;padding:14px 14px 0;border-radius:18px;background:linear-gradient(145deg,#3a2108,#b7842a 34%,#2b1605 70%,#d8b568);box-shadow:0 0 48px rgba(0,0,0,.85),0 0 35px rgba(230,177,80,.22)}
+  .frame img{display:block;max-width:88vw;max-height:76vh;object-fit:contain;background:#090603;border-radius:8px;box-shadow:inset 0 0 18px rgba(0,0,0,.7)}
+  .caption{max-width:88vw;margin:0 auto;padding:12px 18px 15px;text-align:center;color:#fff0c8;background:linear-gradient(90deg,rgba(0,0,0,.08),rgba(0,0,0,.35),rgba(0,0,0,.08));text-shadow:0 0 10px rgba(255,207,111,.55)}
+  .caption .title{font-size:19px;letter-spacing:.08em;text-transform:uppercase}
+  .caption .desc{margin-top:6px;font-size:14px;line-height:1.35;color:rgba(255,239,203,.82)}
+  .close{position:absolute;right:10px;top:8px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,234,182,.42);background:rgba(0,0,0,.45);color:#ffe8b4;cursor:pointer;font-size:22px;line-height:28px}
+  .close:hover{background:rgba(255,221,145,.15)}
+
+  .soft-title{position:absolute;z-index:4;top:1.4%;left:50%;transform:translateX(-50%);font-size:clamp(13px,1.15vw,19px);letter-spacing:.24em;text-transform:uppercase;color:rgba(255,240,204,.56);text-shadow:0 0 11px rgba(255,213,132,.46);pointer-events:none;white-space:nowrap}
+</style>
+</head>
+<body>
+  <main class="stage" aria-label="Библиотека Дворца Некса">
+    <div class="artboard">
+    <img class="bg" src="assets/library_palace_bg.png" alt="Библиотека Дворца Некса" />
+    <div class="soft-title">DVORETS NEX · LIBRARY</div>
+
+    <div id="leftDoor" class="zone door" title="Портал в левую гостиную"></div>
+    <div id="rightDoor" class="zone door" title="Портал в правую гостиную"></div>
+
+    <div id="pic1" class="zone" title="Открыть картину"></div>
+    <div id="pic2" class="zone" title="Открыть картину"></div>
+    <div id="pic3" class="zone" title="Открыть картину"></div>
+    <div id="bookcase" class="zone" title="Открыть Букиниста"></div>
+
+    <div class="metsu-sign">
+      <div class="name">Gabriel Metsu</div>
+      <div class="small">1629 — 1667</div>
+      <div class="small">Amsterdam</div>
+    </div>
+
+    <div class="hint">двери · картины · книжный шкаф</div>
+    </div>
+  </main>
+
+  <section id="modal" class="modal">
+    <div class="frame">
+      <button class="close" id="closeBtn" aria-label="Закрыть">×</button>
+      <img id="modalImg" src="" alt="" />
+      <div class="caption">
+        <div id="modalTitle" class="title"></div>
+        <div id="modalDesc" class="desc"></div>
+      </div>
+    </div>
+  </section>
+
+<script>
+const paintings = {
+  pic1: {
+    src: 'assets/metsu_virginal_dog.jpg',
+    title: 'Gabriel Metsu — Woman at a Virginal with a Dog',
+    desc: 'Габриэль Метсю. Камерная голландская сцена: музыка, окно, собака и тихое напряжение домашнего пространства.'
+  },
+  pic2: {
+    src: 'assets/hunter_after_bathing.jpg',
+    title: 'Gabriel Metsu — Hunter Dressing after Bathing',
+    desc: 'Габриэль Метсю. Охотничий мотив, отдых у воды, собака, ружьё и открытый пейзаж.'
+  },
+  pic3: {
+    src: 'assets/metsu_man_writing_letter.jpg',
+    title: 'Gabriel Metsu — Man Writing a Letter',
+    desc: 'Габриэль Метсю. Человек за письмом: стол, ковёр, окно, карта/глобус и сосредоточенная тишина.'
+  }
+};
+
+function go(path){ window.location.href = path; }
+document.getElementById('leftDoor').onclick = () => go('gostinaya_left.html');
+document.getElementById('rightDoor').onclick = () => go('gostinaya_right.html');
+document.getElementById('bookcase').onclick = () => go('bukinist.html');
+
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modalImg');
+const modalTitle = document.getElementById('modalTitle');
+const modalDesc = document.getElementById('modalDesc');
+
+function openPainting(id){
+  const p = paintings[id];
+  modalImg.src = p.src;
+  modalImg.alt = p.title;
+  modalTitle.textContent = p.title;
+  modalDesc.textContent = p.desc;
+  modal.classList.add('open');
+}
+
+['pic1','pic2','pic3'].forEach(id=>{
+  document.getElementById(id).onclick = () => openPainting(id);
+});
+
+function closeModal(){ modal.classList.remove('open'); modalImg.src=''; }
+document.getElementById('closeBtn').onclick = closeModal;
+modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
