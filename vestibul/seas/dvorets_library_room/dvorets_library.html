@@ -48,41 +48,44 @@
   #pic3{left:68.3%;top:8.4%;width:23.8%;height:35.5%}
   #bookcase{left:38.3%;top:43.1%;width:27.2%;height:40.6%}
 
-  .metsu-sign{
-    position:absolute;
-    z-index:4;
-    left:67.8%;
-    top:50.4%;
-    width:20.8%;
-    height:7%;
-}
  .metsu-sign{
     position:absolute;
     z-index:4;
-    left:67.8%;
+    left:69.1%;
     top:50.4%;
     width:20.8%;
     height:7%;
 
-    color:rgba(255,236,190,0.92);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    pointer-events:none;
+
+    color:rgba(255,236,184,.96);
+    font-size:clamp(16px,1.9vw,30px);
+    line-height:1.22;
+    letter-spacing:.08em;
 
     text-shadow:
-        0 0 8px rgba(255,230,170,0.72),
-        0 0 18px rgba(255,215,140,0.42),
-        0 0 34px rgba(255,200,120,0.16);
+        0 0 7px rgba(255,243,204,.95),
+        0 0 18px rgba(255,193,92,.66),
+        0 0 34px rgba(255,169,48,.34);
 
-    font-family:Georgia, serif;
-
-    pointer-events:none;
-}
-    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;
-    color:rgba(255,236,184,.96);font-size:clamp(12px,1.55vw,23px);line-height:1.22;letter-spacing:.08em;
-    text-shadow:0 0 7px rgba(255,243,204,.95),0 0 18px rgba(255,193,92,.66),0 0 34px rgba(255,169,48,.34);
     opacity:.96;
-  }
-  .metsu-sign .name{font-size:1.05em;text-transform:uppercase;letter-spacing:.12em}
-  .metsu-sign .small{font-size:.78em;letter-spacing:.16em;color:rgba(255,245,214,.88)}
+}
 
+.metsu-sign .name{
+    font-size:1.05em;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+}
+
+.metsu-sign .small{
+    font-size:.78em;
+    letter-spacing:.16em;
+    color:rgba(255,245,214,.88);
   .hint{
     position:absolute;z-index:6;left:50%;bottom:18px;transform:translateX(-50%);
     padding:8px 18px;border:1px solid rgba(255,221,150,.22);border-radius:999px;
