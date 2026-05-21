@@ -83,47 +83,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#080b0f;font-family:
 .infoPlate{position:absolute;left:22px;bottom:20px;max-width:430px;padding:14px 18px;background:rgba(12,15,20,.72);border:1px solid rgba(255,255,255,.16);box-shadow:0 10px 35px rgba(0,0,0,.35);backdrop-filter:blur(5px);color:rgba(255,255,255,.86);line-height:1.55;font-size:14px;z-index:5}.infoPlate .title{font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;margin-bottom:5px}.infoPlate .muted{opacity:.72;font-size:12px;word-break:break-word}
 .tools{position:absolute;top:18px;left:22px;display:flex;gap:8px;z-index:6}.toolBtn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.075);color:white;font-family:Georgia,serif;font-size:16px;line-height:1;padding:9px 12px;min-width:38px;cursor:pointer}.toolBtn:hover{background:rgba(255,255,255,.16)}
 .closeBtn{position:absolute;top:12px;right:20px;color:white;font-size:34px;cursor:pointer;opacity:.72;z-index:8}.closeBtn:hover{opacity:1}
-.windowContent{position:relative;width:88%;height:86%;padding:28px 30px;background:rgba(18,22,28,.86);border:1px solid rgba(255,255,255,.12);box-shadow:0 0 50px rgba(0,0,0,.35);overflow:hidden}.windowHeader{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-right:48px;margin-bottom:18px}.windowHeader h2{font-weight:normal;letter-spacing:2px;font-size:22px}.windowHeader .small{opacity:.62;font-size:13px;line-height:1.4}.grid{height:calc(100% - 58px);overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:15px;padding-right:8px}.card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);padding:8px;cursor:pointer;transition:.25s}.card:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}.card img{width:100%;height:110px;object-fit:cover;display:block;margin-bottom:7px}.card .num{opacity:.55;font-size:12px}.card .name{font-size:13px;line-height:1.25;word-break:break-word}.emptyMsg{opacity:.78;line-height:1.7;margin-top:24px}.nexBox{width:520px;max-width:90%;padding:34px;background:rgba(20,24,30,.78);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.86);line-height:1.9;font-size:18px}.nexTitle{margin-bottom:18px;letter-spacing:4px;font-size:15px;opacity:.65}
-
-#loadingScreen{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    gap:18px;
-    background:rgba(7,9,13,.96);
-    color:rgba(255,255,255,.86);
-    z-index:999;
-    font-family:Georgia,serif;
-    letter-spacing:2px;
-    text-align:center;
-}
-#loadingScreen .loaderTitle{
-    font-size:22px;
-    letter-spacing:4px;
-}
-#loadingScreen .loaderSmall{
-    font-size:14px;
-    opacity:.68;
-    letter-spacing:1px;
-}
-#loadingScreen.hidden{
-    display:none;
-}
-
+.windowContent{position:relative;width:88%;height:86%;padding:28px 30px;background:rgba(18,22,28,.86);border:1px solid rgba(255,255,255,.12);box-shadow:0 0 50px rgba(0,0,0,.35);overflow:hidden}.windowHeader{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-right:48px;margin-bottom:18px}.windowHeader h2{font-weight:normal;letter-spacing:2px;font-size:22px}.windowHeader .small{opacity:.62;font-size:13px;line-height:1.4}.grid{height:calc(100% - 58px);overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:15px;padding-right:8px}.card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);padding:8px;cursor:pointer;transition:.25s}.card:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}.card img{width:100%;height:110px;object-fit:cover;display:block;margin-bottom:7px;background:rgba(255,255,255,.04);opacity:.35;transition:.35s}.card.ready img{opacity:1}.card.error img{opacity:.18}.card .status{margin-top:6px;font-size:11px;opacity:.62}.card.ready .status{opacity:.9}.card.error .status{opacity:.9;color:#ffb0b0}.card .num{opacity:.55;font-size:12px}.card .name{font-size:13px;line-height:1.25;word-break:break-word}.emptyMsg{opacity:.78;line-height:1.7;margin-top:24px}.nexBox{width:520px;max-width:90%;padding:34px;background:rgba(20,24,30,.78);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.86);line-height:1.9;font-size:18px}.nexTitle{margin-bottom:18px;letter-spacing:4px;font-size:15px;opacity:.65}
 </style>
 </head>
 <body>
-<div id="loadingScreen">
-  <div class="loaderTitle">CENTRAL GALLERY</div>
-  <div class="loaderSmall" id="loadingText">Loading works...</div>
-</div>
 <audio id="bgMusic" src="9999.mp3" loop preload="auto"></audio>
 <div id="scene" class="leftMode"><div id="mist"></div><div id="paintingZone" class="zone" title="Open next work"></div><div id="windowZone" class="zone" title="Open catalogue window"></div><div id="forwardZone" class="zone" title="Move forward"></div><div id="miniNex"></div></div>
 <div id="viewer"><div class="viewerContent"><div class="tools"><button class="toolBtn" onclick="zoomOut(event)">−</button><button class="toolBtn" onclick="zoomIn(event)">+</button><button class="toolBtn" onclick="resetZoom(event)">RESET</button></div><div class="imageWrap" id="imageWrap"><img id="viewerImage"></div><div class="infoPlate" id="infoPlate"></div><div class="closeBtn" onclick="closeViewer()">×</div></div></div>
-<div id="windowPanel"><div class="windowContent"><div class="closeBtn" onclick="closeWindow()">×</div><div class="windowHeader"><h2>CATALOGUE WINDOW</h2><div class="small">The window shows all works found in the gallery folder.<br>Click any small card to open it.</div></div><div class="grid" id="catalogueGrid"></div></div></div>
+<div id="windowPanel"><div class="windowContent"><div class="closeBtn" onclick="closeWindow()">×</div><div class="windowHeader"><h2>CATALOGUE WINDOW</h2><div class="small">The window shows all works found in the gallery folder.<br><span id="catalogueStatus">Preparing catalogue...</span></div></div><div class="grid" id="catalogueGrid"></div></div></div>
 <div id="nexHelp">
     <div id="nexClose" onclick="closeNexHelp()">×</div>
 
@@ -195,11 +162,9 @@ const viewer=document.getElementById('viewer');
 const viewerImage=document.getElementById('viewerImage');
 const infoPlate=document.getElementById('infoPlate');
 const grid=document.getElementById('catalogueGrid');
+const catalogueStatus=document.getElementById('catalogueStatus');
 const wrap=document.getElementById('imageWrap');
-const loadingScreen=document.getElementById('loadingScreen');
-const loadingText=document.getElementById('loadingText');
-let galleryReady=false;
-let preloadedImages=[];
+let imageLoadState=[];
 function loadScene(){scene.style.opacity='0';setTimeout(()=>{scene.style.backgroundImage=`url('${scenes[currentScene].bg}')`;scene.classList.remove('leftMode','rightMode');scene.classList.add(scenes[currentScene].mode);scene.style.opacity='1'},350)}
 function cleanText(s){return decodeURIComponent(String(s||'')).replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim()}
 
@@ -257,82 +222,22 @@ async function loadWorks(){
   }
   renderCatalogue();
 }
-
-function preloadAllImages(){
-
-  galleryReady=false;
-  preloadedImages=[];
-
-  return new Promise(resolve=>{
-
-    if(!works.length){
-      galleryReady=true;
-      resolve();
-      return;
-    }
-
-    let loaded=0;
-
-    works.forEach((w,index)=>{
-
-      const img=new Image();
-
-      img.onload=finish;
-      img.onerror=finish;
-
-      img.src=w.src;
-
-      preloadedImages[index]=img;
-
-    });
-
-    function finish(){
-
-      loaded++;
-
-      if(loadingText){
-        loadingText.textContent='Loading works: '+loaded+' / '+works.length;
-      }
-
-      if(loaded>=works.length){
-        galleryReady=true;
-        resolve();
-      }
-
-    }
-
-  });
-
-}
-
-function showLoading(){
-  if(loadingScreen){
-    loadingScreen.classList.remove('hidden');
+function updateCatalogueStatus(){
+  if(!catalogueStatus)return;
+  if(!works.length){
+    catalogueStatus.textContent='No works found.';
+    return;
   }
+  const ready=imageLoadState.filter(x=>x==='ready').length;
+  const error=imageLoadState.filter(x=>x==='error').length;
+  catalogueStatus.textContent='Loaded: '+ready+' / '+works.length+(error ? ' · missing: '+error : '');
 }
 
-function hideLoading(){
-  if(loadingScreen){
-    loadingScreen.classList.add('hidden');
-  }
-}
-
-async function initGallery(){
-
-  showLoading();
-
-  loadScene();
-
-  await loadWorks();
-
-  await preloadAllImages();
-
-  hideLoading();
-
-}
 function renderCatalogue(){
 
   grid.innerHTML='';
+  imageLoadState=new Array(works.length).fill('loading');
+  updateCatalogueStatus();
 
   if(!works.length){
 
@@ -346,10 +251,11 @@ function renderCatalogue(){
 
     const card=document.createElement('div');
 
-    card.className='card';
+    card.className='card loading';
 
     card.innerHTML=`
       <div class="num">${w.number}</div>
+      <img alt="${w.title}">
       <div class="name">${w.title}</div>
       <div class="muted">${w.author || ''}</div>
       <div class="muted">
@@ -357,7 +263,29 @@ function renderCatalogue(){
           .filter(Boolean)
           .join(' · ')}
       </div>
+      <div class="status">loading...</div>
     `;
+
+    const img=card.querySelector('img');
+    const status=card.querySelector('.status');
+
+    img.onload=()=>{
+      imageLoadState[i]='ready';
+      card.classList.remove('loading','error');
+      card.classList.add('ready');
+      status.textContent='ready';
+      updateCatalogueStatus();
+    };
+
+    img.onerror=()=>{
+      imageLoadState[i]='error';
+      card.classList.remove('loading','ready');
+      card.classList.add('error');
+      status.textContent='not found';
+      updateCatalogueStatus();
+    };
+
+    img.src=w.src;
 
     card.onclick=()=>openWork(i);
 
@@ -371,13 +299,6 @@ function openCurrentWork(){
      картина НЕ листает работы сама по себе.
      Она открывает только текущую работу.
      Следующая работа подготавливается только после клика по ДАЛЬ. */
-
-  if(!galleryReady){
-    showLoading();
-    preloadAllImages().then(hideLoading);
-    return;
-  }
-
   if(!works.length){openWindow();return}
   if(workIndex<0 || workIndex>=works.length){workIndex=0}
   openWork(workIndex)
@@ -399,14 +320,14 @@ function openWork(i){
 
   viewer.style.display='flex';
 
-  viewerImage.src=(preloadedImages[workIndex] && preloadedImages[workIndex].src) ? preloadedImages[workIndex].src : w.src;
+  viewerImage.src=w.src;
 
   infoPlate.innerHTML=`<div class="title">${w.title}</div><div>${w.author||'Author not specified'}</div><div>${[w.size,w.material,w.year].filter(Boolean).join(' · ')}</div><div class="muted">${w.file}</div>`;
 
   resetZoom();
 }
 function closeViewer(){viewer.style.display='none'}
-function openWindow(){document.getElementById('windowPanel').style.display='flex';renderCatalogue()}
+function openWindow(){document.getElementById('windowPanel').style.display='flex';if(!grid.children.length)renderCatalogue();updateCatalogueStatus()}
 function closeWindow(){document.getElementById('windowPanel').style.display='none'}
 function applyTransform(){viewerImage.style.transform=`translate(${panX}px,${panY}px) scale(${zoom})`}
 function zoomIn(e){if(e)e.stopPropagation();zoom=Math.min(4,zoom+.25);applyTransform()}
@@ -424,7 +345,7 @@ function closeNexHelp(){
 }
 document.getElementById('miniNex').addEventListener('click',openNexHelp);
 viewer.addEventListener('click',e=>{if(e.target===viewer)closeViewer()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeWindow();closeNexHelp()}});
-initGallery();
+loadScene();loadWorks();
 
 
 /* =========================
