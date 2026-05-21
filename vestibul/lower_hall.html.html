@@ -306,9 +306,58 @@ function closeNexHelp(){
   document.getElementById('nexHelp').style.display='none';
 }
 document.getElementById('miniNex').addEventListener('click',openNexHelp);
-viewer.addEventListener('click',e=>{if(e.target===viewer)closeViewer()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeWindow();closeNexHelp()}});
-loadScene();loadWorks();
+viewer.addEventListener('click',e=>{if(e.target===viewer)closeViewer()});document.addEventListener
+    ('keydown',e=>{if(e.key==='Escape'){closeViewer();closeWindow();closeNexHelp()}});
+loadScene();
 
+loadWorks().then(()=>{
+
+  preloadAllImages(()=>{
+    console.log('ВСЕ КАРТИНЫ ГОТОВЫ');
+  });
+
+});
+    /* =========================
+   ПРЕДЗАГРУЗКА ВСЕХ КАРТИН
+========================= */
+
+let preloadedImages=[];
+
+function preloadAllImages(callback){
+
+  if(!works.length){
+    callback();
+    return;
+  }
+
+  let loaded=0;
+
+  works.forEach((w,index)=>{
+
+    const img=new Image();
+
+    img.onload=finish;
+    img.onerror=finish;
+
+    img.src=w.src;
+
+    preloadedImages[index]=img;
+
+  });
+
+  function finish(){
+
+    loaded++;
+
+    if(loaded>=works.length){
+
+      callback();
+
+    }
+
+  }
+
+}
 
 /* =========================
    МУЗЫКА ЦЕНТРАЛЬНОЙ ГАЛЕРЕИ
