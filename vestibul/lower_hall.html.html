@@ -127,11 +127,26 @@ const CATALOG_JSON=WORKS_FOLDER+'/catalog.json';
 /* Запасной список. Если catalog.json не найден — программа возьмёт эти имена.
    Когда сделаем настоящую папку, просто заменим этот список или подключим catalog.json. */
 const FALLBACK_FILES=[
-  '001 ROAD TO REPENTANCE Vasiliy Yudov 80Х60 cm oil on canvas 2025.jpg',
-  '002__Utro v tumane__Vasiliy Yudov__70x100__oil on canvas__2026.jpg',
-  '003__Kum pishushchiy manuskript Voynicha__Vasiliy Yudov__90x60__oil on canvas__2026.jpg',
-  '004__Davydenko chitaet stsenariy__Vasiliy Yudov__60x90__oil on canvas__2026.jpg',
-  '005__Sontse nyzenko__Vasiliy Yudov__90x120__oil on canvas__2026.jpg'
+  '001.jpg',
+  '002.jpg',
+  '003.jpg',
+  '004.jpg',
+  '005.jpg',
+  '006.jpg',
+  '007.jpg',
+  '008.jpg',
+  '009.jpg',
+  '010.jpg',
+  '011.jpg',
+  '012.jpg',
+  '013.jpg',
+  '014.jpg',
+  '015.jpg',
+  '016.jpg',
+  '017.jpg',
+  '018.jpg',
+  '019.jpg',
+  '020.jpg'
 ];
 
 const scenes=[
@@ -150,10 +165,61 @@ const grid=document.getElementById('catalogueGrid');
 const wrap=document.getElementById('imageWrap');
 function loadScene(){scene.style.opacity='0';setTimeout(()=>{scene.style.backgroundImage=`url('${scenes[currentScene].bg}')`;scene.classList.remove('leftMode','rightMode');scene.classList.add(scenes[currentScene].mode);scene.style.opacity='1'},350)}
 function cleanText(s){return decodeURIComponent(String(s||'')).replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim()}
-function parseWork(fileName,idx){const base=fileName.split('/').pop().replace(/\.[^.]+$/,'');const parts=base.split('__');let number=String(idx+1).padStart(3,'0'),title=cleanText(base),author='',size='',material='',year='';if(parts.length>=2){number=cleanText(parts[0])||number;title=cleanText(parts[1]);author=cleanText(parts[2]);size=cleanText(parts[3]);material=cleanText(parts[4]);year=cleanText(parts[5])}return{file:fileName,src:WORKS_FOLDER+'/'+fileName,number,title,author,size,material,year}}
-async function loadWorks(){try{const r=await fetch(CATALOG_JSON+'?v='+Date.now());if(!r.ok)throw new Error('no catalog');const data=await r.json();const list=Array.isArray(data)?data:(data.files||[]);works=list.filter(isImage).sort(naturalSort).map(parseWork)}catch(e){works=FALLBACK_FILES.filter(isImage).sort(naturalSort).map(parseWork)}renderCatalogue()}
-function isImage(f){return /\.(jpg|jpeg|png|webp|gif)$/i.test(String(f))}
-function naturalSort(a,b){return String(a).localeCompare(String(b),undefined,{numeric:true,sensitivity:'base'})}
+
+function isImage(f){
+  const name=(typeof f==='object' && f.file) ? f.file : String(f||'');
+  return /\.(jpg|jpeg|png|webp|gif)$/i.test(name);
+}
+
+function naturalSort(a,b){
+  const aa=(typeof a==='object' && a.file) ? a.file : String(a||'');
+  const bb=(typeof b==='object' && b.file) ? b.file : String(b||'');
+  return aa.localeCompare(bb,undefined,{numeric:true,sensitivity:'base'});
+}
+
+function parseWork(item,idx){
+  if(typeof item==='object' && item.file){
+    return{
+      file:item.file,
+      src:WORKS_FOLDER+'/'+item.file,
+      number:item.number || String(idx+1).padStart(3,'0'),
+      title:item.title || item.name || item.file,
+      author:item.author || '',
+      size:item.size || '',
+      material:item.material || '',
+      year:item.year || ''
+    };
+  }
+
+  const fileName=String(item||'');
+  const base=fileName.split('/').pop().replace(/\.[^.]+$/,'');
+  const parts=base.split('__');
+  let number=String(idx+1).padStart(3,'0'),title=cleanText(base),author='',size='',material='',year='';
+
+  if(parts.length>=2){
+    number=cleanText(parts[0])||number;
+    title=cleanText(parts[1]);
+    author=cleanText(parts[2]);
+    size=cleanText(parts[3]);
+    material=cleanText(parts[4]);
+    year=cleanText(parts[5]);
+  }
+
+  return{file:fileName,src:WORKS_FOLDER+'/'+fileName,number,title,author,size,material,year};
+}
+
+async function loadWorks(){
+  try{
+    const r=await fetch(CATALOG_JSON+'?v='+Date.now());
+    if(!r.ok)throw new Error('no catalog');
+    const data=await r.json();
+    const list=Array.isArray(data)?data:(data.files||[]);
+    works=list.filter(isImage).sort(naturalSort).map(parseWork);
+  }catch(e){
+    works=FALLBACK_FILES.filter(isImage).sort(naturalSort).map(parseWork);
+  }
+  renderCatalogue();
+}
 function renderCatalogue(){grid.innerHTML='';if(!works.length){grid.innerHTML='<div class="emptyMsg">No works found. Put images into the <b>central_works</b> folder and add their names to <b>central_works/catalog.json</b>.</div>';return}works.forEach((w,i)=>{const card=document.createElement('div');card.className='card';card.innerHTML=`<img src="${w.src}" onerror="this.style.opacity=.25"><div class="num">${w.number}</div><div class="name">${w.title}</div>`;card.onclick=()=>openWork(i);grid.appendChild(card)})}
 function openCurrentWork(){
   /* Главная логика Дворца:
