@@ -220,7 +220,42 @@ async function loadWorks(){
   }
   renderCatalogue();
 }
-function renderCatalogue(){grid.innerHTML='';if(!works.length){grid.innerHTML='<div class="emptyMsg">No works found. Put images into the <b>central_works</b> folder and add their names to <b>central_works/catalog.json</b>.</div>';return}works.forEach((w,i)=>{const card=document.createElement('div');card.className='card';card.innerHTML=`<img src="${w.src}" onerror="this.style.opacity=.25"><div class="num">${w.number}</div><div class="name">${w.title}</div>`;card.onclick=()=>openWork(i);grid.appendChild(card)})}
+function renderCatalogue(){
+
+  grid.innerHTML='';
+
+  if(!works.length){
+
+    grid.innerHTML=
+    '<div class="emptyMsg">No works found.</div>';
+
+    return;
+  }
+
+  works.forEach((w,i)=>{
+
+    const card=document.createElement('div');
+
+    card.className='card';
+
+    card.innerHTML=`
+      <div class="num">${w.number}</div>
+      <div class="name">${w.title}</div>
+      <div class="muted">${w.author || ''}</div>
+      <div class="muted">
+        ${[w.size,w.material,w.year]
+          .filter(Boolean)
+          .join(' · ')}
+      </div>
+    `;
+
+    card.onclick=()=>openWork(i);
+
+    grid.appendChild(card);
+
+  });
+
+}
 function openCurrentWork(){
   /* Главная логика Дворца:
      картина НЕ листает работы сама по себе.
