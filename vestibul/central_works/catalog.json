@@ -1,7 +1,182 @@
 [
-  "001__Shalnaya karta__Vasiliy Yudov__60x80__oil on canvas__2026.jpg",
-  "002__Utro v tumane__Vasiliy Yudov__70x100__oil on canvas__2026.jpg",
-  "003__Kum pishushchiy manuskript Voynicha__Vasiliy Yudov__90x60__oil on canvas__2026.jpg",
-  "004__Davydenko chitaet stsenariy__Vasiliy Yudov__60x90__oil on canvas__2026.jpg",
-  "005__Sontse nyzenko__Vasiliy Yudov__90x120__oil on canvas__2026.jpg"
+  {
+    "file": "001.jpg",
+    "number": "001",
+    "title": "ROAD TO REPENTANCE",
+    "author": "Vasiliy Yudov",
+    "size": "80x60 cm",
+    "material": "oil on canvas",
+    "year": "2025"
+  },
+  {
+    "file": "002.jpg",
+    "number": "002",
+    "title": "CHERRY PLUMS FOR TONI",
+    "author": "Vasiliy Yudov",
+    "size": "48x32 cm",
+    "material": "oil on plywood",
+    "year": "2023"
+  },
+  {
+    "file": "003.jpg",
+    "number": "003",
+    "title": "AUTUMN JOY",
+    "author": "Vasiliy Yudov",
+    "size": "45x36 cm",
+    "material": "oil on canvas",
+    "year": "2022"
+  },
+  {
+    "file": "004.jpg",
+    "number": "004",
+    "title": "FAREWELL TO SUMMER",
+    "author": "Vasiliy Yudov",
+    "size": "65x40 cm",
+    "material": "oil on plywood",
+    "year": "2022"
+  },
+  {
+    "file": "005.jpg",
+    "number": "005",
+    "title": "EVENING GATHERINGS",
+    "author": "Vasiliy Yudov",
+    "size": "50x50 cm",
+    "material": "oil on canvas",
+    "year": "2023"
+  },
+  {
+    "file": "006.jpg",
+    "number": "006",
+    "title": "HOME THROUGH THE GARDENS",
+    "author": "Vasiliy Yudov",
+    "size": "69x45 cm",
+    "material": "oil on canvas",
+    "year": "2022"
+  },
+  {
+    "file": "007.jpg",
+    "number": "007",
+    "title": "RUDOST",
+    "author": "Vasiliy Yudov",
+    "size": "90x56 cm",
+    "material": "oil on canvas",
+    "year": "2022"
+  },
+  {
+    "file": "008.jpg",
+    "number": "008",
+    "title": "WITH PITCHFORKS TO THE ARMORED TRAIN",
+    "author": "Vasiliy Yudov",
+    "size": "65x48 cm",
+    "material": "oil on plywood",
+    "year": "2025"
+  },
+  {
+    "file": "009.jpg",
+    "number": "009",
+    "title": "THE HARE ACTOR",
+    "author": "Vasiliy Yudov",
+    "size": "60x40 cm",
+    "material": "oil on canvas",
+    "year": "2026"
+  },
+  {
+    "file": "010.jpg",
+    "number": "010",
+    "title": "MAMAI’S GOLD",
+    "author": "Vasiliy Yudov",
+    "size": "58x40 cm",
+    "material": "oil on canvas",
+    "year": "2025"
+  },
+  {
+    "file": "011.jpg",
+    "number": "011",
+    "title": "YOUNG CABBAGE",
+    "author": "Vasiliy Yudov",
+    "size": "60x45 cm",
+    "material": "oil on canvas",
+    "year": "2022"
+  },
+  {
+    "file": "012.jpg",
+    "number": "012",
+    "title": "BEGINNING OF JULY",
+    "author": "Vasiliy Yudov",
+    "size": "60x46 cm",
+    "material": "oil on canvas",
+    "year": "2025"
+  },
+  {
+    "file": "013.jpg",
+    "number": "013",
+    "title": "SILVER SPRING",
+    "author": "Vasiliy Yudov",
+    "size": "65x47 cm",
+    "material": "oil on plywood",
+    "year": "2025"
+  },
+  {
+    "file": "014.jpg",
+    "number": "014",
+    "title": "PILLAR OF SUPPORT",
+    "author": "Vasiliy Yudov",
+    "size": "32x25 cm",
+    "material": "oil on wood",
+    "year": "2025"
+  },
+  {
+    "file": "015.jpg",
+    "number": "015",
+    "title": "THE STOLEN BRIDE",
+    "author": "Vasiliy Yudov",
+    "size": "70x50 cm",
+    "material": "oil on canvas",
+    "year": "2023"
+  },
+  {
+    "file": "016.jpg",
+    "number": "016",
+    "title": "ECHO",
+    "author": "Vasiliy Yudov",
+    "size": "92x68 cm",
+    "material": "oil on canvas",
+    "year": "2022"
+  },
+  {
+    "file": "017.jpg",
+    "number": "017",
+    "title": "LAKE OF ILLUSIONS",
+    "author": "Vasiliy Yudov",
+    "size": "64x53 cm",
+    "material": "oil on canvas",
+    "year": "2022"
+  },
+  {
+    "file": "018.jpg",
+    "number": "018",
+    "title": "AMAZON SLAYING A WOLF",
+    "author": "Vasiliy Yudov",
+    "size": "110x60 cm",
+    "material": "oil on canvas",
+    "year": "2008"
+  },
+  {
+    "file": "019.jpg",
+    "number": "019",
+    "title": "CANYON OF TRANQUILITY",
+    "author": "Vasiliy Yudov",
+    "size": "70x50 cm",
+    "material": "oil on canvas",
+    "year": "2022"
+  },
+  {
+    "file": "020.jpg",
+    "number": "020",
+    "title": "TOBACCO HARVEST",
+    "author": "Vasiliy Yudov",
+    "size": "47x34 cm",
+    "material": "oil on board",
+    "year": "2022"
+  }
 ]
