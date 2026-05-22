@@ -304,9 +304,20 @@ function openCurrentWork(){
   openWork(workIndex)
 }
 function advanceWork(){
+
   if(!works.length)return;
+
   workIndex++;
-  if(workIndex>=works.length){workIndex=0}
+
+  /* После последней работы —
+     переход на Балкон Некса */
+
+  if(workIndex>=works.length){
+
+    window.location.href='/dvorets-nex/vestibul/concert_nex/balcony.html';
+
+    return;
+  }
 }
 function openWork(i){
 
