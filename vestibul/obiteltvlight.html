@@ -192,9 +192,7 @@ const tvStatus = document.getElementById("tvStatus");
 const fullView = document.getElementById("fullView");
 const obitelMusic = document.getElementById("obitelMusic");
 
-document.addEventListener("click", () => {
-  obitelMusic.play();
-}, { once:true });
+
 nexZone.addEventListener("click", openTV);
 
 async function loadWorks(){
@@ -221,6 +219,13 @@ async function loadWorks(){
 }
 
 function openTV(){
+
+  const music = document.getElementById("obitelMusic");
+  if(music){
+    music.volume = 0.45;
+    music.play();
+  }
+
   tvOverlay.classList.add("open");
 
   if(!tvWasOpened){
