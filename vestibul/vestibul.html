@@ -6,7 +6,52 @@
 <title>ВЕСТИБЮЛЬ ДВОРЦА</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+/* ===== БОЛЬШОЕ ОКНО КАРТИНЫ ===== */
 
+#artViewer{
+  position:fixed;
+  inset:0;
+
+  z-index:120;
+
+  display:none;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(0,0,0,0.88);
+}
+
+#artViewer img{
+  max-width:94vw;
+  max-height:94vh;
+
+  object-fit:contain;
+
+  box-shadow:
+    0 0 35px rgba(120,220,255,.35);
+
+  border-radius:10px;
+}
+
+#artViewerCaption{
+  position:absolute;
+
+  left:0;
+  right:0;
+  bottom:24px;
+
+  text-align:center;
+
+  color:white;
+
+  font-size:24px;
+
+  text-shadow:
+    0 0 12px #00d9ff,
+    0 0 22px black;
+
+  letter-spacing:.06em;
+}
 <style>
 html,body{
   margin:0;
@@ -342,7 +387,9 @@ body{
       принимает эфир...
     </div>
 
-    <img id="obitelImg" src="">
+    <img id="obitelImg"
+     src=""
+     onclick="openCurrentArtwork(event)">
 
     <div id="obitelCaption">
       ОБИТЕЛЬ НЕКСА
@@ -351,7 +398,13 @@ body{
   </div>
 
 </div>
+<div id="artViewer" onclick="hideArtViewer()">
 
+  <img id="artViewerImg" src="">
+
+  <div id="artViewerCaption"></div>
+
+</div>
 <script>
 
 /* ===== MOZART LOOP ===== */
@@ -418,8 +471,9 @@ document.addEventListener('keydown',(e)=>{
 
   if(e.key === "Escape"){
 
-    hideObitelTV();
-  }
+  hideObitelTV();
+  hideArtViewer();
+}
 });
 
 /* ===== SUPABASE ===== */
@@ -580,7 +634,44 @@ function closeObitelTV(e){
     hideObitelTV();
   }
 }
+/* ===== БОЛЬШОЙ ПРОСМОТР ===== */
 
+function openCurrentArtwork(e){
+
+  e.stopPropagation();
+
+  if(!obitelWorks.length) return;
+
+  let index = obitelIndex - 1;
+
+  if(index < 0){
+    index = obitelWorks.length - 1;
+  }
+
+  const w = obitelWorks[index];
+
+  document.getElementById(
+    "artViewer"
+  ).style.display = "flex";
+
+  document.getElementById(
+    "artViewerImg"
+  ).src = w.image_url || "";
+
+  document.getElementById(
+    "artViewerCaption"
+  ).textContent =
+    (w.title || "Без названия")
+    + " — " +
+    (w.author || "Неизвестный автор");
+}
+
+function hideArtViewer(){
+
+  document.getElementById(
+    "artViewer"
+  ).style.display = "none";
+}
 </script>
 
 </body>
