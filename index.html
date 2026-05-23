@@ -271,25 +271,31 @@ document.getElementById('nex-zone').addEventListener('click',()=>{
 
 let nexVoicePlayed = false;
 
-document.addEventListener('click',()=>{
+function sayLittleNex(){
 
-if(nexVoicePlayed) return;
+  if(nexVoicePlayed) return;
 
-nexVoicePlayed = true;
+  nexVoicePlayed = true;
 
-const voice = new SpeechSynthesisUtterance(
-"Здравствуйте. Я Маленький Некс. Нажми меня и увидишь афишу. Или войди во Дворец. Или найди Башню Некса."
-);
+  speechSynthesis.cancel();
 
-voice.lang='ru-RU';
+  const voice = new SpeechSynthesisUtterance(
+    "Hello. I am Little Nex. Click me to see the announcement. Or enter the Palace. Or find the Tower of Nex."
+  );
 
-voice.rate=0.92;
-voice.pitch=1.02;
-voice.volume=1;
+  voice.lang = "en-US";
 
-speechSynthesis.speak(voice);
+  voice.rate = 0.92;
+  voice.pitch = 1.02;
+  voice.volume = 1;
 
-});
+  setTimeout(()=>{
+    speechSynthesis.speak(voice);
+  },300);
+
+}
+
+document.addEventListener("click", sayLittleNex, {once:true});
 
 </script>
 
