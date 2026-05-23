@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>M.NEX · LATEST ARRIVALS</title>
+<title>M.NEX · SANCTUARY</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
@@ -143,31 +143,31 @@ html,body{
 </head>
 <body>
 <div id="vestibule">
-  <div id="nexZone" title="М.Некс — последние поступления"></div>
-  <div id="nexHint">М.НЕКС · ПОСЛЕДНИЕ ПОСТУПЛЕНИЯ</div>
+  <div id="nexZone" title="LATEST ARRIVALS TO THE SANCTUARY"></div>
+  <div id="nexHint">M.NEX · LATEST ARRIVALS</div>
 </div>
 
 <div id="tvOverlay">
   <div id="tv">
     <button id="tvClose" onclick="closeTV(event)">×</button>
-    <div id="tvTitle">ПОСЛЕДНИЕ ПОСТУПЛЕНИЯ В ОБИТЕЛЬ</div>
+    <div id="tvTitle">LATEST ARRIVALS TO THE SANCTUARY</div>
     <div id="slideArea" onclick="openFullWork()">
-      <img id="slideImg" alt="Работа из ОБИТЕЛИ">
+      <img id="slideImg" alt="SANCTUARY">
     </div>
     <div id="workTitle"></div>
-    <div id="tvStatus">клик по картине — раскрыть</div>
+    <div id="tvStatus">click artwork to expand</div>
   </div>
 </div>
 
 <div id="fullView">
   <button id="fullClose" onclick="closeFullWork()">×</button>
   <div id="infoPanel">
-    <h2 id="infoTitle">Название</h2>
-    <div class="field"><b>АВТОР</b><span id="infoAuthor"></span></div>
-    <div class="field"><b>ГОД</b><span id="infoYear"></span></div>
-    <div class="field"><b>МАТЕРИАЛЫ</b><span id="infoMaterials"></span></div>
-    <div class="field"><b>РАЗМЕР</b><span id="infoSize"></span></div>
-    <div class="field"><b>СОПРОВОЖДЕНИЕ</b><span id="storyText"></span></div>
+    <h2 id="infoTitle">TITLE</h2>
+    <div class="field"><b>AUTHOR</b><span id="infoAuthor"></span></div>
+    <div class="field"><b>YEAR</b><span id="infoYear"></span></div>
+    <div class="field"><b>MATERIALS</b><span id="infoMaterials"></span></div>
+    <div class="field"><b>SIZE</b><span id="infoSize"></span></div>
+    <div class="field"><b>NOTES</b><span id="storyText"></span></div>
   </div>
   <div id="fullImgWrap">
     <img id="fullImg" alt="Работа крупно">
@@ -194,25 +194,25 @@ const fullView = document.getElementById("fullView");
 nexZone.addEventListener("click", openTV);
 
 async function loadWorks(){
-  tvStatus.textContent = "загружаю ОБИТЕЛЬ...";
+  tvStatus.textContent = "loading SANCTUARY...";
   const result = await client
     .from("artworks")
     .select("*")
     .order("created_at", { ascending:false });
 
   if(result.error){
-    tvStatus.textContent = "ошибка чтения ОБИТЕЛИ: " + result.error.message;
+    tvStatus.textContent = "SANCTUARY read error" + result.error.message;
     return;
   }
 
   works = result.data || [];
   if(!works.length){
-    tvStatus.textContent = "в ОБИТЕЛИ пока нет работ";
+    tvStatus.textContent = "no artworks in the SANCTUARY yet";
     return;
   }
 
   if(currentIndex >= works.length) currentIndex = 0;
-  tvStatus.textContent = "клик по картине — раскрыть";
+  tvStatus.textContent = "click artwork to expand";
   showCurrent(true);
 }
 
@@ -261,7 +261,7 @@ function showCurrent(first){
 
   setTimeout(() => {
     slideImg.src = work.image_url || "";
-    workTitle.textContent = work.title || "Без названия";
+    workTitle.textContent = work.title || "Untitled";
     slideImg.onload = () => {
       slideImg.classList.add("visible");
       workTitle.classList.add("show");
@@ -274,8 +274,8 @@ function openFullWork(){
   stopSlideshow();
 
   const work = works[currentIndex];
-  document.getElementById("infoTitle").textContent = work.title || "Без названия";
-  document.getElementById("infoAuthor").textContent = work.author || "Неизвестный автор";
+  document.getElementById("infoTitle").textContent = work.title || "Untitled";
+  document.getElementById("infoAuthor").textContent = work.author || "Unknown author";
   document.getElementById("infoYear").textContent = work.year || "";
   document.getElementById("infoMaterials").textContent = work.materials || "";
   document.getElementById("infoSize").textContent = work.size || "";
