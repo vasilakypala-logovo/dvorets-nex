@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ВЕСТИБЮЛЬ ДВОРЦА</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 html,body{
   margin:0;
@@ -56,7 +58,7 @@ body{
   box-shadow:0 0 25px rgba(255,210,90,0.45);
 }
 
-/* 1. М.Некс — НЕ ТРОГАЛ */
+/* М.Некс */
 #miniNex{
   left:15%;
   top:42%;
@@ -64,7 +66,7 @@ body{
   height:40%;
 }
 
-/* 2. Шкатулка — НЕ ТРОГАЛ */
+/* Шкатулка */
 #box{
   left:1%;
   bottom:3%;
@@ -72,7 +74,7 @@ body{
   height:22%;
 }
 
-/* 3. Центральные двери нижнего зала */
+/* Центральные двери */
 #centerDoor{
   left:39%;
   top:33%;
@@ -80,7 +82,7 @@ body{
   height:49%;
 }
 
-/* 4. Левая верхняя дверь с мишенью — ДОБАВЛЕНА */
+/* Верхние двери */
 #doorTarget{
   left:12%;
   top:8%;
@@ -88,7 +90,6 @@ body{
   height:20%;
 }
 
-/* 5. Левая верхняя дверь с сердцем — ДОБАВЛЕНА */
 #doorHeart{
   left:22%;
   top:8%;
@@ -96,7 +97,6 @@ body{
   height:20%;
 }
 
-/* 6-9. Остальные двери/зоны — оставил как в последнем удачном варианте */
 #doorLowerLeft{
   left:66%;
   top:46%;
@@ -125,7 +125,7 @@ body{
   height:20%;
 }
 
-/* Часы — НЕ ТРОГАЛ */
+/* Часы */
 #clock{
   left:45%;
   top:1%;
@@ -133,91 +133,454 @@ body{
   height:18%;
 }
 
-/* Белая планетка — оставил как в последнем варианте */
+/* Белая планетка */
 #planet{
   left:56%;
   top:3%;
   width:7%;
   height:13%;
 }
+
+/* ===== ТЕЛЕВИЗОР ОБИТЕЛИ ===== */
+
+#obitelTV{
+  position:fixed;
+  inset:0;
+  z-index:50;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.10);
+}
+
+#obitelScreen{
+  position:relative;
+  width:min(78vw,980px);
+  height:min(72vh,680px);
+
+  border:2px solid rgba(120,240,255,.65);
+  border-radius:28px;
+
+  box-shadow:
+    0 0 22px rgba(80,220,255,.85),
+    0 0 65px rgba(30,180,255,.45),
+    inset 0 0 35px rgba(140,240,255,.22);
+
+  background:rgba(0,20,30,.12);
+
+  backdrop-filter:blur(2px);
+
+  overflow:hidden;
+}
+
+#obitelImg{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+
+  opacity:0;
+
+  transition:opacity 1.2s ease;
+}
+
+#obitelImg.ready{
+  opacity:1;
+}
+
+#obitelCaption{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+
+  padding:16px 22px;
+
+  text-align:center;
+
+  color:white;
+
+  font-size:22px;
+
+  text-shadow:
+    0 0 12px #00d9ff,
+    0 0 25px black;
+
+  background:
+    linear-gradient(
+      transparent,
+      rgba(0,0,0,.48)
+    );
+
+  letter-spacing:.06em;
+  line-height:1.35;
+}
+
+#obitelClose{
+  position:absolute;
+  right:18px;
+  top:12px;
+
+  z-index:2;
+
+  color:white;
+
+  font-size:32px;
+
+  line-height:1;
+
+  cursor:pointer;
+
+  text-shadow:
+    0 0 12px #00d9ff,
+    0 0 22px black;
+
+  user-select:none;
+}
+
+#obitelLoading{
+  position:absolute;
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  color:rgba(230,255,255,.82);
+
+  font-size:22px;
+
+  letter-spacing:.08em;
+
+  text-shadow:0 0 16px #00d9ff;
+
+  pointer-events:none;
+}
 </style>
 </head>
 
 <body>
+
 <audio id="mozartLoop" src="9999.mp3" preload="auto" loop></audio>
+
 <div id="vestibul">
+
   <div id="fog"></div>
 
-  <div class="zone" id="miniNex" onclick="go('mini_nex.html')" title="М.Некс"></div>
-  <div class="zone" id="box" onclick="go('box.html')" title="Шкатулка"></div>
-  <div class="zone" id="centerDoor" onclick="go('lower_hall.html')" title="Центральные двери нижнего зала"></div>
+  <div class="zone" id="miniNex"
+       onclick="openObitelTV()"
+       title="М.Некс — последние поступления ОБИТЕЛИ">
+  </div>
 
-  <div class="zone" id="doorTarget" onclick="go('seas/hall1.html')" title="Дверь с мишенью">
+  <div class="zone" id="box"
+       onclick="go('box.html')"
+       title="Шкатулка">
+  </div>
+
+  <div class="zone" id="centerDoor"
+       onclick="go('lower_hall.html')"
+       title="Центральные двери нижнего зала">
+  </div>
+
+  <div class="zone" id="doorTarget"
+       onclick="go('seas/hall1.html')"
+       title="Дверь с мишенью">
+  </div>
+
+  <div class="zone" id="doorHeart"
+       onclick="go('seas/hall1.html')"
+       title="Дверь с сердцем">
+  </div>
+
+  <div class="zone" id="doorLowerLeft"
+       onclick="go('guest_lower_left.html')"
+       title="Нижняя левая гостиная">
+  </div>
+
+  <div class="zone" id="doorLowerRight"
+       onclick="go('guest_lower_right.html')"
+       title="Нижняя правая гостиная">
+  </div>
+
+  <div class="zone" id="doorUpperRightSun"
+       onclick="go('seas/hall1.html')"
+       title="Дверь с солнцем">
+  </div>
+
+  <div class="zone" id="doorUpperRightMoon"
+       onclick="go('seas/hall1.html')"
+       title="Дверь с луной">
+  </div>
+
+  <div class="zone" id="clock"
+       onclick="go('concert_nex/index.html')"
+       title="Concert Hall of Nex">
+  </div>
+
+  <div class="zone" id="planet"
+       onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/'"
+       title="White Planet — LOGOVO">
+  </div>
 
 </div>
-  <div class="zone" id="doorHeart" 
-onclick="go('seas/hall1.html')" title="Дверь с сердцем">
 
-</div>
+<!-- ===== ТЕЛЕВИЗОР ОБИТЕЛИ ===== -->
 
-  <div class="zone" id="doorLowerLeft" onclick="go('guest_lower_left.html')" title="Нижняя левая гостиная">
+<div id="obitelTV" onclick="closeObitelTV(event)">
 
-</div>
-  <div class="zone" id="doorLowerRight" onclick="go('guest_lower_right.html')" title="Нижняя правая гостиная">
+  <div id="obitelScreen">
 
-</div>
-  <div class="zone" id="doorUpperRightSun" onclick="go('seas/hall1.html')" title="Дверь с солнцем">
+    <div id="obitelClose"
+         onclick="hideObitelTV()">
+      ×
+    </div>
 
-</div>
-  <div class="zone" id="doorUpperRightMoon" onclick="go('seas/hall1.html')" title="Дверь с луной">
+    <div id="obitelLoading">
+      ОБИТЕЛЬ НЕКСА<br>
+      принимает эфир...
+    </div>
 
-</div>
+    <img id="obitelImg" src="">
 
-  <div class="zone" id="clock" onclick="go('concert_nex/index.html')" title="Concert Hall of Nex">
-</div>
-  <div class="zone" id="planet" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/'" title="White Planet — LOGOVO"></div>
+    <div id="obitelCaption">
+      ОБИТЕЛЬ НЕКСА
+    </div>
+
+  </div>
+
 </div>
 
 <script>
-/* MOZART LOOP / МУЗЫКА ВЕСТИБЮЛЯ
-   Браузер может запретить автозапуск, поэтому музыка запускается
-   автоматически при возможности или с первого клика/касания.
-   loop в теге audio заставляет фрагмент повторяться бесконечно. */
-const mozart = document.getElementById('mozartLoop');
+
+/* ===== MOZART LOOP ===== */
+
+const mozart =
+document.getElementById('mozartLoop');
+
 let mozartStarted = false;
 
 function startMozart(){
+
   if(mozartStarted) return;
+
   mozart.volume = 0.85;
   mozart.loop = true;
 
   const playPromise = mozart.play();
+
   if(playPromise !== undefined){
+
     playPromise.then(()=>{
+
       mozartStarted = true;
+
     }).catch(()=>{
-      // Если браузер заблокировал автозапуск, первый реальный клик включит музыку.
+
+      // браузер заблокировал автозапуск
+
     });
   }
 }
 
-// Пытаемся включить сразу при открытии страницы.
 window.addEventListener('load', startMozart);
 
-// Надежный запуск с первого действия мышкой или пальцем.
-document.addEventListener('pointerdown', startMozart, {capture:true});
-document.addEventListener('click', startMozart, {capture:true});
+document.addEventListener(
+  'pointerdown',
+  startMozart,
+  {capture:true}
+);
+
+document.addEventListener(
+  'click',
+  startMozart,
+  {capture:true}
+);
 
 function go(link){
+
   startMozart();
+
   window.location.href = link;
 }
 
+/* ===== HOTSPOTS ===== */
+
 document.addEventListener('keydown',(e)=>{
+
   if(e.key.toLowerCase()==='h'){
-    document.body.classList.toggle('show-hotspots');
+
+    document.body.classList.toggle(
+      'show-hotspots'
+    );
+  }
+
+  if(e.key === "Escape"){
+
+    hideObitelTV();
   }
 });
+
+/* ===== SUPABASE ===== */
+
+const SUPABASE_URL =
+"https://qekemclxegswolddmqxa.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_arQvVM0huxdB5jbiLPpSPA_7tksXK-Y";
+
+const obitelClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+/* ===== ОБИТЕЛЬ ===== */
+
+let obitelWorks = [];
+
+let obitelIndex = 0;
+
+let obitelTimer = null;
+
+let obitelLoaded = false;
+
+const obitelTV =
+document.getElementById("obitelTV");
+
+const obitelImg =
+document.getElementById("obitelImg");
+
+const obitelCaption =
+document.getElementById("obitelCaption");
+
+const obitelLoading =
+document.getElementById("obitelLoading");
+
+/* ===== ЗАГРУЗКА РАБОТ ===== */
+
+async function loadObitelWorks(){
+
+  obitelLoading.style.display = "flex";
+
+  const result =
+  await obitelClient
+
+    .from("artworks")
+
+    .select(
+      "title,author,image_url,created_at"
+    )
+
+    .order(
+      "created_at",
+      {ascending:false}
+    );
+
+  if(result.error){
+
+    obitelCaption.textContent =
+      "ОБИТЕЛЬ пока молчит";
+
+    obitelLoading.innerHTML =
+      "Не удалось прочитать поступления";
+
+    return;
+  }
+
+  obitelWorks = result.data || [];
+
+  obitelLoaded = true;
+
+  if(!obitelWorks.length){
+
+    obitelCaption.textContent =
+      "В ОБИТЕЛИ пока нет работ";
+
+    obitelLoading.innerHTML =
+      "ОБИТЕЛЬ открыта,<br>но поступлений пока нет";
+  }
+}
+
+/* ===== ПОКАЗ КАРТИН ===== */
+
+function showObitelWork(){
+
+  if(!obitelWorks.length) return;
+
+  const w =
+  obitelWorks[obitelIndex];
+
+  obitelImg.classList.remove("ready");
+
+  obitelLoading.style.display = "flex";
+
+  obitelImg.onload = ()=>{
+
+    obitelLoading.style.display = "none";
+
+    obitelImg.classList.add("ready");
+  };
+
+  obitelImg.src =
+    w.image_url || "";
+
+  const title =
+    w.title || "Без названия";
+
+  const author =
+    w.author || "Неизвестный автор";
+
+  obitelCaption.textContent =
+    title + " — " + author;
+
+  obitelIndex =
+    (obitelIndex + 1)
+    % obitelWorks.length;
+}
+
+/* ===== ОТКРЫТЬ ===== */
+
+async function openObitelTV(){
+
+  startMozart();
+
+  obitelTV.style.display = "flex";
+
+  if(!obitelLoaded){
+
+    await loadObitelWorks();
+  }
+
+  showObitelWork();
+
+  clearInterval(obitelTimer);
+
+  obitelTimer =
+    setInterval(
+      showObitelWork,
+      5000
+    );
+}
+
+/* ===== ЗАКРЫТЬ ===== */
+
+function hideObitelTV(){
+
+  obitelTV.style.display = "none";
+
+  clearInterval(obitelTimer);
+}
+
+function closeObitelTV(e){
+
+  if(e.target.id === "obitelTV"){
+
+    hideObitelTV();
+  }
+}
+
 </script>
 
 </body>
