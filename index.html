@@ -267,6 +267,30 @@ document.getElementById('nex-zone').addEventListener('click',()=>{
 });
 
 </script>
+<script>
+
+window.addEventListener('load',()=>{
+
+setTimeout(()=>{
+
+const voice = new SpeechSynthesisUtterance(
+"Здравствуйте. Я Маленький Некс. Нажми меня и увидишь афишу. Или войди во Дворец. Или найди Башню Некса."
+);
+
+voice.lang='ru-RU';
+
+voice.rate=0.92;
+voice.pitch=1.02;
+voice.volume=1;
+
+speechSynthesis.speak(voice);
+
+},1800);
+
+});
+
+</script>
+
 
 </body>
 </html>
