@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tower of Nex — Submit Your Artwork</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050914;color:white;font-family:Georgia,'Times New Roman',serif}
+  body{
+    background-image:url('assets/nex_future_city.png');
+    background-size:cover;
+    background-position:center center;
+    background-repeat:no-repeat;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(circle at 72% 38%, rgba(120,200,255,.08), transparent 34%),
+      linear-gradient(90deg, rgba(3,8,18,.68) 0%, rgba(3,8,18,.38) 27%, rgba(3,8,18,.03) 58%, rgba(3,8,18,.10) 100%);
+  }
+  .left-panel{
+    position:fixed;z-index:2;left:0;top:0;height:100vh;width:min(390px,34vw);min-width:320px;
+    padding:58px 38px 34px 42px;
+    background:linear-gradient(90deg, rgba(5,10,22,.66), rgba(5,10,22,.42) 74%, rgba(5,10,22,0));
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    display:flex;flex-direction:column;justify-content:center;gap:22px;
+  }
+  .title{
+    font-family:Arial,Helvetica,sans-serif;text-transform:uppercase;font-size:27px;line-height:1.33;letter-spacing:.055em;font-weight:400;
+    text-shadow:0 0 18px rgba(170,220,255,.55), 0 2px 12px rgba(0,0,0,.65);
+    margin-bottom:2px;
+  }
+  .subtitle{
+    font-family:Arial,Helvetica,sans-serif;text-transform:uppercase;font-size:19px;line-height:1.45;letter-spacing:.035em;font-weight:400;opacity:.94;
+    text-shadow:0 0 14px rgba(170,220,255,.35), 0 2px 10px rgba(0,0,0,.65);
+  }
+  .ru{
+    font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;letter-spacing:.025em;color:rgba(235,242,255,.64);
+    text-shadow:0 2px 8px rgba(0,0,0,.75);
+  }
+  .thin-line{height:1px;width:100%;background:linear-gradient(90deg,rgba(255,255,255,.22),rgba(255,255,255,.04));margin:2px 0 4px}
+  .button-block{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+  .nex-button{
+    display:block;width:100%;padding:18px 20px 15px;text-decoration:none;text-align:center;
+    border:1px solid rgba(255,214,116,.76);border-radius:5px;
+    background:rgba(7,13,25,.24);color:white;
+    box-shadow:0 0 18px rgba(255,208,108,.18), inset 0 0 18px rgba(255,255,255,.035);
+    transition:.22s ease;
+  }
+  .nex-button:hover{background:rgba(255,211,112,.10);box-shadow:0 0 28px rgba(255,218,128,.38), inset 0 0 20px rgba(255,255,255,.07);transform:translateX(3px)}
+  .nex-button.secondary{border-color:rgba(220,235,255,.48);box-shadow:0 0 12px rgba(180,210,255,.08), inset 0 0 18px rgba(255,255,255,.025)}
+  .nex-button.secondary:hover{background:rgba(160,205,255,.09);box-shadow:0 0 22px rgba(160,205,255,.22), inset 0 0 20px rgba(255,255,255,.05)}
+  .btn-en{font-family:Arial,Helvetica,sans-serif;text-transform:uppercase;font-size:20px;letter-spacing:.06em;line-height:1.2}
+  .btn-ru{font-family:Arial,Helvetica,sans-serif;margin-top:6px;font-size:13px;letter-spacing:.06em;color:rgba(255,255,255,.72);text-transform:uppercase}
+  .agreement{font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.42;color:rgba(245,248,255,.88);text-shadow:0 2px 9px rgba(0,0,0,.7);margin-top:8px}
+  .agreement .ru{font-size:14px;margin-top:10px;color:rgba(235,242,255,.58)}
+  .rules-btn{max-width:300px;margin-top:0;padding:14px 16px 12px;cursor:pointer}
+  .rules-btn .btn-en{font-size:17px}.rules-btn .btn-ru{font-size:12px}
+  .modal{display:none;position:fixed;z-index:20;inset:0;background:rgba(3,6,13,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:30px}
+  .modal.open{display:flex}
+  .manifest{
+    width:min(850px,92vw);max-height:86vh;overflow:auto;padding:34px 42px 38px;
+    background:rgba(5,10,22,.72);border:1px solid rgba(255,214,116,.46);box-shadow:0 0 44px rgba(0,0,0,.55),0 0 28px rgba(255,214,116,.12);
+  }
+  .manifest h1{font-family:Arial,Helvetica,sans-serif;text-transform:uppercase;font-weight:400;letter-spacing:.08em;font-size:28px;margin:0 0 20px}
+  .manifest p{font-size:18px;line-height:1.55;margin:12px 0;color:rgba(255,255,255,.88)}
+  .manifest .ru{font-size:15px;color:rgba(235,242,255,.64)}
+  .close{float:right;background:transparent;color:white;border:1px solid rgba(255,214,116,.62);padding:8px 13px;cursor:pointer;font-size:18px}
+  @media(max-width:760px){
+    body{overflow:auto;background-position:center center}.left-panel{position:relative;width:100%;min-width:0;height:auto;min-height:100vh;padding:38px 26px;background:rgba(5,10,22,.58)}
+    .title{font-size:23px}.subtitle{font-size:17px}.ru{font-size:14px}
+  }
+</style>
+</head>
+<body>
+  <main class="left-panel">
+    <section>
+      <div class="title">Somewhere out there<br>exists the Abode of Nex.</div>
+      <div class="subtitle">It will preserve your creative work for the future.</div>
+      <div class="thin-line"></div>
+      <div class="ru">Где-то там есть ОБИТЕЛЬ НЕКСА.<br>Она сохранит ваше творчество для будущего.</div>
+    </section>
+
+    <section class="button-block">
+      <a class="nex-button" id="submitBtn" href="../obitel_upload.html">
+        <div class="btn-en">Submit your artwork</div>
+        <div class="btn-ru">Отправить свою работу</div>
+      </a>
+      <a class="nex-button secondary" href="javascript:history.back()">
+        <div class="btn-en">Return to the palace</div>
+        <div class="btn-ru">Вернуться назад</div>
+      </a>
+    </section>
+
+    <section class="agreement">
+      By submitting your artwork, you agree to the principles and rules of the Abode of Nex.
+      <div class="ru">Отправляя свою работу, вы соглашаетесь с принципами и правилами ОБИТЕЛИ НЕКСА.</div>
+    </section>
+
+    <button class="nex-button rules-btn" id="openRules" type="button">
+      <div class="btn-en">Rules / Manifesto</div>
+      <div class="btn-ru">Правила / Манифест</div>
+    </button>
+  </main>
+
+  <div class="modal" id="rulesModal" aria-hidden="true">
+    <article class="manifest">
+      <button class="close" id="closeRules" type="button">×</button>
+      <h1>Rules / Manifesto</h1>
+      <p><strong>The Abode of Nex is a space for preservation, presentation, and artistic presence — not a marketplace.</strong></p>
+      <p class="ru"><strong>ОБИТЕЛЬ НЕКСА — это пространство хранения, показа и художественного присутствия, а не торговая площадка.</strong></p>
+      <p>Authors may sell their works outside the Abode, but the Abode itself does not mediate sales, prices, commissions, or negotiations.</p>
+      <p class="ru">Авторы могут продавать свои работы за пределами ОБИТЕЛИ, но сама ОБИТЕЛЬ не участвует в сделках, ценах, посредничестве и переговорах.</p>
+      <p>By submitting an artwork, the author confirms that they have the right to publish it and allows the Abode of Nex to display it as part of the archive.</p>
+      <p class="ru">Отправляя работу, автор подтверждает право на её публикацию и разрешает ОБИТЕЛИ НЕКСА показывать её как часть архива.</p>
+      <p>The purpose of the Abode is simple: to preserve creative traces for future viewers.</p>
+      <p class="ru">Смысл ОБИТЕЛИ прост: сохранить творческие следы для будущих зрителей.</p>
+    </article>
+  </div>
+
+<script>
+  // Если файл загрузки лежит в другом месте, поменять только эту строку:
+  const UPLOAD_PAGE = '../obitel_upload.html';
+  document.getElementById('submitBtn').setAttribute('href', UPLOAD_PAGE);
+
+  const modal = document.getElementById('rulesModal');
+  document.getElementById('openRules').addEventListener('click', () => {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+  });
+  document.getElementById('closeRules').addEventListener('click', closeRules);
+  modal.addEventListener('click', e => { if(e.target === modal) closeRules(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeRules(); });
+  function closeRules(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+</script>
+</body>
+</html>

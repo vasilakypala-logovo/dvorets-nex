@@ -1,0 +1,35 @@
+<!-- БАШНЯ НЕКСА: пример активной зоны в основном файле Дворца -->
+<div id="tower-nex-zone" title="SUBMIT YOUR ARTWORK"></div>
+<div id="tower-nex-hint">SUBMIT YOUR ARTWORK</div>
+
+<style>
+#tower-nex-zone{
+  position:absolute;
+  /* Подогнать координаты под вашу башню */
+  left:48%; top:8%; width:10%; height:35%;
+  cursor:pointer;
+  z-index:20;
+}
+#tower-nex-hint{
+  position:absolute;
+  left:43%; top:6%;
+  z-index:21;
+  padding:10px 16px;
+  font:18px Arial, sans-serif;
+  letter-spacing:.08em;
+  color:white;
+  background:rgba(5,10,22,.35);
+  border:1px solid rgba(255,214,116,.62);
+  box-shadow:0 0 18px rgba(255,214,116,.28);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+}
+#tower-nex-zone:hover + #tower-nex-hint{opacity:1;}
+</style>
+
+<script>
+document.getElementById('tower-nex-zone').addEventListener('click', function(){
+  window.location.href = 'bashnya_nex/index.html';
+});
+</script>
