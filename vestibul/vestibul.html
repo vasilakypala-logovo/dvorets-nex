@@ -6,77 +6,20 @@
 <title>ВЕСТИБЮЛЬ ДВОРЦА</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-/* ===== БОЛЬШОЕ ОКНО КАРТИНЫ ===== */
 
-#artViewer{
-  position:fixed;
-  inset:0;
-
-  z-index:120;
-
-  display:none;
-  align-items:center;
-  justify-content:center;
-
-  background:rgba(0,0,0,0.88);
-}
-
-#artViewer img{
-  max-width:94vw;
-  max-height:94vh;
-
-  object-fit:contain;
-
-  box-shadow:
-    0 0 35px rgba(120,220,255,.35);
-
-  border-radius:10px;
-}
-
-#artViewerCaption{
-  position:absolute;
-
-  left:0;
-  right:0;
-  bottom:24px;
-
-  text-align:center;
-
-  color:white;
-
-  font-size:24px;
-
-  text-shadow:
-    0 0 12px #00d9ff,
-    0 0 22px black;
-
-  letter-spacing:.06em;
-}
 <style>
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:black;
-}
-
-body{
-  font-family:Georgia,serif;
-}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:black}
+body{font-family:Georgia,serif}
 
 #vestibul{
-  position:relative;
-  width:100%;
-  height:100%;
+  position:relative;width:100%;height:100%;
   background-image:url('VESTIBUL.png');
   background-size:cover;
   background-position:center;
 }
 
 #fog{
-  position:absolute;
-  inset:-10%;
+  position:absolute;inset:-10%;
   background:
     radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05), transparent 35%),
     radial-gradient(circle at 70% 50%, rgba(180,220,255,0.05), transparent 35%),
@@ -84,117 +27,34 @@ body{
   animation:fogMove 35s linear infinite alternate;
   pointer-events:none;
 }
-
 @keyframes fogMove{
-  from{ transform:translateX(-2%) translateY(-1%); }
-  to{ transform:translateX(2%) translateY(1%); }
+  from{transform:translateX(-2%) translateY(-1%)}
+  to{transform:translateX(2%) translateY(1%)}
 }
 
-.zone{
-  position:absolute;
-  cursor:pointer;
-  border-radius:42%;
-}
-
-/* Нажать H — показать / скрыть активные пятна */
+.zone{position:absolute;cursor:pointer;border-radius:42%}
 .show-hotspots .zone{
   background:rgba(255,225,90,0.28);
   outline:2px solid rgba(255,255,255,0.65);
   box-shadow:0 0 25px rgba(255,210,90,0.45);
 }
 
-/* М.Некс */
-#miniNex{
-  left:15%;
-  top:42%;
-  width:12%;
-  height:40%;
-}
+#miniNex{left:15%;top:42%;width:12%;height:40%}
+#box{left:1%;bottom:3%;width:14%;height:22%}
+#centerDoor{left:39%;top:33%;width:22%;height:49%}
+#doorTarget{left:12%;top:8%;width:10%;height:20%}
+#doorHeart{left:22%;top:8%;width:10%;height:20%}
+#doorLowerLeft{left:66%;top:46%;width:8%;height:20%}
+#doorLowerRight{left:74%;top:46%;width:8%;height:20%}
+#doorUpperRightSun{left:67%;top:8%;width:8%;height:20%}
+#doorUpperRightMoon{left:81%;top:8%;width:8%;height:20%}
+#clock{left:45%;top:1%;width:12%;height:18%}
+#planet{left:56%;top:3%;width:7%;height:13%}
 
-/* Шкатулка */
-#box{
-  left:1%;
-  bottom:3%;
-  width:14%;
-  height:22%;
-}
-
-/* Центральные двери */
-#centerDoor{
-  left:39%;
-  top:33%;
-  width:22%;
-  height:49%;
-}
-
-/* Верхние двери */
-#doorTarget{
-  left:12%;
-  top:8%;
-  width:10%;
-  height:20%;
-}
-
-#doorHeart{
-  left:22%;
-  top:8%;
-  width:10%;
-  height:20%;
-}
-
-#doorLowerLeft{
-  left:66%;
-  top:46%;
-  width:8%;
-  height:20%;
-}
-
-#doorLowerRight{
-  left:74%;
-  top:46%;
-  width:8%;
-  height:20%;
-}
-
-#doorUpperRightSun{
-  left:67%;
-  top:8%;
-  width:8%;
-  height:20%;
-}
-
-#doorUpperRightMoon{
-  left:81%;
-  top:8%;
-  width:8%;
-  height:20%;
-}
-
-/* Часы */
-#clock{
-  left:45%;
-  top:1%;
-  width:12%;
-  height:18%;
-}
-
-/* Белая планетка */
-#planet{
-  left:56%;
-  top:3%;
-  width:7%;
-  height:13%;
-}
-
-/* ===== ТЕЛЕВИЗОР ОБИТЕЛИ ===== */
-
+/* ТВ ОБИТЕЛИ */
 #obitelTV{
-  position:fixed;
-  inset:0;
-  z-index:50;
-  display:none;
-  align-items:center;
-  justify-content:center;
+  position:fixed;inset:0;z-index:50;
+  display:none;align-items:center;justify-content:center;
   background:rgba(0,0,0,0.10);
 }
 
@@ -202,19 +62,14 @@ body{
   position:relative;
   width:min(78vw,980px);
   height:min(72vh,680px);
-
   border:2px solid rgba(120,240,255,.65);
   border-radius:28px;
-
   box-shadow:
     0 0 22px rgba(80,220,255,.85),
     0 0 65px rgba(30,180,255,.45),
     inset 0 0 35px rgba(140,240,255,.22);
-
   background:rgba(0,20,30,.12);
-
   backdrop-filter:blur(2px);
-
   overflow:hidden;
 }
 
@@ -223,85 +78,61 @@ body{
   height:100%;
   object-fit:contain;
   display:block;
-
   opacity:0;
-
   transition:opacity 1.2s ease;
+  cursor:zoom-in;
 }
 
-#obitelImg.ready{
-  opacity:1;
-}
+#obitelImg.ready{opacity:1}
 
 #obitelCaption{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-
+  position:absolute;left:0;right:0;bottom:0;
   padding:16px 22px;
-
-  text-align:center;
-
-  color:white;
-
-  font-size:22px;
-
-  text-shadow:
-    0 0 12px #00d9ff,
-    0 0 25px black;
-
-  background:
-    linear-gradient(
-      transparent,
-      rgba(0,0,0,.48)
-    );
-
-  letter-spacing:.06em;
-  line-height:1.35;
+  text-align:center;color:white;font-size:22px;
+  text-shadow:0 0 12px #00d9ff,0 0 25px black;
+  background:linear-gradient(transparent, rgba(0,0,0,.48));
+  letter-spacing:.06em;line-height:1.35;
+  pointer-events:none;
 }
 
 #obitelClose{
-  position:absolute;
-  right:18px;
-  top:12px;
-
-  z-index:2;
-
-  color:white;
-
-  font-size:32px;
-
-  line-height:1;
-
+  position:absolute;right:18px;top:12px;z-index:2;
+  color:white;font-size:32px;line-height:1;
   cursor:pointer;
-
-  text-shadow:
-    0 0 12px #00d9ff,
-    0 0 22px black;
-
+  text-shadow:0 0 12px #00d9ff,0 0 22px black;
   user-select:none;
 }
 
 #obitelLoading{
-  position:absolute;
-  inset:0;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  text-align:center;
-
-  color:rgba(230,255,255,.82);
-
-  font-size:22px;
-
-  letter-spacing:.08em;
-
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;color:rgba(230,255,255,.82);
+  font-size:22px;letter-spacing:.08em;
   text-shadow:0 0 16px #00d9ff;
-
   pointer-events:none;
+}
+
+/* БОЛЬШОЙ ПРОСМОТР КАРТИНЫ */
+#artViewer{
+  position:fixed;inset:0;z-index:200;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.88);
+  cursor:zoom-out;
+}
+
+#artViewerImg{
+  max-width:94vw;
+  max-height:88vh;
+  object-fit:contain;
+  border-radius:10px;
+  box-shadow:0 0 35px rgba(120,220,255,.35);
+}
+
+#artViewerCaption{
+  position:absolute;left:0;right:0;bottom:22px;
+  text-align:center;color:white;font-size:24px;
+  text-shadow:0 0 12px #00d9ff,0 0 22px black;
+  letter-spacing:.06em;
 }
 </style>
 </head>
@@ -311,368 +142,173 @@ body{
 <audio id="mozartLoop" src="9999.mp3" preload="auto" loop></audio>
 
 <div id="vestibul">
-
   <div id="fog"></div>
 
-  <div class="zone" id="miniNex"
-       onclick="openObitelTV()"
-       title="М.Некс — последние поступления ОБИТЕЛИ">
-  </div>
-
-  <div class="zone" id="box"
-       onclick="go('box.html')"
-       title="Шкатулка">
-  </div>
-
-  <div class="zone" id="centerDoor"
-       onclick="go('lower_hall.html')"
-       title="Центральные двери нижнего зала">
-  </div>
-
-  <div class="zone" id="doorTarget"
-       onclick="go('seas/hall1.html')"
-       title="Дверь с мишенью">
-  </div>
-
-  <div class="zone" id="doorHeart"
-       onclick="go('seas/hall1.html')"
-       title="Дверь с сердцем">
-  </div>
-
-  <div class="zone" id="doorLowerLeft"
-       onclick="go('guest_lower_left.html')"
-       title="Нижняя левая гостиная">
-  </div>
-
-  <div class="zone" id="doorLowerRight"
-       onclick="go('guest_lower_right.html')"
-       title="Нижняя правая гостиная">
-  </div>
-
-  <div class="zone" id="doorUpperRightSun"
-       onclick="go('seas/hall1.html')"
-       title="Дверь с солнцем">
-  </div>
-
-  <div class="zone" id="doorUpperRightMoon"
-       onclick="go('seas/hall1.html')"
-       title="Дверь с луной">
-  </div>
-
-  <div class="zone" id="clock"
-       onclick="go('concert_nex/index.html')"
-       title="Concert Hall of Nex">
-  </div>
-
-  <div class="zone" id="planet"
-       onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/'"
-       title="White Planet — LOGOVO">
-  </div>
-
+  <div class="zone" id="miniNex" onclick="openObitelTV()" title="М.Некс — последние поступления ОБИТЕЛИ"></div>
+  <div class="zone" id="box" onclick="go('box.html')" title="Шкатулка"></div>
+  <div class="zone" id="centerDoor" onclick="go('lower_hall.html')" title="Центральные двери нижнего зала"></div>
+  <div class="zone" id="doorTarget" onclick="go('seas/hall1.html')" title="Дверь с мишенью"></div>
+  <div class="zone" id="doorHeart" onclick="go('seas/hall1.html')" title="Дверь с сердцем"></div>
+  <div class="zone" id="doorLowerLeft" onclick="go('guest_lower_left.html')" title="Нижняя левая гостиная"></div>
+  <div class="zone" id="doorLowerRight" onclick="go('guest_lower_right.html')" title="Нижняя правая гостиная"></div>
+  <div class="zone" id="doorUpperRightSun" onclick="go('seas/hall1.html')" title="Дверь с солнцем"></div>
+  <div class="zone" id="doorUpperRightMoon" onclick="go('seas/hall1.html')" title="Дверь с луной"></div>
+  <div class="zone" id="clock" onclick="go('concert_nex/index.html')" title="Concert Hall of Nex"></div>
+  <div class="zone" id="planet" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/'" title="White Planet — LOGOVO"></div>
 </div>
-
-<!-- ===== ТЕЛЕВИЗОР ОБИТЕЛИ ===== -->
 
 <div id="obitelTV" onclick="closeObitelTV(event)">
-
   <div id="obitelScreen">
-
-    <div id="obitelClose"
-         onclick="hideObitelTV()">
-      ×
-    </div>
-
-    <div id="obitelLoading">
-      ОБИТЕЛЬ НЕКСА<br>
-      принимает эфир...
-    </div>
-
-    <img id="obitelImg"
-     src=""
-     onclick="openCurrentArtwork(event)">
-
-    <div id="obitelCaption">
-      ОБИТЕЛЬ НЕКСА
-    </div>
-
+    <div id="obitelClose" onclick="hideObitelTV()">×</div>
+    <div id="obitelLoading">ОБИТЕЛЬ НЕКСА<br>принимает эфир...</div>
+    <img id="obitelImg" src="" onclick="openCurrentArtwork(event)">
+    <div id="obitelCaption">ОБИТЕЛЬ НЕКСА</div>
   </div>
-
 </div>
+
 <div id="artViewer" onclick="hideArtViewer()">
-
   <img id="artViewerImg" src="">
-
   <div id="artViewerCaption"></div>
-
 </div>
+
 <script>
-
-/* ===== MOZART LOOP ===== */
-
-const mozart =
-document.getElementById('mozartLoop');
-
-let mozartStarted = false;
+const mozart=document.getElementById('mozartLoop');
+let mozartStarted=false;
 
 function startMozart(){
-
-  if(mozartStarted) return;
-
-  mozart.volume = 0.85;
-  mozart.loop = true;
-
-  const playPromise = mozart.play();
-
-  if(playPromise !== undefined){
-
-    playPromise.then(()=>{
-
-      mozartStarted = true;
-
-    }).catch(()=>{
-
-      // браузер заблокировал автозапуск
-
-    });
+  if(mozartStarted)return;
+  mozart.volume=0.85;
+  mozart.loop=true;
+  const p=mozart.play();
+  if(p!==undefined){
+    p.then(()=>{mozartStarted=true}).catch(()=>{});
   }
 }
 
-window.addEventListener('load', startMozart);
-
-document.addEventListener(
-  'pointerdown',
-  startMozart,
-  {capture:true}
-);
-
-document.addEventListener(
-  'click',
-  startMozart,
-  {capture:true}
-);
+window.addEventListener('load',startMozart);
+document.addEventListener('pointerdown',startMozart,{capture:true});
+document.addEventListener('click',startMozart,{capture:true});
 
 function go(link){
-
   startMozart();
-
-  window.location.href = link;
+  window.location.href=link;
 }
-
-/* ===== HOTSPOTS ===== */
 
 document.addEventListener('keydown',(e)=>{
-
   if(e.key.toLowerCase()==='h'){
-
-    document.body.classList.toggle(
-      'show-hotspots'
-    );
+    document.body.classList.toggle('show-hotspots');
   }
-
-  if(e.key === "Escape"){
-
-  hideObitelTV();
-  hideArtViewer();
-}
+  if(e.key==="Escape"){
+    hideArtViewer();
+    hideObitelTV();
+  }
 });
 
-/* ===== SUPABASE ===== */
+const SUPABASE_URL="https://qekemclxegswolddmqxa.supabase.co";
+const SUPABASE_KEY="sb_publishable_arQvVM0huxdB5jbiLPpSPA_7tksXK-Y";
+const obitelClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const SUPABASE_URL =
-"https://qekemclxegswolddmqxa.supabase.co";
+let obitelWorks=[];
+let obitelIndex=0;
+let currentWorkIndex=-1;
+let obitelTimer=null;
+let obitelLoaded=false;
 
-const SUPABASE_KEY =
-"sb_publishable_arQvVM0huxdB5jbiLPpSPA_7tksXK-Y";
-
-const obitelClient =
-supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-/* ===== ОБИТЕЛЬ ===== */
-
-let obitelWorks = [];
-
-let obitelIndex = 0;
-
-let obitelTimer = null;
-
-let obitelLoaded = false;
-
-const obitelTV =
-document.getElementById("obitelTV");
-
-const obitelImg =
-document.getElementById("obitelImg");
-
-const obitelCaption =
-document.getElementById("obitelCaption");
-
-const obitelLoading =
-document.getElementById("obitelLoading");
-
-/* ===== ЗАГРУЗКА РАБОТ ===== */
+const obitelTV=document.getElementById("obitelTV");
+const obitelImg=document.getElementById("obitelImg");
+const obitelCaption=document.getElementById("obitelCaption");
+const obitelLoading=document.getElementById("obitelLoading");
 
 async function loadObitelWorks(){
+  obitelLoading.style.display="flex";
 
-  obitelLoading.style.display = "flex";
-
-  const result =
-  await obitelClient
-
+  const result=await obitelClient
     .from("artworks")
-
-    .select(
-      "title,author,image_url,created_at"
-    )
-
-    .order(
-      "created_at",
-      {ascending:false}
-    );
+    .select("title,author,image_url,created_at")
+    .order("created_at",{ascending:false});
 
   if(result.error){
-
-    obitelCaption.textContent =
-      "ОБИТЕЛЬ пока молчит";
-
-    obitelLoading.innerHTML =
-      "Не удалось прочитать поступления";
-
+    obitelCaption.textContent="ОБИТЕЛЬ пока молчит";
+    obitelLoading.innerHTML="Не удалось прочитать поступления";
     return;
   }
 
-  obitelWorks = result.data || [];
-
-  obitelLoaded = true;
+  obitelWorks=result.data||[];
+  obitelLoaded=true;
 
   if(!obitelWorks.length){
-
-    obitelCaption.textContent =
-      "В ОБИТЕЛИ пока нет работ";
-
-    obitelLoading.innerHTML =
-      "ОБИТЕЛЬ открыта,<br>но поступлений пока нет";
+    obitelCaption.textContent="В ОБИТЕЛИ пока нет работ";
+    obitelLoading.innerHTML="ОБИТЕЛЬ открыта,<br>но поступлений пока нет";
   }
 }
 
-/* ===== ПОКАЗ КАРТИН ===== */
-
 function showObitelWork(){
+  if(!obitelWorks.length)return;
 
-  if(!obitelWorks.length) return;
-
-  const w =
-  obitelWorks[obitelIndex];
+  currentWorkIndex=obitelIndex;
+  const w=obitelWorks[currentWorkIndex];
 
   obitelImg.classList.remove("ready");
+  obitelLoading.style.display="flex";
 
-  obitelLoading.style.display = "flex";
-
-  obitelImg.onload = ()=>{
-
-    obitelLoading.style.display = "none";
-
+  obitelImg.onload=()=>{
+    obitelLoading.style.display="none";
     obitelImg.classList.add("ready");
   };
 
-  obitelImg.src =
-    w.image_url || "";
+  obitelImg.src=w.image_url||"";
 
-  const title =
-    w.title || "Без названия";
+  obitelCaption.textContent=
+    (w.title||"Без названия")+" — "+(w.author||"Неизвестный автор");
 
-  const author =
-    w.author || "Неизвестный автор";
-
-  obitelCaption.textContent =
-    title + " — " + author;
-
-  obitelIndex =
-    (obitelIndex + 1)
-    % obitelWorks.length;
+  obitelIndex=(obitelIndex+1)%obitelWorks.length;
 }
 
-/* ===== ОТКРЫТЬ ===== */
-
 async function openObitelTV(){
-
   startMozart();
-
-  obitelTV.style.display = "flex";
+  obitelTV.style.display="flex";
 
   if(!obitelLoaded){
-
     await loadObitelWorks();
   }
 
   showObitelWork();
 
   clearInterval(obitelTimer);
-
-  obitelTimer =
-    setInterval(
-      showObitelWork,
-      5000
-    );
+  obitelTimer=setInterval(showObitelWork,5000);
 }
 
-/* ===== ЗАКРЫТЬ ===== */
-
 function hideObitelTV(){
-
-  obitelTV.style.display = "none";
-
+  obitelTV.style.display="none";
   clearInterval(obitelTimer);
 }
 
 function closeObitelTV(e){
-
-  if(e.target.id === "obitelTV"){
-
+  if(e.target.id==="obitelTV"){
     hideObitelTV();
   }
 }
-/* ===== БОЛЬШОЙ ПРОСМОТР ===== */
 
 function openCurrentArtwork(e){
-
   e.stopPropagation();
 
-  if(!obitelWorks.length) return;
+  if(currentWorkIndex<0 || !obitelWorks[currentWorkIndex])return;
 
-  let index = obitelIndex - 1;
+  const w=obitelWorks[currentWorkIndex];
 
-  if(index < 0){
-    index = obitelWorks.length - 1;
-  }
+  document.getElementById("artViewerImg").src=w.image_url||"";
+  document.getElementById("artViewerCaption").textContent=
+    (w.title||"Без названия")+" — "+(w.author||"Неизвестный автор");
 
-  const w = obitelWorks[index];
-
-  document.getElementById(
-    "artViewer"
-  ).style.display = "flex";
-
-  document.getElementById(
-    "artViewerImg"
-  ).src = w.image_url || "";
-
-  document.getElementById(
-    "artViewerCaption"
-  ).textContent =
-    (w.title || "Без названия")
-    + " — " +
-    (w.author || "Неизвестный автор");
+  document.getElementById("artViewer").style.display="flex";
 }
 
 function hideArtViewer(){
-
-  document.getElementById(
-    "artViewer"
-  ).style.display = "none";
+  document.getElementById("artViewer").style.display="none";
 }
 </script>
 
 </body>
 </html>
+
+
