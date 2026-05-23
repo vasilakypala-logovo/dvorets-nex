@@ -232,7 +232,8 @@ function openTV(){
 
 function closeTV(event){
   if(event) event.stopPropagation();
-  window.location.href='vestibul.html';
+  tvOverlay.classList.remove("open");
+  stopSlideshow();
 }
 }
 
