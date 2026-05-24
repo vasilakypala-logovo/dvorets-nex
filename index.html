@@ -294,17 +294,29 @@ flags.forEach((flag,index)=>{
 });
 
 /* М.НЕКС */
-
 document.getElementById('nex-zone').addEventListener('click',()=>{
 
   const afisha = document.getElementById('afisha-layer');
 
   if(!afisha) return;
 
-  afisha.classList.toggle('open');
+  if(afisha.classList.contains('open')){
+
+    afisha.classList.remove('open');
+
+    /* очищаем окно */
+    afisha.src = '';
+
+  }else{
+
+    /* загружаем заново */
+    afisha.src = 'afisha_dvorets_nex.html';
+
+    afisha.classList.add('open');
+
+  }
 
 });
-
 
 /* Закрытие афиши из iframe */
 window.addEventListener('message', function(e){
