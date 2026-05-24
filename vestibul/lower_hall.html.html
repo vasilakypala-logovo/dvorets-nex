@@ -103,7 +103,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#080b0f;font-family:
         0 0 26px rgba(0,120,255,0.70),
         0 0 48px rgba(0,90,255,0.45);
     opacity:.92;
-    animation:neonBreath 3.8s ease-in-out infinite alternate;
+    animation:neonAlive 6.8s ease-in-out infinite;
     user-select:none;
 }
 #wordOpen{
@@ -121,28 +121,59 @@ html,body{width:100%;height:100%;overflow:hidden;background:#080b0f;font-family:
     font-size:52px;
     letter-spacing:0.20em;
 }
+
+#wordOpen{animation-delay:.2s}
+#wordLook{animation-delay:1.6s}
+#wordGo{animation-delay:3.0s}
 .leftMode #wordOpen{left:7%}
 .leftMode #wordLook{right:5%}
 .rightMode #wordOpen{right:7%}
 .rightMode #wordLook{left:5%}
 
-@keyframes neonBreath{
-    from{
-        opacity:.68;
-        filter:blur(.15px);
-        text-shadow:
-            0 0 4px rgba(0,190,255,0.75),
-            0 0 10px rgba(0,150,255,0.65),
-            0 0 22px rgba(0,120,255,0.45);
+@keyframes neonAlive{
+    0%{
+        opacity:0;
+        filter:blur(2px);
+        text-shadow:none;
     }
-    to{
-        opacity:.98;
+    12%{
+        opacity:.08;
+        filter:blur(1.4px);
+    }
+    22%{
+        opacity:.95;
         filter:blur(0);
         text-shadow:
             0 0 7px rgba(0,220,255,1),
             0 0 18px rgba(0,165,255,.95),
             0 0 36px rgba(0,120,255,.78),
             0 0 64px rgba(0,90,255,.52);
+    }
+    38%{
+        opacity:.62;
+        filter:blur(.4px);
+    }
+    48%{
+        opacity:1;
+        filter:blur(0);
+        text-shadow:
+            0 0 8px rgba(0,230,255,1),
+            0 0 22px rgba(0,165,255,1),
+            0 0 44px rgba(0,120,255,.88),
+            0 0 78px rgba(0,90,255,.60);
+    }
+    64%{
+        opacity:.18;
+        filter:blur(1px);
+    }
+    78%{
+        opacity:.90;
+        filter:blur(.1px);
+    }
+    100%{
+        opacity:0;
+        filter:blur(2px);
+        text-shadow:none;
     }
 }
 @media(max-width:800px){
