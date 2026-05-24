@@ -306,6 +306,10 @@
     background:rgba(0,0,0,0) !important;
   }
 
+
+  html, body{
+    background:transparent !important;
+  }
 </style>
 </head>
 <body>
@@ -444,10 +448,14 @@ renderPortals();
 
 
 function closeAfisha(){
-  if(window.history.length > 1){
-    window.history.back();
+  if(window.parent && window.parent !== window){
+    window.parent.postMessage('close-afisha', '*');
   }else{
-    window.close();
+    if(window.history.length > 1){
+      window.history.back();
+    }else{
+      window.close();
+    }
   }
 }
 
