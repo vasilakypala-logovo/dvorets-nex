@@ -80,27 +80,129 @@ html, body {
 
 #nextRoom{
     position:absolute;
+
     left:50%;
     transform:translateX(-50%);
-    bottom:4%;
-    width:180px;
-    height:44px;
+
+    bottom:3%;
+
+    width:150px;
+    height:150px;
+
+    border-radius:50%;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    color:rgba(255,255,255,0.88);
-    font-size:16px;
-    letter-spacing:0.25em;
-
-    background:rgba(0,0,0,0.28);
-    border-radius:18px;
-
     cursor:pointer;
     user-select:none;
 
-    backdrop-filter:blur(6px);
+    overflow:hidden;
+
+    background:
+        radial-gradient(circle at center,
+            rgba(120,220,255,0.95) 0%,
+            rgba(50,120,255,0.75) 28%,
+            rgba(0,40,120,0.38) 58%,
+            rgba(0,0,0,0) 76%);
+
+    box-shadow:
+        0 0 18px rgba(120,220,255,0.95),
+        0 0 44px rgba(80,170,255,0.82),
+        0 0 90px rgba(0,120,255,0.55),
+        inset 0 0 38px rgba(255,255,255,0.24);
+
+    animation:
+        nexPulse 3.2s ease-in-out infinite,
+        nexFloat 5s ease-in-out infinite;
+
+    z-index:40;
+}
+
+#nextRoom::before{
+    content:"";
+
+    position:absolute;
+    inset:-40%;
+
+    background:
+        repeating-conic-gradient(
+            from 0deg,
+            rgba(120,220,255,0.0) 0deg,
+            rgba(120,220,255,0.9) 8deg,
+            rgba(120,220,255,0.0) 16deg
+        );
+
+    mix-blend-mode:screen;
+
+    animation:
+        electricSpin 7s linear infinite;
+
+    opacity:.55;
+}
+
+#nextRoom::after{
+    content:"NEXT";
+
+    position:relative;
+
+    color:rgba(255,60,60,0.96);
+
+    font-size:28px;
+    letter-spacing:0.28em;
+    font-weight:bold;
+
+    text-shadow:
+        0 0 8px rgba(255,0,0,0.95),
+        0 0 18px rgba(255,60,60,0.95),
+        0 0 42px rgba(255,0,0,0.75),
+        0 0 72px rgba(255,0,0,0.45);
+
+    animation:
+        nextFire 2s ease-in-out infinite alternate;
+
+    z-index:5;
+}
+
+@keyframes nexPulse{
+    0%,100%{
+        transform:translateX(-50%) scale(1);
+    }
+
+    50%{
+        transform:translateX(-50%) scale(1.08);
+    }
+}
+
+@keyframes nexFloat{
+    0%,100%{
+        bottom:3%;
+    }
+
+    50%{
+        bottom:4%;
+    }
+}
+
+@keyframes electricSpin{
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@keyframes nextFire{
+    from{
+        opacity:.72;
+    }
+
+    to{
+        opacity:1;
+    }
 }
 
 #viewer {
