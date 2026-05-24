@@ -298,9 +298,10 @@ flags.forEach((flag,index)=>{
 document.getElementById('nex-zone').addEventListener('click',()=>{
 
   const afisha = document.getElementById('afisha-layer');
-  if(afisha){
-    afisha.classList.add('open');
-  }
+
+  if(!afisha) return;
+
+  afisha.classList.toggle('open');
 
 });
 
