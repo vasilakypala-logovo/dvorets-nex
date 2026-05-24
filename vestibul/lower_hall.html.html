@@ -84,11 +84,77 @@ html,body{width:100%;height:100%;overflow:hidden;background:#080b0f;font-family:
 .tools{position:absolute;top:18px;left:22px;display:flex;gap:8px;z-index:6}.toolBtn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.075);color:white;font-family:Georgia,serif;font-size:16px;line-height:1;padding:9px 12px;min-width:38px;cursor:pointer}.toolBtn:hover{background:rgba(255,255,255,.16)}
 .closeBtn{position:absolute;top:12px;right:20px;color:white;font-size:34px;cursor:pointer;opacity:.72;z-index:8}.closeBtn:hover{opacity:1}
 .windowContent{position:relative;width:88%;height:86%;padding:28px 30px;background:rgba(18,22,28,.86);border:1px solid rgba(255,255,255,.12);box-shadow:0 0 50px rgba(0,0,0,.35);overflow:hidden}.windowHeader{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-right:48px;margin-bottom:18px}.windowHeader h2{font-weight:normal;letter-spacing:2px;font-size:22px}.windowHeader .small{opacity:.62;font-size:13px;line-height:1.4}.grid{height:calc(100% - 58px);overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:15px;padding-right:8px}.card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);padding:8px;cursor:pointer;transition:.25s}.card:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}.card img{width:100%;height:110px;object-fit:cover;display:block;margin-bottom:7px;background:rgba(255,255,255,.04);opacity:.35;transition:.35s}.card.ready img{opacity:1}.card.error img{opacity:.18}.card .status{margin-top:6px;font-size:11px;opacity:.62}.card.ready .status{opacity:.9}.card.error .status{opacity:.9;color:#ffb0b0}.card .num{opacity:.55;font-size:12px}.card .name{font-size:13px;line-height:1.25;word-break:break-word}.emptyMsg{opacity:.78;line-height:1.7;margin-top:24px}.nexBox{width:520px;max-width:90%;padding:34px;background:rgba(20,24,30,.78);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.86);line-height:1.9;font-size:18px}.nexTitle{margin-bottom:18px;letter-spacing:4px;font-size:15px;opacity:.65}
+
+/* =========================
+   NEON DIRECTION WORDS
+========================= */
+.neonWord{
+    position:absolute;
+    z-index:22;
+    pointer-events:none;
+    font-family:Arial, Helvetica, sans-serif;
+    font-weight:300;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:rgba(185,235,255,0.96);
+    text-shadow:
+        0 0 5px rgba(0,190,255,0.95),
+        0 0 12px rgba(0,150,255,0.90),
+        0 0 26px rgba(0,120,255,0.70),
+        0 0 48px rgba(0,90,255,0.45);
+    opacity:.92;
+    animation:neonBreath 3.8s ease-in-out infinite alternate;
+    user-select:none;
+}
+#wordOpen{
+    top:8%;
+    font-size:42px;
+}
+#wordLook{
+    top:7%;
+    font-size:42px;
+}
+#wordGo{
+    left:50%;
+    top:38%;
+    transform:translate(-50%,-50%);
+    font-size:52px;
+    letter-spacing:0.20em;
+}
+.leftMode #wordOpen{left:7%}
+.leftMode #wordLook{right:5%}
+.rightMode #wordOpen{right:7%}
+.rightMode #wordLook{left:5%}
+
+@keyframes neonBreath{
+    from{
+        opacity:.68;
+        filter:blur(.15px);
+        text-shadow:
+            0 0 4px rgba(0,190,255,0.75),
+            0 0 10px rgba(0,150,255,0.65),
+            0 0 22px rgba(0,120,255,0.45);
+    }
+    to{
+        opacity:.98;
+        filter:blur(0);
+        text-shadow:
+            0 0 7px rgba(0,220,255,1),
+            0 0 18px rgba(0,165,255,.95),
+            0 0 36px rgba(0,120,255,.78),
+            0 0 64px rgba(0,90,255,.52);
+    }
+}
+@media(max-width:800px){
+    #wordOpen,#wordLook{font-size:26px}
+    #wordGo{font-size:34px}
+}
+
 </style>
 </head>
 <body>
 <audio id="bgMusic" src="9999.mp3" loop preload="auto"></audio>
-<div id="scene" class="leftMode"><div id="mist"></div><div id="paintingZone" class="zone" title="Open next work"></div><div id="windowZone" class="zone" title="Open catalogue window"></div><div id="forwardZone" class="zone" title="Move forward"></div><div id="miniNex"></div></div>
+<div id="scene" class="leftMode"><div id="mist"></div><div id="wordOpen" class="neonWord">OPEN</div><div id="wordLook" class="neonWord">LOOK</div><div id="wordGo" class="neonWord">GO</div><div id="paintingZone" class="zone" title="Open next work"></div><div id="windowZone" class="zone" title="Open catalogue window"></div><div id="forwardZone" class="zone" title="Move forward"></div><div id="miniNex"></div></div>
 <div id="viewer"><div class="viewerContent"><div class="tools"><button class="toolBtn" onclick="zoomOut(event)">−</button><button class="toolBtn" onclick="zoomIn(event)">+</button><button class="toolBtn" onclick="resetZoom(event)">RESET</button></div><div class="imageWrap" id="imageWrap"><img id="viewerImage"></div><div class="infoPlate" id="infoPlate"></div><div class="closeBtn" onclick="closeViewer()">×</div></div></div>
 <div id="windowPanel"><div class="windowContent"><div class="closeBtn" onclick="closeWindow()">×</div><div class="windowHeader"><h2>CATALOGUE WINDOW</h2><div class="small">The window shows all works found in the gallery folder.<br><span id="catalogueStatus">Preparing catalogue...</span></div></div><div class="grid" id="catalogueGrid"></div></div></div>
 <div id="nexHelp">
