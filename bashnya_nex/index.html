@@ -1,5 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+#musicHint{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:9999;
+
+  color:rgba(255,248,218,.70);
+  font-size:11px;
+  letter-spacing:.08em;
+
+  background:rgba(10,22,8,.35);
+
+  border:1px solid rgba(255,238,170,.16);
+
+  padding:7px 10px;
+
+  opacity:0;
+
+  transition:opacity .5s ease;
+}
+
+#musicHint.show{
+  opacity:.9;
+}
+</style>
+
+ 
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -147,5 +175,94 @@ rgba(8,12,20,0));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') closeRules(); });
   function closeRules(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
 </script>
+<script>
+
+const echo = document.getElementById('echo');
+const hint = document.getElementById('musicHint');
+
+function startEcho(){
+
+  try{
+
+    const src =
+      localStorage.getItem('nexHallTrack')
+      || 'audio/Childhood.mp3';
+
+    const t =
+      parseFloat(
+        localStorage.getItem('nexHallTrackTime')
+        || '0'
+      );
+
+    echo.src = src;
+
+    echo.volume = 0.22;
+
+    echo.currentTime =
+      isFinite(t)
+      ? Math.max(0,t)
+      : 0;
+
+    const p = echo.play();
+
+    if(p !== undefined){
+
+      p.catch(()=>{
+        hint.classList.add('show');
+      });
+
+    }
+
+  }catch(e){
+
+    hint.classList.add('show');
+
+  }
+
+}
+
+/* старт */
+
+startEcho();
+
+/* если браузер заблокировал —
+   первый клик включает музыку */
+
+document.addEventListener('click',()=>{
+
+  if(echo.paused){
+
+    startEcho();
+
+  }
+
+  hint.classList.remove('show');
+
+},{once:false});
+
+/* сохраняем текущее время */
+
+setInterval(()=>{
+
+  if(!echo.paused){
+
+    localStorage.setItem(
+      'nexHallTrackTime',
+      echo.currentTime
+    );
+
+  }
+
+},2000);
+
+</script>
+
+ 
 </body>
+<audio id="echo" loop preload="auto"></audio>
+
+<div id="musicHint">
+click anywhere — the palace music will continue here
+</div>
+ 
 </html>
