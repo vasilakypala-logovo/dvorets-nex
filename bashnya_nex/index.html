@@ -253,7 +253,19 @@ setInterval(()=>{
 },2000);
 
 </script>
+<audio id="echo" loop preload="auto"></audio>
 
+<script>
+const echo = document.getElementById('echo');
+
+document.addEventListener('click',()=>{
+  echo.src = '/dvorets-nex/vestibul/concert_nex/audio/Childhood.mp3';
+  echo.volume = 0.3;
+  echo.play().catch(err=>{
+    alert('Music error: ' + err.message);
+  });
+});
+</script>
  
 </body>
 <audio id="echo" loop preload="auto"></audio>
