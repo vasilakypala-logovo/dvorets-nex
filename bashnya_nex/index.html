@@ -124,7 +124,7 @@ rgba(8,12,20,0));
     </section>
 
     <section class="button-block">
-      <a class="nex-button" id="submitBtn" href="href="obitel.html">
+      <a class="nex-button" id="submitBtn" href="obitel.html">
         <div class="btn-en">Submit your artwork</div>
         <div class="btn-ru">Отправить свою работу</div>
       </a>
@@ -175,103 +175,38 @@ rgba(8,12,20,0));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') closeRules(); });
   function closeRules(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
 </script>
-<script>
 
-const echo = document.getElementById('echo');
-const hint = document.getElementById('musicHint');
-
-function startEcho(){
-
-  try{
-
-   const src = '/dvorets-nex/vestibul/concert_nex/audio/Childhood.mp3';
-    const t =
-      parseFloat(
-        localStorage.getItem('nexHallTrackTime')
-        || '0'
-      );
-
-    echo.src = src;
-
-    echo.volume = 0.22;
-
-    echo.currentTime =
-      isFinite(t)
-      ? Math.max(0,t)
-      : 0;
-
-    const p = echo.play();
-
-    if(p !== undefined){
-
-      p.catch(()=>{
-        hint.classList.add('show');
-      });
-
-    }
-
-  }catch(e){
-
-    hint.classList.add('show');
-
-  }
-
-}
-
-/* старт */
-
-startEcho();
-
-/* если браузер заблокировал —
-   первый клик включает музыку */
-
-document.addEventListener('click',()=>{
-
-  if(echo.paused){
-
-    startEcho();
-
-  }
-
-  hint.classList.remove('show');
-
-},{once:false});
-
-/* сохраняем текущее время */
-
-setInterval(()=>{
-
-  if(!echo.paused){
-
-    localStorage.setItem(
-      'nexHallTrackTime',
-      echo.currentTime
-    );
-
-  }
-
-},2000);
-
-</script>
-<audio id="echo" loop preload="auto"></audio>
-
-<script>
-const echo = document.getElementById('echo');
-
-document.addEventListener('click',()=>{
-  echo.src = '/dvorets-nex/vestibul/concert_nex/audio/Childhood.mp3';
-  echo.volume = 0.3;
-  echo.play().catch(err=>{
-    alert('Music error: ' + err.message);
-  });
-});
-</script>
- 
-</body>
 <audio id="echo" loop preload="auto"></audio>
 
 <div id="musicHint">
 click anywhere — the palace music will continue here
 </div>
- 
+
+<script>
+const echo = document.getElementById('echo');
+const hint = document.getElementById('musicHint');
+
+function startEcho(){
+  echo.src = '/dvorets-nex/vestibul/concert_nex/audio/Childhood.mp3';
+  echo.volume = 0.22;
+
+  echo.play().then(()=>{
+    if(hint) hint.classList.remove('show');
+  }).catch(()=>{
+    if(hint) hint.classList.add('show');
+  });
+}
+
+document.addEventListener('click',()=>{
+  startEcho();
+});
+
+setInterval(()=>{
+  if(echo && !echo.paused){
+    localStorage.setItem('nexHallTrackTime', echo.currentTime);
+  }
+},2000);
+</script>
+
+</body>
 </html>
