@@ -569,7 +569,11 @@ function renderPortals(){
     a.className = 'portal-button' + (hasUrl ? '' : ' disabled');
 
     if(hasUrl){
-      a.href = portal.url;
+      a.href = '#';
+      a.onclick = function(e){
+        e.preventDefault();
+        window.location.href = portal.url.trim();
+      };
     }else{
       a.title = 'Portal address will be added later';
     }
