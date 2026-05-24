@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -148,6 +147,38 @@ body{
   opacity:1;
 }
 
+
+/* АФИША М.НЕКСА — ПРОЗРАЧНАЯ ПАНЕЛЬ ПОВЕРХ ДВОРЦА */
+
+#afisha-layer{
+  position:fixed;
+  left:3.5vw;
+  top:6vh;
+  width:34vw;
+  min-width:340px;
+  max-width:430px;
+  height:88vh;
+  z-index:45;
+  border:0;
+  background:transparent;
+  display:none;
+}
+
+#afisha-layer.open{
+  display:block;
+}
+
+@media(max-width:760px){
+  #afisha-layer{
+    left:4vw;
+    top:5vh;
+    width:92vw;
+    min-width:0;
+    max-width:none;
+    height:88vh;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -176,6 +207,10 @@ body{
   <div id="flag5" class="zone flag-zone" title="Башня 5"></div>
   <div id="flag6" class="zone flag-zone" title="Башня 6"></div>
   <div id="flag7" class="zone flag-zone" title="Башня 7"></div>
+
+
+  <!-- АФИША М.НЕКСА: открывается поверх Дворца, не заменяя локацию -->
+  <iframe id="afisha-layer" src="afisha_dvorets_nex.html" allowtransparency="true"></iframe>
 
   <div id="fade"></div>
 
@@ -262,8 +297,22 @@ flags.forEach((flag,index)=>{
 
 document.getElementById('nex-zone').addEventListener('click',()=>{
 
-  window.location.href='afisha_dvorets_nex.html';
+  const afisha = document.getElementById('afisha-layer');
+  if(afisha){
+    afisha.classList.add('open');
+  }
 
+});
+
+
+/* Закрытие афиши из iframe */
+window.addEventListener('message', function(e){
+  if(e.data === 'close-afisha'){
+    const afisha = document.getElementById('afisha-layer');
+    if(afisha){
+      afisha.classList.remove('open');
+    }
+  }
 });
 
 </script>
