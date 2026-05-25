@@ -96,6 +96,28 @@ html,body{
   position:absolute;left:0;right:0;bottom:15px;text-align:center;
   color:rgba(220,250,255,.66);font-size:13px;letter-spacing:.08em;z-index:4;
 }
+#musicToggle{
+  position:absolute;
+  left:18px;
+  top:14px;
+  z-index:6;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:1px solid rgba(220,255,255,.52);
+  background:rgba(0,0,0,.45);
+  color:white;
+  font-size:17px;
+  cursor:pointer;
+  text-shadow:0 0 10px cyan;
+  box-shadow:0 0 14px rgba(80,240,255,.25);
+}
+#musicToggle.off{
+  color:rgba(255,190,220,.95);
+  text-shadow:0 0 10px rgba(255,70,150,.95);
+  border-color:rgba(255,190,220,.55);
+}
+
 #fullView{
   position:fixed;inset:0;z-index:30;
   background:radial-gradient(circle at 60% 35%,rgba(45,55,75,.26),transparent 42%),rgba(0,0,0,.96);
@@ -150,6 +172,7 @@ html,body{
 <div id="tvOverlay">
   <div id="tv">
     <button id="tvClose" onclick="closeTV(event)">×</button>
+    <button id="musicToggle" onclick="toggleMusic(event)" title="music on/off">🔊</button>
     <div id="tvTitle">LATEST ARRIVALS TO THE SANCTUARY</div>
     <div id="slideArea" onclick="openFullWork()">
       <img id="slideImg" alt="SANCTUARY">
@@ -183,6 +206,7 @@ let works = [];
 let currentIndex = 0;
 let slideTimer = null;
 let tvWasOpened = false;
+let musicMuted = false;
 
 const nexZone = document.getElementById("nexZone");
 const tvOverlay = document.getElementById("tvOverlay");
@@ -191,6 +215,7 @@ const workTitle = document.getElementById("workTitle");
 const tvStatus = document.getElementById("tvStatus");
 const fullView = document.getElementById("fullView");
 const obitelMusic = document.getElementById("obitelMusic");
+const musicToggle = document.getElementById("musicToggle");
 
 
 nexZone.addEventListener("click", openTV);
@@ -223,8 +248,12 @@ function openTV(){
   const music = document.getElementById("obitelMusic");
   if(music){
     music.volume = 0.45;
-    music.play();
+    music.muted = musicMuted;
+    if(!musicMuted){
+      music.play().catch(() => {});
+    }
   }
+  updateMusicButton();
 
   tvOverlay.classList.add("open");
 
@@ -235,6 +264,33 @@ function openTV(){
     showCurrent(true);
     startSlideshow();
   }
+}
+
+function toggleMusic(event){
+  if(event) event.stopPropagation();
+
+  const music = document.getElementById("obitelMusic");
+  musicMuted = !musicMuted;
+
+  if(music){
+    music.muted = musicMuted;
+    music.volume = 0.45;
+
+    if(musicMuted){
+      music.pause();
+    }else{
+      music.play().catch(() => {});
+    }
+  }
+
+  updateMusicButton();
+}
+
+function updateMusicButton(){
+  if(!musicToggle) return;
+  musicToggle.textContent = musicMuted ? "🔇" : "🔊";
+  musicToggle.classList.toggle("off", musicMuted);
+  musicToggle.title = musicMuted ? "music off" : "music on";
 }
 
 function closeTV(event){
