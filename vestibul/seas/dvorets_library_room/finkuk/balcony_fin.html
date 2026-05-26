@@ -300,15 +300,23 @@ function launchBalconyPicture(){
 
 function startEcho(){
   try{
-    const src = localStorage.getItem('nexHallTrack') || 'audio/Childhood.mp3';
-    const t = parseFloat(localStorage.getItem('nexHallTrackTime') || '0');
-    echo.src = src;
+    echo.src = 'OZERO.mp3';
     echo.volume = 0.22;
-    echo.currentTime = isFinite(t) ? Math.max(0,t) : 0;
+
     const p = echo.play();
-    if(p !== undefined){ p.catch(()=>{ hint.classList.add('show'); }); }
-  }catch(e){ hint.classList.add('show'); }
+
+    if(p !== undefined){
+      p.catch(()=>{
+        hint.classList.add('show');
+      });
+    }
+
+  }catch(e){
+    hint.classList.add('show');
+  }
 }
+
+Так балкон станет самостоятельной локацией со своей музыкой.
 
 startEcho();
 launchBalconyPicture();
