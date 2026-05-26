@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Balcony Garden of Nex</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;font-family:Georgia,serif;}
+#garden{position:relative;width:100%;height:100%;background-image:url('balcony_garden.png');background-size:cover;background-position:center;}
+#morningGlow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 19% 15%,rgba(255,245,185,.18),transparent 25%),radial-gradient(circle at 48% 45%,rgba(255,255,255,.055),transparent 28%),linear-gradient(to bottom,rgba(5,20,10,.02),rgba(0,0,0,.10));mix-blend-mode:screen;}
+#dewVeil{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.36) 0 1px,transparent 2px),radial-gradient(circle,rgba(255,230,150,.23) 0 1px,transparent 2px);background-size:130px 95px,210px 150px;background-position:12% 66%,71% 52%;opacity:.22;animation:dew 7s ease-in-out infinite alternate;}
+@keyframes dew{from{opacity:.16;filter:blur(.1px)}to{opacity:.28;filter:blur(.45px)}}
+
+.zone{position:absolute;z-index:20;cursor:pointer;border-radius:50%;}
+#logovoZone{left:35%;top:43%;width:16%;height:22%;border-radius:50%;}
+#backZone{left:2%;top:3%;width:10%;height:12%;border-radius:40%;}
+.show-hotspots .zone{background:rgba(255,244,160,.24);outline:2px solid rgba(255,255,255,.70);box-shadow:0 0 30px rgba(255,235,140,.55);}
+#komorny-title{
+  position:fixed;
+  top:22px;
+  left:0;
+  width:100%;
+
+  text-align:center;
+
+  font-family:Georgia, serif;
+  font-size:40px;
+  letter-spacing:0.18em;
+
+  color:rgba(70,30,40,0.92);
+
+  text-shadow:
+    0 0 6px rgba(255,255,255,0.95),
+    0 0 14px rgba(170,220,255,0.9),
+    0 0 28px rgba(120,190,255,0.7),
+    0 0 54px rgba(80,150,255,0.45);
+
+  z-index:9999;
+  pointer-events:none;
+
+  opacity:0;
+
+  animation:
+    komornyFade 14s ease-in-out infinite,
+    komornyFloat 10s ease-in-out infinite;
+}
+
+/* ПОЯВЛЕНИЕ */
+
+@keyframes komornyFade{
+  0%{opacity:0;}
+  18%{opacity:.82;}
+  70%{opacity:.78;}
+  100%{opacity:0;}
+}
+
+/* ЛЕГКОЕ ПЛАВАНИЕ */
+
+@keyframes komornyFloat{
+  0%,100%{
+    transform:translateY(0px);
+  }
+
+  50%{
+    transform:translateY(3px);
+  }
+}
+#caption{position:absolute;left:50%;bottom:4.5%;transform:translateX(-50%);z-index:24;padding:9px 18px;color:rgba(255,248,218,.86);background:rgba(15,28,12,.30);border:1px solid rgba(255,238,170,.22);box-shadow:0 0 28px rgba(0,0,0,.28),inset 0 0 18px rgba(255,245,190,.05);backdrop-filter:blur(4px);font-size:13px;letter-spacing:.10em;text-align:center;opacity:.78;pointer-events:none;}
+#musicHint{position:absolute;right:2.5%;bottom:3%;z-index:25;color:rgba(255,248,218,.70);font-size:11px;letter-spacing:.08em;background:rgba(10,22,8,.35);border:1px solid rgba(255,238,170,.16);padding:7px 10px;opacity:0;transition:opacity .5s ease;}
+#musicHint.show{opacity:.9;}
+
+#flyingPainting{
+  position:fixed;
+  left:-340px;
+  top:22%;
+  width:240px;
+  padding:18px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255,210,120,.18), transparent 18%),
+    radial-gradient(circle at 82% 18%, rgba(255,210,120,.14), transparent 17%),
+    radial-gradient(circle at 20% 82%, rgba(255,210,120,.13), transparent 18%),
+    radial-gradient(circle at 82% 80%, rgba(255,210,120,.16), transparent 18%),
+    linear-gradient(135deg,#1b0d05,#3a1c0b,#120804);
+  border:8px ridge #3b1d0c;
+  outline:3px solid rgba(90,45,18,.85);
+  box-shadow:
+    inset 0 0 18px rgba(255,190,95,.16),
+    inset 0 0 34px rgba(0,0,0,.75),
+    0 0 38px rgba(255,205,125,.25),
+    0 18px 38px rgba(0,0,0,.55);
+  border-radius:12px;
+  z-index:18;
+  opacity:0;
+  pointer-events:none;
+}
+
+#flyingPainting::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border:3px double rgba(190,125,58,.75);
+  border-radius:8px;
+  pointer-events:none;
+  box-shadow:inset 0 0 12px rgba(0,0,0,.65);
+}
+
+
+
+#flyingPainting img{
+  width:100%;
+  display:block;
+  border:3px solid rgba(40,18,8,.95);
+  box-shadow:
+    inset 0 0 10px rgba(0,0,0,.8),
+    0 0 10px rgba(255,210,130,.18);
+}
+
+#flyingPainting.fly{
+  animation:paintingFlight 36s ease-in-out forwards;
+
+}
+
+@keyframes paintingFlight{
+  0%{left:-340px;top:28%;opacity:0;transform:rotate(-5deg) scale(.88);}
+  8%{opacity:1;}
+  20%{top:22%;transform:rotate(2deg) scale(.96);}
+  36%{top:18%;transform:rotate(-1deg) scale(1.02);}
+  52%{top:21%;transform:rotate(3deg) scale(.98);}
+  68%{top:16%;transform:rotate(-2deg) scale(1.03);}
+  84%{opacity:1;top:23%;transform:rotate(2deg) scale(.96);}
+  100%{left:112vw;top:27%;opacity:0;transform:rotate(-4deg) scale(.90);}
+}
+
+audio{display:none;}
+  
+  #floatingGallery{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:8;
+}
+
+.floatArt{
+  position:absolute;
+  width:220px;
+  padding:7px;
+  border-radius:0;
+  background:rgba(245,238,210,0.78);
+  box-shadow:
+    0 0 12px rgba(255,255,255,0.25),
+    0 12px 28px rgba(0,0,0,0.45);
+  opacity:0;
+  transform:translateX(110vw) scale(0.92);
+  animation:balconyFloat 28s linear forwards;
+}
+
+.floatArt img{
+  width:100%;
+  display:block;
+  border-radius:0;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25);
+}
+
+@keyframes balconyFloat{
+  0%{
+    opacity:0;
+    transform:translateX(110vw) scale(0.88);
+  }
+  10%{
+    opacity:1;
+  }
+  78%{
+    opacity:1;
+  }
+  100%{
+    opacity:0;
+    transform:translateX(-35vw) scale(1);
+  }
+}
+
+То есть получится примерно так:
+
+<style>
+
+...старые стили...
+
+#floatingGallery{
+...
+}
+
+</style>
+</head>
+<body>
+<div id="garden">
+  <div id="komorny-title">
+  Serhii Komorny • white paper • soft pastel • Kharkiv
+</div>
+  <div id="morningGlow"></div>
+  <div id="dewVeil"></div>
+
+  <div id="flyingPainting">
+  <img id="flyingImage" src="fin1.jpg" alt="Hit painting">
+</div>
+
+  <div class="zone" id="backZone" title="Back to Concert Hall" onclick="window.location.href='index.html'"></div>
+  <div class="zone" id="logovoZone" title="Enter Logovo" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/logovo.html'"></div>
+
+  <div id="caption">The music remains behind the leaves.</div>
+  <div id="musicHint">click anywhere — the hall music will breathe quietly here</div>
+  <audio id="echo" loop preload="auto"></audio>
+</div>
+  <div id="floatingGallery"></div>
+<script>
+const echo = document.getElementById('echo');
+const hint = document.getElementById('musicHint');
+const floatingGallery = document.getElementById('floatingGallery');
+
+const balconyPictures = [
+  'fin1.jpg',
+  'fin2.jpg',
+  'fin3.jpg',
+  'fin4.jpg',
+  'fin5.jpg',
+  'fin6.jpg',
+  'fin7.jpg',
+  'fin8.jpg',
+  'fin9.jpg',
+  'fin10.jpg',
+  'fin11.jpg',
+  'fin12.jpg',
+  'fin13.jpg',
+  'fin14.jpg',
+  'fin15.jpg',
+  'fin16.jpg',
+  'fin17.jpg',
+  'fin18.jpg',
+  'fin19.jpg',
+  'fin20.jpg',
+  'fin21.jpg',
+  'fin22.jpg',
+  'fin23.jpg',
+  'fin24.jpg',
+  'fin25.jpg',
+  'fin26.jpg',
+  'fin27.jpg',
+  'fin28.jpg',
+  'fin29.jpg',
+  'fin30.jpg',
+  'fin31.jpg',
+  'fin32.jpg',
+  'fin33.jpg',
+  'fin34.jpg',
+  'fin35.jpg',
+  'fin36.jpg',
+  'fin37.jpg',
+  'fin38.jpg',
+  'fin39.jpg',
+  'fin40.jpg',
+  'fin41.jpg',
+  'fin42.jpg',
+  'fin43.jpg',
+  'fin44.jpg',
+  'fin45.jpg',
+  'fin46.jpg',
+  'fin47.jpg',
+  'fin48.jpg',
+  'fin49.jpg',
+  'fin50.jpg'
+];
+
+let balconyIndex = 0;
+
+function launchBalconyPicture(){
+  const frame = document.createElement('div');
+  frame.className = 'floatArt';
+
+  const img = document.createElement('img');
+  img.src = balconyPictures[balconyIndex];
+
+  frame.appendChild(img);
+
+  const top = 8 + Math.random() * 34;
+  frame.style.top = top + '%';
+
+  const size = 180 + Math.random() * 70;
+  frame.style.width = size + 'px';
+
+  floatingGallery.appendChild(frame);
+
+  balconyIndex++;
+  if(balconyIndex >= balconyPictures.length){
+    balconyIndex = 0;
+  }
+
+  setTimeout(()=>{
+    frame.remove();
+  },29000);
+}
+
+function startEcho(){
+  try{
+    const src = localStorage.getItem('nexHallTrack') || 'audio/Childhood.mp3';
+    const t = parseFloat(localStorage.getItem('nexHallTrackTime') || '0');
+    echo.src = src;
+    echo.volume = 0.22;
+    echo.currentTime = isFinite(t) ? Math.max(0,t) : 0;
+    const p = echo.play();
+    if(p !== undefined){ p.catch(()=>{ hint.classList.add('show'); }); }
+  }catch(e){ hint.classList.add('show'); }
+}
+
+startEcho();
+launchBalconyPicture();
+setInterval(launchBalconyPicture,5200);
+
+document.addEventListener('click',()=>{
+  if(echo.paused) startEcho();
+  hint.classList.remove('show');
+},{once:false});
+
+document.addEventListener('keydown',(e)=>{
+  if(e.key.toLowerCase()==='h') document.body.classList.toggle('show-hotspots');
+  if(e.key==='Escape') window.location.href='index.html';
+});
+</script>
+
+</body>
+</html>
