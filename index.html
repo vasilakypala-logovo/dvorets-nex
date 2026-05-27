@@ -200,6 +200,27 @@ body{
   display:block;
 }
 
+
+
+/* ПОЧТА НЕКСА — МАЛЕНЬКОЕ ПРОЗРАЧНОЕ ОКНО СПРАВА */
+
+#pochta-layer{
+  position:fixed;
+  right:3.2vw;
+  top:22vh;
+  width:320px;
+  height:330px;
+  z-index:46;
+  border:0;
+  background:transparent;
+  display:none;
+  filter:drop-shadow(0 0 22px rgba(90,255,165,.18));
+}
+
+#pochta-layer.open{
+  display:block;
+}
+
 @media(max-width:760px){
   #afisha-layer{
     left:4vw;
@@ -208,6 +229,13 @@ body{
     min-width:0;
     max-width:none;
     height:88vh;
+  }
+
+  #pochta-layer{
+    right:4vw;
+    top:18vh;
+    width:86vw;
+    height:330px;
   }
 }
 
@@ -247,6 +275,9 @@ body{
 
   <!-- АФИША М.НЕКСА: открывается поверх Дворца, не заменяя локацию -->
   <iframe id="afisha-layer" src="afisha_dvorets_nex.html" allowtransparency="true"></iframe>
+
+  <!-- ПОЧТА НЕКСА: маленький прозрачный пульт справа поверх Дворца -->
+  <iframe id="pochta-layer" src="" allowtransparency="true"></iframe>
 
   <div id="fade"></div>
 
@@ -313,10 +344,16 @@ const mailBust = document.getElementById('mail-bust-zone');
 
 if(mailBust){
   mailBust.addEventListener('click',()=>{
-    fade.classList.add('active');
-    setTimeout(()=>{
-      window.location.href='pochta/pochtanex.html';
-    },650);
+    const pochta = document.getElementById('pochta-layer');
+    if(!pochta) return;
+
+    if(pochta.classList.contains('open')){
+      pochta.classList.remove('open');
+      pochta.src = '';
+    }else{
+      pochta.src = 'pochta/pochtanex.html';
+      pochta.classList.add('open');
+    }
   });
 }
 
@@ -374,6 +411,14 @@ window.addEventListener('message', function(e){
     const afisha = document.getElementById('afisha-layer');
     if(afisha){
       afisha.classList.remove('open');
+    }
+  }
+
+  if(e.data === 'close-pochta'){
+    const pochta = document.getElementById('pochta-layer');
+    if(pochta){
+      pochta.classList.remove('open');
+      pochta.src = '';
     }
   }
 });
