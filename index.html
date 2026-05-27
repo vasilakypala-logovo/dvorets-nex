@@ -104,27 +104,6 @@ body{
   border-radius:46% 46% 38% 38%;
 }
 
-#mail-bust-zone::after{
-  content:"";
-  position:absolute;
-  right:25%;
-  top:18%;
-  width:16px;
-  height:16px;
-  border-radius:50%;
-  background:rgba(80,255,150,0.0);
-  box-shadow:0 0 0 rgba(80,255,150,0);
-  transition:all .45s ease;
-}
-
-#mail-bust-zone:hover::after{
-  background:rgba(80,255,150,0.95);
-  box-shadow:
-    0 0 12px rgba(80,255,150,0.95),
-    0 0 30px rgba(80,255,150,0.60),
-    0 0 55px rgba(80,255,150,0.30);
-}
-
 /* М.НЕКС */
 
 #nex-zone{
@@ -207,14 +186,14 @@ body{
 #pochta-layer{
   position:fixed;
   right:3.2vw;
-  top:22vh;
-  width:320px;
-  height:330px;
+  top:23vh;
+  width:285px;
+  height:260px;
   z-index:46;
   border:0;
   background:transparent;
   display:none;
-  filter:drop-shadow(0 0 22px rgba(90,255,165,.18));
+  filter:drop-shadow(0 0 18px rgba(230,255,240,.12));
 }
 
 #pochta-layer.open{
@@ -234,8 +213,8 @@ body{
   #pochta-layer{
     right:4vw;
     top:18vh;
-    width:86vw;
-    height:330px;
+    width:82vw;
+    height:270px;
   }
 }
 
