@@ -170,9 +170,14 @@ function softSignal(text){
 }
 
 document.getElementById('sendBtn').addEventListener('click',()=>{
-  softSignal('Механизм отправки будет подключен следующим шагом.');
-});
 
+  window.open(
+    'pochtaobitel.html',
+    '_blank',
+    'width=900,height=850'
+  );
+
+});
 document.getElementById('viewBtn').addEventListener('click',()=>{
   softSignal('Просмотр архива будет подключен следующим шагом.');
 });
