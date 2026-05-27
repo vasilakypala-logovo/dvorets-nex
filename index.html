@@ -93,17 +93,6 @@ body{
   filter:blur(5px);
 }
 
-
-/* ПОЧТА НЕКСА — АКТИВНАЯ ЗОНА БЮСТА СЛЕВА ВНИЗУ */
-
-#mail-bust-zone{
-  width:210px;
-  height:260px;
-  left:4.5%;
-  bottom:4.5%;
-  border-radius:46% 46% 38% 38%;
-}
-
 /* М.НЕКС */
 
 #nex-zone{
@@ -179,27 +168,6 @@ body{
   display:block;
 }
 
-
-
-/* ПОЧТА НЕКСА — МАЛЕНЬКОЕ ПРОЗРАЧНОЕ ОКНО СПРАВА */
-
-#pochta-layer{
-  position:fixed;
-  right:3.2vw;
-  top:23vh;
-  width:285px;
-  height:260px;
-  z-index:46;
-  border:0;
-  background:transparent;
-  display:none;
-  filter:drop-shadow(0 0 18px rgba(230,255,240,.12));
-}
-
-#pochta-layer.open{
-  display:block;
-}
-
 @media(max-width:760px){
   #afisha-layer{
     left:4vw;
@@ -209,12 +177,48 @@ body{
     max-width:none;
     height:88vh;
   }
+}
 
+
+/* ПОЧТА НЕКСА — ЧИСТАЯ НЕВИДИМАЯ ЗОНА БЮСТА */
+#mail-bust-zone{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:25vw;
+  max-width:340px;
+  min-width:185px;
+  height:40vh;
+  max-height:430px;
+  min-height:230px;
+  z-index:32;
+  cursor:pointer;
+  background:transparent;
+}
+
+/* ПОЧТА НЕКСА — МАЛЕНЬКОЕ ПРОЗРАЧНОЕ ОКНО СПРАВА */
+#pochta-layer{
+  position:fixed;
+  right:3.2vw;
+  top:24vh;
+  width:255px;
+  height:215px;
+  z-index:46;
+  border:0;
+  background:transparent;
+  display:none;
+}
+
+#pochta-layer.open{
+  display:block;
+}
+
+@media(max-width:760px){
   #pochta-layer{
     right:4vw;
     top:18vh;
-    width:82vw;
-    height:270px;
+    width:255px;
+    height:215px;
   }
 }
 
@@ -232,15 +236,15 @@ body{
 
   <audio id="door-sound" src="99999.mp3" preload="auto"></audio>
 
+
+  <!-- ПОЧТА НЕКСА: невидимая зона бюста слева внизу -->
+  <div id="mail-bust-zone" title="NEX MAIL"></div>
+
   <!-- 1: М.НЕКС -->
   <div id="nex-zone" class="zone" title="М.Некс"></div>
 
   <!-- 2: ВХОД В ВЕСТИБЮЛЬ -->
   <div id="entrance-zone" class="zone" title="Вход в Вестибюль"></div>
-
-  <!-- ПОЧТА НЕКСА: бюст слева внизу -->
-  <div id="mail-bust-zone" class="zone" title="NEX MAIL"></div>
-
 
   <!-- 3–9: СЕМЬ ФЛАГОВ / СЕМЬ БАШЕН -->
   <div id="flag1" class="zone flag-zone" title="Башня 1"></div>
@@ -255,7 +259,7 @@ body{
   <!-- АФИША М.НЕКСА: открывается поверх Дворца, не заменяя локацию -->
   <iframe id="afisha-layer" src="afisha_dvorets_nex.html" allowtransparency="true"></iframe>
 
-  <!-- ПОЧТА НЕКСА: маленький прозрачный пульт справа поверх Дворца -->
+  <!-- ПОЧТА НЕКСА: окно открывается поверх Дворца -->
   <iframe id="pochta-layer" src="" allowtransparency="true"></iframe>
 
   <div id="fade"></div>
@@ -317,8 +321,7 @@ localStorage.setItem('dvorets_entered_count', count);
 });
 
 
-/* ПОЧТА НЕКСА — БЮСТ СЛЕВА ВНИЗУ */
-
+/* ПОЧТА НЕКСА — БЮСТ ТОЛЬКО ОТКРЫВАЕТ ОКНО */
 const mailBust = document.getElementById('mail-bust-zone');
 
 if(mailBust){
@@ -392,7 +395,11 @@ window.addEventListener('message', function(e){
       afisha.classList.remove('open');
     }
   }
+});
 
+
+/* Закрытие почтового окна из iframe */
+window.addEventListener('message', function(e){
   if(e.data === 'close-pochta'){
     const pochta = document.getElementById('pochta-layer');
     if(pochta){
