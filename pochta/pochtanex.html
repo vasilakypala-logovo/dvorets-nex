@@ -179,9 +179,14 @@ document.getElementById('sendBtn').addEventListener('click',()=>{
 
 });
 document.getElementById('viewBtn').addEventListener('click',()=>{
-  softSignal('Просмотр архива будет подключен следующим шагом.');
-});
 
+  window.open(
+    'obitel_viewer.html',
+    '_blank',
+    'width=1200,height=900'
+  );
+
+});
 document.getElementById('contactBtn').addEventListener('click',()=>{
   softSignal('Связь с М.Нексом будет подключена следующим шагом.');
 });
