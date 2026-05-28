@@ -14,9 +14,11 @@ html,body{
     margin:0;
     width:100%;
     min-height:100%;
-    background:
-      radial-gradient(circle at top, rgba(120,180,120,.12), transparent 35%),
-      linear-gradient(180deg,#040806,#0b1710,#050706);
+
+    /* ПРОЗРАЧНОЕ ОКНО:
+       теперь файл не кладёт свой тёмный фон,
+       а показывает фон страницы/iframe под собой */
+    background:transparent;
 
     color:#f3ffe8;
     font-family:Georgia,serif;
