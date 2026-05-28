@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ДВОРЕЦ НЕКСА</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 html,body{
@@ -374,8 +376,57 @@ function setMailLamp(hasNewMail){
   }
 }
 
-/* ДЕМОНСТРАЦИЯ */
-setMailLamp(true);
+
+/* РЕАЛЬНАЯ ПРОВЕРКА НОВОЙ ПОЧТЫ */
+
+const SUPABASE_URL =
+"https://qekemclxegswolddmqxa.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_arQvVM0huxdB5jbiLPpSPA_7tksXK-Y";
+
+const mailClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function checkNewMail(){
+
+  try{
+
+    const { data, error } =
+      await mailClient
+      .from("obitel_storage")
+      .select("id")
+      .eq("is_read", false)
+      .limit(1);
+
+    if(error) throw error;
+
+    setMailLamp(data && data.length > 0);
+
+  }catch(err){
+
+    console.error("MAIL LAMP ERROR:", err);
+
+    /* При ошибке связи лампу не зажигаем как новую почту */
+    setMailLamp(false);
+  }
+}
+
+/* первая проверка и повтор каждые 30 секунд */
+checkNewMail();
+setInterval(checkNewMail, 30000);
+
+/* если просмотрщик почты скажет, что письма прочитаны */
+window.addEventListener("message", function(e){
+
+  if(e.data === "mail-read-refresh"){
+    checkNewMail();
+  }
+
+});
 
 
 
@@ -416,9 +467,12 @@ if(mailBust){
     if(pochta.classList.contains('open')){
       pochta.classList.remove('open');
       pochta.src = '';
+      setTimeout(checkNewMail, 500);
     }else{
       pochta.src = 'pochta/pochtanex.html';
       pochta.classList.add('open');
+
+      setTimeout(checkNewMail, 1500);
     }
   });
 }
