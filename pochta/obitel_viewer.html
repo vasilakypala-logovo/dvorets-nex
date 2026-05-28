@@ -10,179 +10,249 @@
 
 <style>
 
+*{
+  box-sizing:border-box;
+}
+
 html,body{
-    margin:0;
-    width:auto;
-    min-width:0;
-    min-height:0;
-
-    /* ВАЖНО: сам файл больше не рисует тёмную стену.
-       Фон должен идти от страницы, куда вставлен iframe. */
-    background:transparent !important;
-
-    color:#f3ffe8;
-    font-family:Georgia,serif;
+  margin:0;
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+  color:rgba(246,255,232,.94);
+  font-family:Georgia, "Times New Roman", serif;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(210,255,175,.17), transparent 28%),
+    radial-gradient(circle at 82% 5%, rgba(255,225,155,.12), transparent 30%),
+    radial-gradient(circle at 50% 115%, rgba(70,120,80,.22), transparent 42%),
+    linear-gradient(180deg, rgba(9,18,12,.96), rgba(10,28,18,.92) 52%, rgba(4,8,6,.96));
 }
 
 body{
-    padding:10px;
-    box-sizing:border-box;
-    background:transparent !important;
+  padding:18px 12px 26px;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, transparent, rgba(255,255,255,.035), transparent),
+    radial-gradient(circle at center, transparent 35%, rgba(0,0,0,.38));
+  mix-blend-mode:screen;
+  opacity:.55;
+}
+
+.shell{
+  width:min(92vw, 640px);
+  margin:0 auto;
+  position:relative;
 }
 
 .title{
-    text-align:center;
-    font-size:28px;
-    letter-spacing:.14em;
-
-    color:rgba(240,255,220,.95);
-
-    text-shadow:
-      0 0 14px rgba(180,255,180,.25),
-      0 0 30px rgba(180,255,180,.10);
-
-    margin-bottom:8px;
+  margin:0;
+  text-align:center;
+  font-size:clamp(22px, 4.5vw, 34px);
+  letter-spacing:.13em;
+  font-weight:normal;
+  color:rgba(244,255,224,.96);
+  text-shadow:
+    0 0 12px rgba(192,255,178,.34),
+    0 0 32px rgba(192,255,178,.14);
 }
 
 .subtitle{
-    text-align:center;
-    font-size:12px;
-    letter-spacing:.20em;
-
-    color:rgba(255,255,220,.55);
-
-    margin-bottom:16px;
+  margin:7px 0 15px;
+  text-align:center;
+  font-size:11px;
+  line-height:1.5;
+  letter-spacing:.18em;
+  color:rgba(255,248,216,.62);
 }
-
-#list{
-    width:100%;
-    max-width:520px;
-    margin:auto;
-}
-
-.card{
-
-    margin-bottom:14px;
-
-    border:1px solid rgba(220,255,220,.14);
-    border-radius:22px;
-
-    background:transparent;
-
-    box-shadow:
-      0 0 24px rgba(0,0,0,.35),
-      inset 0 0 22px rgba(255,255,255,.03);
-
-    padding:14px;
-
-    backdrop-filter:blur(4px);
-}
-
-.card.unread{
-    border-color:rgba(110,255,150,.42);
-    box-shadow:
-      0 0 24px rgba(80,255,130,.12),
-      inset 0 0 22px rgba(255,255,255,.04);
-}
-
-.head{
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
-    flex-wrap:wrap;
-}
-
-.sender{
-    font-size:22px;
-    color:#e6ffd7;
-}
-
-.date{
-    font-size:12px;
-    opacity:.55;
-}
-
-.recipient{
-    margin-top:4px;
-    font-size:12px;
-    letter-spacing:.08em;
-    opacity:.7;
-}
-
-.subject{
-    margin-top:18px;
-    font-size:20px;
-    color:#fff7cf;
-}
-
-.text{
-    margin-top:16px;
-    line-height:1.6;
-    white-space:pre-wrap;
-    color:#f3f6e8;
-}
-
-.image{
-    margin-top:18px;
-    max-width:100%;
-    border-radius:14px;
-    display:block;
-    box-shadow:0 0 18px rgba(0,0,0,.45);
-}
-
-.fileLink{
-    display:inline-block;
-    margin-top:18px;
-    padding:10px 16px;
-
-    border-radius:12px;
-
-    text-decoration:none;
-
-    color:#081008;
-
-    background:linear-gradient(
-      90deg,
-      #d8ffbc,
-      #95ffaf
-    );
-
-    font-size:14px;
-}
-
-.empty{
-    text-align:center;
-    opacity:.5;
-    margin-top:80px;
-    font-size:18px;
-}
-
 
 .readStatus{
-    width:100%;
-    max-width:520px;
-    margin:0 auto 22px auto;
-    padding:9px 12px;
-    border-radius:14px;
-    box-sizing:border-box;
-    text-align:center;
-    font-size:13px;
-    letter-spacing:.06em;
-    color:rgba(230,255,220,.82);
-    background:transparent;
-    border:1px solid rgba(180,255,180,.14);
+  width:100%;
+  margin:0 auto 14px;
+  padding:10px 12px;
+  border-radius:18px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.45;
+  letter-spacing:.04em;
+  color:rgba(230,255,220,.80);
+  background:rgba(0,0,0,.16);
+  border:1px solid rgba(200,255,190,.15);
+  box-shadow:
+    inset 0 0 18px rgba(255,255,255,.025),
+    0 0 16px rgba(0,0,0,.18);
+  overflow-wrap:anywhere;
 }
 
 .readStatus.good{
-    color:#baffc8;
-    border-color:rgba(120,255,160,.35);
-    box-shadow:0 0 18px rgba(80,255,130,.12);
+  color:#caffd3;
+  border-color:rgba(130,255,165,.35);
+  box-shadow:0 0 20px rgba(80,255,130,.12);
 }
 
 .readStatus.bad{
-    color:#ffd0b8;
-    border-color:rgba(255,150,100,.35);
-    box-shadow:0 0 18px rgba(255,120,80,.10);
+  color:#ffd0b8;
+  border-color:rgba(255,150,100,.38);
+  box-shadow:0 0 18px rgba(255,120,80,.11);
+}
+
+#list{
+  width:100%;
+  margin:0 auto;
+}
+
+.card{
+  width:100%;
+  margin:0 0 14px;
+  padding:16px 16px 15px;
+  border:1px solid rgba(230,255,215,.18);
+  border-radius:24px;
+  background:rgba(0,0,0,.20);
+  box-shadow:
+    0 12px 34px rgba(0,0,0,.32),
+    inset 0 0 24px rgba(255,255,255,.035);
+  backdrop-filter:blur(7px);
+  overflow:hidden;
+}
+
+.card.unread{
+  border-color:rgba(120,255,150,.46);
+  box-shadow:
+    0 0 26px rgba(80,255,130,.15),
+    0 12px 34px rgba(0,0,0,.32),
+    inset 0 0 24px rgba(255,255,255,.04);
+}
+
+.head{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:5px;
+}
+
+.sender{
+  font-size:21px;
+  line-height:1.18;
+  color:rgba(230,255,215,.98);
+  text-shadow:0 0 10px rgba(170,255,170,.14);
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.date{
+  justify-self:start;
+  margin-top:4px;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:11px;
+  line-height:1.35;
+  letter-spacing:.04em;
+  color:rgba(255,248,218,.56);
+  background:rgba(255,255,255,.045);
+  overflow-wrap:anywhere;
+}
+
+.recipient{
+  margin-top:5px;
+  font-size:11px;
+  line-height:1.45;
+  letter-spacing:.08em;
+  color:rgba(255,248,218,.62);
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.subject{
+  margin-top:15px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,238,180,.16);
+  font-size:19px;
+  line-height:1.25;
+  color:rgba(255,248,204,.96);
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.text{
+  margin-top:12px;
+  padding:12px 13px;
+  border-radius:16px;
+  line-height:1.58;
+  white-space:pre-wrap;
+  color:rgba(246,250,232,.93);
+  background:rgba(255,255,255,.035);
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.image{
+  margin:14px auto 0;
+  max-width:100%;
+  height:auto;
+  border-radius:16px;
+  display:block;
+  box-shadow:0 0 22px rgba(0,0,0,.46);
+}
+
+.fileLink{
+  display:inline-block;
+  max-width:100%;
+  margin-top:14px;
+  padding:10px 15px;
+  border-radius:14px;
+  text-decoration:none;
+  color:#081008;
+  background:linear-gradient(90deg, #e0ffc8, #9cffb2);
+  font-size:13px;
+  letter-spacing:.06em;
+  overflow-wrap:anywhere;
+}
+
+.empty{
+  width:100%;
+  margin:42px auto 0;
+  padding:22px 16px;
+  border:1px solid rgba(230,255,215,.14);
+  border-radius:24px;
+  text-align:center;
+  font-size:17px;
+  line-height:1.45;
+  color:rgba(246,255,232,.58);
+  background:rgba(0,0,0,.16);
+  box-shadow:inset 0 0 22px rgba(255,255,255,.025);
+  overflow-wrap:anywhere;
+}
+
+@media (max-width:520px){
+  body{
+    padding:12px 8px 20px;
+  }
+
+  .shell{
+    width:96vw;
+  }
+
+  .card{
+    padding:13px 12px;
+    border-radius:20px;
+  }
+
+  .sender{
+    font-size:18px;
+  }
+
+  .subject{
+    font-size:17px;
+  }
+
+  .text{
+    padding:10px;
+    font-size:14px;
+  }
 }
 
 </style>
@@ -190,19 +260,23 @@ body{
 
 <body>
 
-<div class="title">ОБИТЕЛЬ НЕКСА</div>
+<main class="shell">
 
-<div class="subtitle">
-АРХИВ ПОСЛАНИЙ И ПОСЫЛОК
-</div>
+  <h1 class="title">ОБИТЕЛЬ НЕКСА</h1>
 
-<div id="readStatus" class="readStatus">
-Проверка статуса писем...
-</div>
+  <div class="subtitle">
+    АРХИВ ПОСЛАНИЙ И ПОСЫЛОК
+  </div>
 
-<div id="list">
-  <div class="empty">Обитель слушает тишину...</div>
-</div>
+  <div id="readStatus" class="readStatus">
+    Проверка статуса писем...
+  </div>
+
+  <div id="list">
+    <div class="empty">Обитель слушает тишину...</div>
+  </div>
+
+</main>
 
 <script>
 
