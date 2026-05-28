@@ -112,8 +112,9 @@ button:hover{
   </div>
 </div>
 
-<script>
- window.open(
+document.getElementById('sendBtn').addEventListener('click',()=>{
+
+  window.open(
     'pochtaobitel.html',
     '_blank',
     'width=900,height=850'
@@ -122,20 +123,31 @@ button:hover{
 });
 
 document.getElementById('viewBtn').addEventListener('click',()=>{
-  window.open('obitel_viewer.html','_blank','width=900,height=760');
+
+  window.open(
+    'obitel_viewer.html',
+    '_blank',
+    'width=1200,height=900'
+  );
+
 });
 
 document.getElementById('contactBtn').addEventListener('click',()=>{
+
   window.open(
     'https://vasilakypala-logovo.github.io/kyrilka/',
     '_blank',
     'width=1400,height=950'
   );
+
 });
 
 document.getElementById('closeBtn').addEventListener('click',()=>{
+
   window.parent.postMessage('close-pochta','*');
+
 });
+
 </script>
 
 </body>
