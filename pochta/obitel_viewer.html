@@ -75,6 +75,13 @@ body{
     backdrop-filter:blur(4px);
 }
 
+.card.unread{
+    border-color:rgba(110,255,150,.42);
+    box-shadow:
+      0 0 24px rgba(80,255,130,.12),
+      inset 0 0 22px rgba(255,255,255,.04);
+}
+
 .head{
     display:flex;
     justify-content:space-between;
@@ -176,6 +183,27 @@ supabase.createClient(
   SUPABASE_KEY
 );
 
+async function markAllAsRead(){
+
+  try{
+
+    const { error } =
+      await client
+      .from("obitel_storage")
+      .update({ is_read:true })
+      .eq("is_read", false);
+
+    if(error) throw error;
+
+    if(window.parent){
+      window.parent.postMessage("mail-read-refresh","*");
+    }
+
+  }catch(err){
+    console.error("READ MARK ERROR:", err);
+  }
+}
+
 async function loadMessages(){
 
   const list =
@@ -209,7 +237,10 @@ async function loadMessages(){
       const card =
         document.createElement("div");
 
-      card.className = "card";
+      card.className =
+        item.is_read === false
+          ? "card unread"
+          : "card";
 
       let media = "";
 
@@ -289,6 +320,9 @@ async function loadMessages(){
       list.appendChild(card);
 
     });
+
+    /* После показа архива считаем новые письма прочитанными */
+    await markAllAsRead();
 
   }catch(err){
 
