@@ -12,26 +12,27 @@
 
 html,body{
     margin:0;
-    width:100%;
-    min-height:100%;
+    width:auto;
+    min-width:0;
+    min-height:0;
 
-    /* ПРОЗРАЧНОЕ ОКНО:
-       теперь файл не кладёт свой тёмный фон,
-       а показывает фон страницы/iframe под собой */
-    background:transparent;
+    /* ВАЖНО: сам файл больше не рисует тёмную стену.
+       Фон должен идти от страницы, куда вставлен iframe. */
+    background:transparent !important;
 
     color:#f3ffe8;
     font-family:Georgia,serif;
 }
 
 body{
-    padding:30px;
+    padding:10px;
     box-sizing:border-box;
+    background:transparent !important;
 }
 
 .title{
     text-align:center;
-    font-size:34px;
+    font-size:28px;
     letter-spacing:.14em;
 
     color:rgba(240,255,220,.95);
@@ -50,18 +51,18 @@ body{
 
     color:rgba(255,255,220,.55);
 
-    margin-bottom:28px;
+    margin-bottom:16px;
 }
 
 #list{
     width:100%;
-    max-width:620px;
+    max-width:520px;
     margin:auto;
 }
 
 .card{
 
-    margin-bottom:24px;
+    margin-bottom:14px;
 
     border:1px solid rgba(220,255,220,.14);
     border-radius:22px;
@@ -72,7 +73,7 @@ body{
       0 0 24px rgba(0,0,0,.35),
       inset 0 0 22px rgba(255,255,255,.03);
 
-    padding:20px;
+    padding:14px;
 
     backdrop-filter:blur(4px);
 }
@@ -159,9 +160,9 @@ body{
 
 .readStatus{
     width:100%;
-    max-width:620px;
+    max-width:520px;
     margin:0 auto 22px auto;
-    padding:12px 16px;
+    padding:9px 12px;
     border-radius:14px;
     box-sizing:border-box;
     text-align:center;
