@@ -224,6 +224,64 @@ body{
   }
 }
 
+
+/* ЛАМПОЧКА ПОЧТЫ */
+
+#mail-lamp{
+  position:fixed;
+  left:18px;
+  bottom:18px;
+
+  width:16px;
+  height:16px;
+
+  border-radius:50%;
+
+  background:rgba(30,80,40,.65);
+
+  border:1px solid rgba(160,255,190,.35);
+
+  box-shadow:
+    0 0 6px rgba(0,255,120,.18);
+
+  z-index:9999;
+
+  transition:
+    background .4s ease,
+    box-shadow .4s ease,
+    opacity .4s ease;
+
+  opacity:.55;
+}
+
+#mail-lamp.active{
+
+  background:#49ff8a;
+
+  opacity:1;
+
+  box-shadow:
+    0 0 8px #49ff8a,
+    0 0 18px rgba(73,255,138,.85),
+    0 0 34px rgba(73,255,138,.45);
+
+  animation:mailBlink 1.15s infinite;
+}
+
+@keyframes mailBlink{
+
+  0%,100%{
+    transform:scale(1);
+    opacity:.55;
+  }
+
+  50%{
+    transform:scale(1.22);
+    opacity:1;
+  }
+}
+
+
 </style>
 </head>
 <body>
@@ -235,6 +293,9 @@ body{
   <div id="night" class="bg"></div>
 
   <div id="fog"></div>
+
+  <!-- ЛАМПОЧКА ПОЧТЫ -->
+  <div id="mail-lamp" title="NEW MAIL"></div>
 
   <audio id="door-sound" src="99999.mp3" preload="auto"></audio>
 
@@ -296,6 +357,27 @@ function setStateByRealTime(){
 
 setStateByRealTime();
 setInterval(setStateByRealTime,60000);
+
+
+/* ЛАМПОЧКА ПОЧТЫ */
+
+function setMailLamp(hasNewMail){
+
+  const lamp = document.getElementById('mail-lamp');
+
+  if(!lamp) return;
+
+  if(hasNewMail){
+    lamp.classList.add('active');
+  }else{
+    lamp.classList.remove('active');
+  }
+}
+
+/* ДЕМОНСТРАЦИЯ */
+setMailLamp(true);
+
+
 
 /* ВХОД В ВЕСТИБЮЛЬ */
 
