@@ -6,7 +6,6 @@
 <title>GOLUBOK — ПОЧТА НЕКСА</title>
 
 <style>
-
 html,body{
   margin:0;
   width:100%;
@@ -18,66 +17,46 @@ html,body{
 }
 
 body{
-display;
-padding:0;
-background;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  background:transparent;
 }
+
 .panel{
-
-width:72%;
-min-height;
-
-box-sizing;
-
-border:1px solid rgba(255,238,180,.28);
-border-radius:26px;
-
-background;
-
-box-shadow;
-
-padding:12px 12px 14px;
-
-backdrop-filter;
+  width:72%;
+  min-height:auto;
+  box-sizing:border-box;
+  border:1px solid rgba(255,238,180,.28);
+  border-radius:26px;
+  background:rgba(5,10,10,.18);
+  box-shadow:0 0 18px rgba(255,230,160,.10);
+  padding:12px 12px 14px;
 }
+
 .title{
   margin:0 0 8px;
-
   text-align:center;
-
   font-size:30px;
   letter-spacing:.14em;
   font-weight:normal;
-
   color:rgba(255,244,205,.96);
-
-  text-shadow:
-    0 0 10px rgba(255,231,160,.45),
-    0 0 22px rgba(255,231,160,.18);
+  text-shadow:0 0 10px rgba(255,231,160,.45);
 }
 
 .subtitle{
   margin:-2px 0 13px;
-
   text-align:center;
-
   font-size:11px;
   letter-spacing:.20em;
-
   color:rgba(255,248,218,.62);
 }
 
 .line{
   height:1px;
-
   margin:0 0 20px;
-
-  background:linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,238,180,.60),
-    transparent
-  );
+  background:linear-gradient(90deg,transparent,rgba(255,238,180,.60),transparent);
 }
 
 .buttons{
@@ -88,109 +67,71 @@ backdrop-filter;
 
 button{
   width:100%;
-
   box-sizing:border-box;
-
   border:1px solid rgba(255,238,180,.48);
   border-radius:15px;
-
-  padding:12px 12px;
-
+  padding:12px;
   background:rgba(0,0,0,.14);
-
   color:rgba(255,248,218,.94);
-
-  text-align:center;
-
   font-family:Georgia,serif;
   font-size:15px;
   letter-spacing:.04em;
-
   cursor:pointer;
-
-  box-shadow:
-    inset 0 0 14px rgba(255,255,255,.025),
-    0 0 10px rgba(255,230,160,.05);
 }
 
 button:hover{
   background:rgba(255,238,180,.11);
-
-  box-shadow:
-    0 0 14px rgba(255,230,160,.17),
-    inset 0 0 16px rgba(255,255,255,.045);
 }
 
 .small{
   margin-top:17px;
-
   font-size:10.5px;
   line-height:1.35;
-
   text-align:center;
-
   color:rgba(255,248,218,.45);
 }
-
 </style>
 </head>
+
 <body>
 
 <div class="panel">
-
   <h1 class="title">THE POST OF NEX</h1>
-
   <div class="subtitle">NEX MAIL</div>
-
   <div class="line"></div>
 
   <div class="buttons">
-
     <button id="sendBtn">SEND</button>
-
     <button id="viewBtn">LOOK</button>
-
     <button id="contactBtn">CHAT</button>
-
     <button id="closeBtn">BACK</button>
-
   </div>
 
   <div class="small">
-    Узел связи открыт. Архив и отправка будут подключены позже через ОБИТЕЛЬ.
+    Узел связи открыт. Архив и отправка подключены через ОБИТЕЛЬ.
   </div>
-
 </div>
 
 <script>
-
-function softSignal(text){
-  alert(text);
-}
-
 document.getElementById('sendBtn').addEventListener('click',()=>{
-
-  window.open(
-    'pochtaobitel.html',
-    '_blank',
-    'width=900,height=850'
-  );
-
+  window.open('pochtaobitel.html','_blank','width=900,height=850');
 });
+
 document.getElementById('viewBtn').addEventListener('click',()=>{
+  window.open('obitel_viewer.html','_blank','width=900,height=760');
+});
 
+document.getElementById('contactBtn').addEventListener('click',()=>{
   window.open(
-    'obitel_viewer.html',
+    'https://vasilakypala-logovo.github.io/kyrilka/',
     '_blank',
-    'width=1200,height=900'
+    'width=1400,height=950'
   );
-
 });
 
 document.getElementById('closeBtn').addEventListener('click',()=>{
   window.parent.postMessage('close-pochta','*');
 });
-
 </script>
 
 </body>
