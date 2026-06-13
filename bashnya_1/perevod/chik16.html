@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Malina TV</title>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+    }
+
+    /* ФОН */
+    body {
+        background: url("chikino.png") center center no-repeat;
+        background-size: cover;
+    }
+
+    /* ПРОЗРАЧНАЯ НАДСТРОЙКА */
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+    }
+
+    /* НЕОНОВОЕ СЛОВО */
+    #word {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        font-size: 90px;
+        color: #4df;
+        text-shadow:
+            0 0 10px #4df,
+            0 0 20px #4df,
+            0 0 40px #0ff;
+
+        animation: blink 2s infinite;
+        pointer-events: none; /* важно — не ломает клики */
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
+    }
+
+#uaWord {
+    position: absolute;
+    top: 62%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-size: 28px;
+    color: rgba(255,255,255,0.7);
+
+    letter-spacing: 2px;
+
+    text-shadow: 0 0 5px rgba(255,255,255,0.2);
+
+    pointer-events: none;
+}
+
+    /* КНОПКИ */
+    .btn {
+    position: absolute;
+    bottom: 40px;
+
+    width: 150px;
+    height: 60px;
+
+    border-radius: 18px;
+    border: 2px solid rgba(255,255,255,0.35);
+
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+
+    z-index: 50;
+
+    box-shadow:
+        inset 0 2px 6px rgba(255,255,255,0.25),
+        inset 0 -4px 10px rgba(0,0,0,0.4),
+        0 6px 15px rgba(0,0,0,0.5);
+}
+
+/* контейнерная логика через центр */
+#blueBtn {
+    left: calc(50% - 170px);  /* левее центра */
+    background: linear-gradient(145deg, #1a4dff, #0026a3);
+}
+
+#redBtn {
+    left: calc(50% + 20px);   /* правее центра */
+    background: linear-gradient(145deg, #ff3b3b, #a30000);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="overlay">
+
+    <div id="word">water gives us a drink</div>
+<div id="uaWord">вода напуває нас</div>
+
+    <button id="blueBtn" class="btn">🔊</button>
+    <button id="redBtn" class="btn">повернення</button>
+
+</div>
+
+<script>
+    document.getElementById("blueBtn").onclick = function() {
+        const utter = new SpeechSynthesisUtterance("water gives us a drink");
+        utter.lang = "en-US";
+        speechSynthesis.speak(utter);
+    };
+
+   document.getElementById("redBtn").onclick = function() {
+    window.location.href = "../index.html";
+};
+</script>
+
+</body>
+</html>
