@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>САДОК ІГРАШОК</title>
+
+<style>
+html, body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:Georgia, serif;
+}
+
+/* Контейнер карти */
+#garden{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+}
+
+/* Сам рисунок */
+#garden img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+    user-select:none;
+    -webkit-user-drag:none;
+}
+
+/* Невидимі активні зони */
+.zone{
+    position:absolute;
+    cursor:pointer;
+
+    /* Для налагодження можна увімкнути:
+    background:rgba(255,0,0,0.25);
+    border:2px solid red;
+    */
+}
+
+/* Кнопка повернення */
+.back{
+    position:absolute;
+    left:20px;
+    bottom:20px;
+
+    padding:10px 20px;
+
+    border-radius:999px;
+
+    border:1px solid rgba(255,255,255,0.3);
+
+    background:rgba(0,0,0,0.45);
+
+    color:white;
+
+    text-decoration:none;
+
+    letter-spacing:0.08em;
+
+    font-size:13px;
+
+    z-index:1000;
+}
+
+.back:hover{
+    background:rgba(255,255,255,0.15);
+}
+</style>
+</head>
+
+<body>
+
+<div id="garden">
+
+    <!-- Карта -->
+    <img src="plan.png" alt="САДОК ІГРАШОК">
+
+
+    <!-- ========================= -->
+    <!-- АКТИВНІ ЗОНИ -->
+    <!-- Координати приблизні -->
+    <!-- Підкоригуємо пізніше -->
+    <!-- ========================= -->
+
+
+    <!-- МАЛИНА -->
+    <div class="zone"
+         title="Малина"
+         style="
+            left:4%;
+            top:28%;
+            width:18%;
+            height:30%;
+         "
+         onclick="go('index.html')">
+    </div>
+
+
+    <!-- КРИЖОВНИК -->
+    <div class="zone"
+         title="Крижовник"
+         style="
+            left:24%;
+            top:30%;
+            width:15%;
+            height:28%;
+         "
+         onclick="go('krizhovnyk.htm')">
+    </div>
+
+
+    <!-- ЯБЛУНЯ -->
+    <div class="zone"
+         title="Яблуня"
+         style="
+            left:52%;
+            top:20%;
+            width:20%;
+            height:30%;
+         "
+         onclick="go('yablunya.htm')">
+    </div>
+
+
+    <!-- ВИШНЯ -->
+    <div class="zone"
+         title="Вишня"
+         style="
+            left:76%;
+            top:30%;
+            width:16%;
+            height:28%;
+         "
+         onclick="go('vyshnya.htm')">
+    </div>
+
+
+    <!-- БЕСІДКА -->
+    <div class="zone"
+         title="Бесідка"
+         style="
+            left:39%;
+            top:40%;
+            width:16%;
+            height:24%;
+         "
+         onclick="go('besidka.htm')">
+    </div>
+
+
+    <!-- БУДИНОЧОК -->
+    <div class="zone"
+         title="Будиночок"
+         style="
+            left:56%;
+            top:55%;
+            width:20%;
+            height:25%;
+         "
+         onclick="go('budynochok.htm')">
+    </div>
+
+
+    <!-- ПОВЕРНЕННЯ -->
+    <a class="back" href="../index.html">
+        ПОВЕРНУТИСЯ ДО ПАЛАЦУ
+    </a>
+
+</div>
+
+
+<script>
+function go(file){
+    window.location.href = file;
+}
+</script>
+
+</body>
+</html>
