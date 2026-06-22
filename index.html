@@ -1,317 +1,562 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ДВОРЕЦ НЕКСА</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:black;
-}
-
-body{
-  font-family:Georgia,serif;
-}
-
-#palace{
-  position:relative;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-}
-
-.bg{
-  position:absolute;
-  inset:0;
-
- background-size:102% auto;
-  background-repeat:no-repeat;
-  background-position:center;
-
-  opacity:0;
-  transition:opacity 5s ease;
-}
-
-.bg.active{
-  opacity:1;
-}
-
-#day{ background-image:url('DAY.png'); }
-#sunset{ background-image:url('SUNSET.png'); }
-#night{ background-image:url('NIGHT.png'); }
-
-/* ТУМАН */
-
-#fog{
-  position:absolute;
-  inset:-10%;
-
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05), transparent 35%),
-    radial-gradient(circle at 70% 50%, rgba(180,220,255,0.05), transparent 35%),
-    radial-gradient(circle at 50% 80%, rgba(255,255,255,0.03), transparent 40%);
-
-  animation:fogMove 35s linear infinite alternate;
-
-  pointer-events:none;
-  z-index:5;
-}
-
-@keyframes fogMove{
-  from{ transform:translateX(-2%) translateY(-1%); }
-  to{ transform:translateX(2%) translateY(1%); }
-}
-
-/* АКТИВНЫЕ ТУМАННЫЕ ЗОНЫ */
-
-.zone{
-  position:absolute;
-  z-index:20;
-
-  border-radius:50%;
-  cursor:pointer;
-
-  background:radial-gradient(circle,
-    rgba(255,255,255,0.20) 0%,
-    rgba(180,220,255,0.12) 25%,
-    rgba(120,170,255,0.06) 50%,
-    rgba(0,0,0,0) 75%);
-
-  filter:blur(10px);
-  opacity:0.18;
-  transition:opacity 0.5s ease, filter 0.5s ease;
-}
-
-.zone:hover{
-  opacity:0.95;
-  filter:blur(5px);
-}
-
-/* М.НЕКС */
-
-#nex-zone{
-  width:190px;
-  height:430px;
-  right:13%;
-  bottom:7%;
-}
-
-/* ВХОД */
-
-#entrance-zone{
-  width:290px;
-  height:430px;
-  left:50%;
-  margin-left:-145px;
-  bottom:7%;
-}
-
-/* ФЛАГИ — ВСЕ 7 ЗОН, ВКЛЮЧАЯ КРАЙНИЕ */
-
-.flag-zone{
-  width:150px;
-  height:150px;
-  top:0%;
-}
-
-/* крайние зоны слегка заведены внутрь, чтобы не теряться за окном */
-#flag1{ left:2.5%;  top:1.5%; }
-#flag2{ left:16%;   top:1.5%; }
-#flag3{ left:30%;   top:0%; }
-#flag4{ left:44%;   top:0%; }
-#flag5{ right:30%;  top:1.5%; }
-#flag6{ right:16%;  top:1.5%; }
-#flag7{ right:2.5%; top:1.5%; }
-
-/* ЗАТЕМНЕНИЕ */
-
-#fade{
-  position:absolute;
-  inset:0;
-  z-index:50;
-
-  background:black;
-  opacity:0;
-  pointer-events:none;
-
-  transition:opacity 1.5s ease;
-}
-
-#fade.active{
-  opacity:1;
-}
-
-
-/* АФИША М.НЕКСА — ПРОЗРАЧНАЯ ПАНЕЛЬ ПОВЕРХ ДВОРЦА */
-
-#afisha-layer{
-  position:fixed;
-  left:3.5vw;
-  top:6vh;
-  width:39vw;
-  min-width:340px;
- max-width:520px;
-  height:88vh;
-  z-index:45;
-  border:0;
-  background:transparent;
-  display:none;
-}
-
-#afisha-layer.open{
-  display:block;
-}
-
-@media(max-width:760px){
-  #afisha-layer{
-    left:4vw;
-    top:5vh;
-    width:92vw;
-    min-width:0;
-    max-width:none;
-    height:88vh;
-  }
-}
-
-
-/* ПОЧТА НЕКСА — ЧИСТАЯ НЕВИДИМАЯ ЗОНА БЮСТА */
-#mail-bust-zone{
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:25vw;
-  max-width:340px;
-  min-width:185px;
-  height:40vh;
-  max-height:430px;
-  min-height:230px;
-  z-index:32;
-  cursor:pointer;
-  background:transparent;
-}
-
-/* ПОЧТА НЕКСА — МАЛЕНЬКОЕ ПРОЗРАЧНОЕ ОКНО СПРАВА */
-#pochta-layer{
-  position:fixed;
-  right:4vw;
-  top:12vh;
-
-width:520px;
-height:650px;
-
-  z-index:46;
-  border:0;
-  background:transparent;
-  display:none;
-}
-
-#pochta-layer.open{
-  display:block;
-}
-
-@media(max-width:760px){
-  #pochta-layer{
-    right:4vw;
-    top:18vh;
-    width:255px;
-    height:215px;
-  }
-}
-
-
-/* ЛАМПОЧКА ПОЧТЫ */
-
-#mail-lamp{
-  position:fixed;
-  left:18px;
-  bottom:18px;
-
-  width:16px;
-  height:16px;
-
-  border-radius:50%;
-
-  background:rgba(30,80,40,.65);
-
-  border:1px solid rgba(160,255,190,.35);
-
-  box-shadow:
-    0 0 6px rgba(0,255,120,.18);
-
-  z-index:9999;
-
-  transition:
-    background .4s ease,
-    box-shadow .4s ease,
-    opacity .4s ease;
-
-  opacity:.55;
-}
-
-#mail-lamp.active{
-
-  background:#49ff8a;
-
-  opacity:1;
-
-  box-shadow:
-    0 0 8px #49ff8a,
-    0 0 18px rgba(73,255,138,.85),
-    0 0 34px rgba(73,255,138,.45);
-
-  animation:mailBlink 1.15s infinite;
-}
-
-@keyframes mailBlink{
-
-  0%,100%{
-    transform:scale(1);
-    opacity:.55;
-  }
-
-  50%{
-    transform:scale(1.22);
-    opacity:1;
-  }
-}
-
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ДВОРЕЦ НЕКСА · ЧАСЫ</title>
+
+  <style>
+    /* === ГЛОБАЛЬНЫЙ СБРОС === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #eee;
+    }
+
+    /* === ДВОРЕЦ (фон) === */
+    #palace {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000; /* подложка, если картинки не загружены */
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      background-size: 102% auto;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 5s ease;
+    }
+    .bg.active { opacity: 1; }
+
+    #day { background-image: url('DAY.png'); }
+    #sunset { background-image: url('SUNSET.png'); }
+    #night { background-image: url('NIGHT.png'); }
+
+    /* ТУМАН (лёгкий слой поверх дворца) */
+    #fog {
+      position: absolute;
+      inset: -10%;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05), transparent 35%),
+        radial-gradient(circle at 70% 50%, rgba(180,220,255,0.05), transparent 35%),
+        radial-gradient(circle at 50% 80%, rgba(255,255,255,0.03), transparent 40%);
+      animation: fogMove 35s linear infinite alternate;
+      pointer-events: none;
+      z-index: 5;
+    }
+    @keyframes fogMove {
+      from { transform: translateX(-2%) translateY(-1%); }
+      to { transform: translateX(2%) translateY(1%); }
+    }
+
+    /* === ЧАСЫ НЕКСА — ПОВЕРХ ДВОРЦА, ПРОЗРАЧНЫЙ ФОН === */
+    #clockWrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 210px;
+      height: 280px;
+      z-index: 20;  /* выше дворца и тумана */
+      pointer-events: auto;
+      /* фон прозрачный — видно дворец */
+    }
+
+    #root {
+      position: relative;
+      width: 210px;
+      height: 280px;
+      background: radial-gradient(ellipse at 50% 43%, #17222d 0%, #06080b 62%, #000 100%);
+      border-radius: 48% / 50%;
+      box-shadow: 0 0 11px rgba(150, 210, 255, .30), inset 0 0 26px rgba(255, 255, 255, .08);
+      cursor: move;
+      overflow: hidden;
+      /* сам блок часов имеет затемнённый фон, но он не перекрывает дворец,
+         т.к. находится внутри прозрачного wrapper'а.
+         Фон часов — это часть их дизайна, но он не на весь экран,
+         только в области часов. */
+    }
+
+    #ovalLine {
+      position: absolute;
+      left: 16px;
+      top: 24px;
+      width: 178px;
+      height: 194px;
+      border: 1px solid rgba(225, 245, 255, .70);
+      border-radius: 50%;
+      box-shadow: 0 0 7px rgba(90, 190, 255, .40), inset 0 0 10px rgba(230, 240, 255, .10);
+      pointer-events: none;
+    }
+
+    /* === ИНЬ-ЯНЬ === */
+    #yinYang {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 72px;
+      height: 72px;
+      z-index: 8;
+      cursor: pointer;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.12));
+    }
+    #yinYang:hover {
+      transform: translate(-50%, -50%) scale(1.08);
+      filter: drop-shadow(0 0 25px rgba(200, 220, 255, 0.25));
+    }
+    #yinYang:active {
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    #clickZone {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 9;
+      background: transparent;
+    }
+
+    #dateTop {
+      position: absolute;
+      left: 80px;
+      top: 52px;
+      width: 38px;
+      height: 30px;
+      border-radius: 9px;
+      background: rgba(0, 0, 0, .82);
+      box-shadow: 0 0 6px rgba(255, 255, 255, .25), inset 0 0 7px rgba(255, 255, 255, .08);
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+    #dayNum {
+      font-size: 25px;
+      line-height: 30px;
+      text-shadow: 0 0 7px #fff;
+      font-weight: 500;
+    }
+
+    .month {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 25px;
+      font-size: 9px;
+      font-weight: bold;
+      color: #f3f6ff;
+      background: rgba(20, 45, 70, .88);
+      border: 1px solid rgba(160, 220, 255, .70);
+      box-shadow: 0 0 5px rgba(70, 180, 255, .45), inset 0 0 7px rgba(255, 255, 255, .15);
+      z-index: 5;
+      pointer-events: none;
+    }
+    .month.active {
+      background: #ffd51f !important;
+      border: 2px solid #fff8b8;
+      color: #fff;
+      box-shadow: 0 0 10px #fff6a8, 0 0 22px #ffd23f, 0 0 36px rgba(255, 210, 63, .95), inset 0 0 12px rgba(255, 255, 255, .70);
+      text-shadow: 0 0 5px #fff, 0 0 10px #ffd23f;
+      transform: scale(1.10);
+      z-index: 6;
+    }
+
+    #planet {
+      position: absolute;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid rgba(255, 255, 255, .95);
+      box-shadow: 0 0 10px #fff, 0 0 20px rgba(190, 230, 255, .9), inset 0 0 4px rgba(255, 255, 255, .8);
+      z-index: 14;
+      cursor: pointer;
+    }
+
+    #timeBox {
+      position: absolute;
+      left: 56px;
+      top: 235px;
+      width: 98px;
+      height: 31px;
+      background: rgba(0, 0, 0, .88);
+      border-radius: 9px;
+      box-shadow: 0 0 7px rgba(255, 255, 255, .20), inset 0 0 6px rgba(255, 255, 255, .07);
+      text-align: center;
+      z-index: 11;
+      pointer-events: none;
+    }
+    #time {
+      font-size: 25px;
+      line-height: 31px;
+      color: #43c6ff;
+      text-shadow: 0 0 10px rgba(70, 200, 255, .90);
+      font-weight: 400;
+      letter-spacing: 1px;
+    }
+
+    #week {
+      position: absolute;
+      left: 28px;
+      top: 213px;
+      width: 154px;
+      height: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      z-index: 12;
+      pointer-events: none;
+    }
+    .wday {
+      display: inline-block;
+      width: 22px;
+      height: 20px;
+      line-height: 20px;
+      text-align: center;
+      border: 1px solid rgba(220, 220, 220, .36);
+      background: rgba(0, 0, 0, .78);
+      color: #b9b9b9;
+      font-size: 10px;
+      font-weight: bold;
+      box-sizing: border-box;
+    }
+    .wday.active {
+      background: #22be23;
+      color: #fff;
+      box-shadow: 0 0 7px #4cff4c inset, 0 0 7px #19ff19;
+    }
+
+    /* === ПАНЕЛЬ ССЫЛОК === */
+    #linksPanel {
+      display: none;
+      position: absolute;
+      left: 7px;
+      top: 9px;
+      width: 398px;
+      height: 402px;
+      background: rgba(2, 4, 7, .98);
+      border: 1px solid rgba(200, 235, 255, .75);
+      border-radius: 13px;
+      box-shadow: 0 0 18px rgba(210, 240, 255, .45);
+      z-index: 40;
+      color: #eee;
+      cursor: default;
+      padding: 8px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    #closeX {
+      position: absolute;
+      right: 6px;
+      top: 5px;
+      width: 23px;
+      height: 21px;
+      line-height: 19px;
+      text-align: center;
+      border: 1px solid #89c5e8;
+      border-radius: 7px;
+      background: #13283a;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #linksPanel h3 {
+      margin: 0 28px 6px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: normal;
+      color: #fff;
+    }
+    #linkRows {
+      height: 308px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 3px;
+    }
+    .linkRow {
+      display: block;
+      margin: 3px 0;
+      height: 22px;
+      white-space: nowrap;
+    }
+    .linkRow span {
+      display: inline-block;
+      width: 18px;
+      text-align: right;
+      margin-right: 4px;
+      color: #9edcff;
+      font-size: 10px;
+      vertical-align: middle;
+    }
+    .linkRow label {
+      display: inline-block;
+      color: #cfeeff;
+      font-size: 9px;
+      margin: 0 3px;
+      vertical-align: middle;
+    }
+    .linkRow input {
+      display: inline-block;
+      background: #0b1118;
+      border: 1px solid #345;
+      color: #fff;
+      border-radius: 4px;
+      padding: 1px 3px;
+      font-size: 10px;
+      height: 16px;
+      box-sizing: border-box;
+      vertical-align: middle;
+    }
+    .linkName { width: 74px; }
+    .linkUrl { width: 190px; }
+    .linkRow button {
+      display: inline-block;
+      margin-left: 4px;
+      width: 31px;
+      height: 18px;
+      background: #132437;
+      color: #fff;
+      border: 1px solid #4b83a8;
+      border-radius: 4px;
+      font-size: 9px;
+      padding: 0;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    #panelButtons {
+      text-align: center;
+      margin-top: 7px;
+    }
+    #panelButtons button {
+      margin: 0 3px;
+      padding: 3px 7px;
+      border-radius: 7px;
+      border: 1px solid #7db9dd;
+      background: #10283a;
+      color: #fff;
+      font-size: 10px;
+      cursor: pointer;
+    }
+    #hint {
+      font-size: 9px;
+      color: #9caebb;
+      text-align: center;
+      margin-top: 5px;
+      line-height: 11px;
+    }
+
+    /* === ПОЛНОЭКРАННЫЙ СЛОЙ ДЛЯ БУЛЬКАНЬЯ (под часами) === */
+    #bubbleFullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;   /* под часами, но над дворцом? — дворец имеет свой z-index,
+                       но бульканье рисуется поверх всего, кроме часов.
+                       Часы имеют z-index 20, бульканье — 1, но canvas рисуется поверх
+                       из-за положения в DOM. Чтобы бульканье было под часами,
+                       помещаем его в контейнер с z-index:1, а часы — z-index:20.
+                       Однако дворец тоже имеет свои слои, но canvas перекрывает всё,
+                       кроме элементов с более высоким z-index. */
+      pointer-events: none;
+      background: transparent; /* полностью прозрачный фон */
+    }
+    #bubbleFullscreen canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      /* canvas будет рисовать только пузыри, фон прозрачный */
+    }
+
+    /* Часы поверх бульканья и дворца */
+    #clockWrapper {
+      z-index: 20;
+    }
+
+    /* === АДАПТИВ ДЛЯ МАЛЫХ ЭКРАНОВ (часы уменьшаются) === */
+    @media (max-width: 700px) {
+      #clockWrapper {
+        transform: translate(-50%, -50%) scale(0.7);
+      }
+    }
+    @media (max-width: 480px) {
+      #clockWrapper {
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+    }
+
+    /* === ЭЛЕМЕНТЫ ДВОРЦА, КОТОРЫЕ НУЖНО СОХРАНИТЬ (зоны) === */
+    .zone {
+      position: absolute;
+      z-index: 10;  /* ниже часов (20) */
+      border-radius: 50%;
+      cursor: pointer;
+      background: radial-gradient(circle,
+        rgba(255,255,255,0.20) 0%,
+        rgba(180,220,255,0.12) 25%,
+        rgba(120,170,255,0.06) 50%,
+        rgba(0,0,0,0) 75%);
+      filter: blur(10px);
+      opacity: 0.18;
+      transition: opacity 0.5s ease, filter 0.5s ease;
+    }
+    .zone:hover {
+      opacity: 0.95;
+      filter: blur(5px);
+    }
+
+    #nex-zone {
+      width: 190px;
+      height: 430px;
+      right: 13%;
+      bottom: 7%;
+    }
+    #entrance-zone {
+      width: 290px;
+      height: 430px;
+      left: 50%;
+      margin-left: -145px;
+      bottom: 7%;
+    }
+    .flag-zone {
+      width: 150px;
+      height: 150px;
+      top: 0%;
+    }
+    #flag1 { left: 2.5%;  top: 1.5%; }
+    #flag2 { left: 16%;   top: 1.5%; }
+    #flag3 { left: 30%;   top: 0%; }
+    #flag4 { left: 44%;   top: 0%; }
+    #flag5 { right: 30%;  top: 1.5%; }
+    #flag6 { right: 16%;  top: 1.5%; }
+    #flag7 { right: 2.5%; top: 1.5%; }
+
+    /* затемнение */
+    #fade {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      background: black;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease;
+    }
+    #fade.active { opacity: 1; }
+
+    /* афиша и почта — поверх всего, но их можно оставить как есть */
+    #afisha-layer, #pochta-layer {
+      position: fixed;
+      z-index: 45;
+      border: 0;
+      background: transparent;
+      display: none;
+    }
+    #afisha-layer.open, #pochta-layer.open { display: block; }
+    #afisha-layer {
+      left: 3.5vw;
+      top: 6vh;
+      width: 39vw;
+      min-width: 340px;
+      max-width: 520px;
+      height: 88vh;
+    }
+    #pochta-layer {
+      right: 4vw;
+      top: 12vh;
+      width: 520px;
+      height: 650px;
+    }
+    @media (max-width:760px) {
+      #afisha-layer {
+        left: 4vw;
+        top: 5vh;
+        width: 92vw;
+        min-width: 0;
+        max-width: none;
+        height: 88vh;
+      }
+      #pochta-layer {
+        right: 4vw;
+        top: 18vh;
+        width: 255px;
+        height: 215px;
+      }
+    }
+    #mail-bust-zone {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 25vw;
+      max-width: 340px;
+      min-width: 185px;
+      height: 40vh;
+      max-height: 430px;
+      min-height: 230px;
+      z-index: 32;
+      cursor: pointer;
+      background: transparent;
+    }
+    #mail-lamp {
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(30,80,40,.65);
+      border: 1px solid rgba(160,255,190,.35);
+      box-shadow: 0 0 6px rgba(0,255,120,.18);
+      z-index: 9999;
+      transition: background .4s ease, box-shadow .4s ease, opacity .4s ease;
+      opacity: .55;
+    }
+    #mail-lamp.active {
+      background: #49ff8a;
+      opacity: 1;
+      box-shadow: 0 0 8px #49ff8a, 0 0 18px rgba(73,255,138,.85), 0 0 34px rgba(73,255,138,.45);
+      animation: mailBlink 1.15s infinite;
+    }
+    @keyframes mailBlink {
+      0%,100% { transform:scale(1); opacity:.55; }
+      50% { transform:scale(1.22); opacity:1; }
+    }
+  </style>
 </head>
 <body>
 
+<!-- ДВОРЕЦ -->
 <div id="palace">
-
   <div id="day" class="bg active"></div>
   <div id="sunset" class="bg"></div>
   <div id="night" class="bg"></div>
-
   <div id="fog"></div>
 
-  <!-- ЛАМПОЧКА ПОЧТЫ -->
-  <div id="mail-lamp" title="NEW MAIL"></div>
-
-  <audio id="door-sound" src="99999.mp3" preload="auto"></audio>
-
-
-  <!-- ПОЧТА НЕКСА: невидимая зона бюста слева внизу -->
-  <div id="mail-bust-zone" title="NEX MAIL"></div>
-
-  <!-- 1: М.НЕКС -->
+  <!-- ЗОНЫ ДВОРЦА -->
   <div id="nex-zone" class="zone" title="М.Некс"></div>
-
-  <!-- 2: ВХОД В ВЕСТИБЮЛЬ -->
   <div id="entrance-zone" class="zone" title="Вход в Вестибюль"></div>
-
-  <!-- 3–9: СЕМЬ ФЛАГОВ / СЕМЬ БАШЕН -->
   <div id="flag1" class="zone flag-zone" title="Башня 1"></div>
   <div id="flag2" class="zone flag-zone" title="Башня 2"></div>
   <div id="flag3" class="zone flag-zone" title="Башня 3"></div>
@@ -320,266 +565,298 @@ height:650px;
   <div id="flag6" class="zone flag-zone" title="Башня 6"></div>
   <div id="flag7" class="zone flag-zone" title="Башня 7"></div>
 
-
-  <!-- АФИША М.НЕКСА: открывается поверх Дворца, не заменяя локацию -->
-  <iframe id="afisha-layer" src="afisha_dvorets_nex.html" allowtransparency="true"></iframe>
-
-  <!-- ПОЧТА НЕКСА: окно открывается поверх Дворца -->
-  <iframe id="pochta-layer" src="" allowtransparency="true"></iframe>
-
+  <div id="mail-bust-zone" title="NEX MAIL"></div>
   <div id="fade"></div>
-
 </div>
 
+<!-- ПОЛНОЭКРАННОЕ БУЛЬКАНЬЕ (под часами) -->
+<div id="bubbleFullscreen"></div>
+
+<!-- ЧАСЫ НЕКСА (поверх дворца) -->
+<div id="clockWrapper">
+  <div id="root">
+    <div id="ovalLine"></div>
+    <div id="dateTop"><div id="dayNum">--</div></div>
+
+    <svg id="yinYang" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="yinGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="softGlow">
+          <feGaussianBlur stdDeviation="1.5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <path d="M50 5 A45 45 0 0 1 50 95 A22 22 0 0 1 50 51 A22 22 0 0 0 50 5" fill="#1a1a2e" filter="url(#softGlow)"/>
+      <path d="M50 5 A45 45 0 0 0 50 95 A22 22 0 0 0 50 51 A22 22 0 0 1 50 5" fill="#f0f4ff" filter="url(#softGlow)"/>
+      <circle cx="50" cy="73" r="7" fill="#1a1a2e" opacity="0.95"/>
+      <circle cx="50" cy="27" r="7" fill="#f0f4ff" opacity="0.95"/>
+      <circle cx="50" cy="50" r="45" fill="url(#yinGlow)" opacity="0.5"/>
+      <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(180, 210, 255, 0.08)" stroke-width="0.5"/>
+    </svg>
+
+    <div id="clickZone" title="Запустить бульканье"></div>
+    <div id="planet" title="Ссылки"></div>
+    <div id="timeBox"><div id="time">--:--</div></div>
+    <div id="week"></div>
+
+    <div id="linksPanel">
+      <div id="closeX" onclick="hidePanel()">×</div>
+      <h3>12 ссылок</h3>
+      <div id="linkRows"></div>
+      <div id="hint">Пустые ячейки можно заполнять и очищать.</div>
+      <div id="panelButtons">
+        <button onclick="saveConfig()">Сохранить</button>
+        <button onclick="hidePanel()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- АФИША И ПОЧТА (оставляем как есть) -->
+<iframe id="afisha-layer" src="afisha_dvorets_nex.html" allowtransparency="true"></iframe>
+<iframe id="pochta-layer" src="" allowtransparency="true"></iframe>
+<div id="mail-lamp" title="NEW MAIL"></div>
+<audio id="door-sound" src="99999.mp3" preload="auto"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // ====== ЧАСЫ НЕКСА (полный код из час.html) ======
+  (function() {
+    const STORAGE_KEY = 'nex_clock_config';
+    const monthLabels = ['ЯНВ','ФЕВ','МАР','АПР','МАЙ','ИЮН','ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'];
+    const weekLabels = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
 
-const states=[
-  document.getElementById('day'),
-  document.getElementById('sunset'),
-  document.getElementById('night')
-];
+    let cfg = {
+      links: ['','','','','','','','','','','',''],
+      names: ['','','','','','','','','','','',''],
+      x: null,
+      y: null
+    };
 
-function setStateByRealTime(){
-  const minute = new Date().getMinutes();
-
-  let current;
-  if(minute < 15){
-    current = 0; // DAY
-  }else if(minute < 30){
-    current = 1; // SUNSET
-  }else if(minute < 45){
-    current = 2; // NIGHT
-  }else{
-    current = 1; // SUNSET
-  }
-
-  states.forEach(state => state.classList.remove('active'));
-  states[current].classList.add('active');
-}
-
-setStateByRealTime();
-setInterval(setStateByRealTime,60000);
-
-
-/* ЛАМПОЧКА ПОЧТЫ */
-
-function setMailLamp(hasNewMail){
-
-  const lamp = document.getElementById('mail-lamp');
-
-  if(!lamp) return;
-
-  if(hasNewMail){
-    lamp.classList.add('active');
-  }else{
-    lamp.classList.remove('active');
-  }
-}
-
-
-/* РЕАЛЬНАЯ ПРОВЕРКА НОВОЙ ПОЧТЫ */
-
-const SUPABASE_URL =
-"https://qekemclxegswolddmqxa.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_arQvVM0huxdB5jbiLPpSPA_7tksXK-Y";
-
-const mailClient =
-supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-async function checkNewMail(){
-
-  try{
-
-    const { data, error } =
-      await mailClient
-      .from("obitel_storage")
-      .select("id")
-      .eq("is_read", false)
-      .limit(1);
-
-    if(error) throw error;
-
-    setMailLamp(data && data.length > 0);
-
-  }catch(err){
-
-    console.error("MAIL LAMP ERROR:", err);
-
-    /* При ошибке связи лампу не зажигаем как новую почту */
-    setMailLamp(false);
-  }
-}
-
-/* первая проверка и повтор каждые 30 секунд */
-checkNewMail();
-setInterval(checkNewMail, 30000);
-
-/* если просмотрщик почты скажет, что письма прочитаны */
-window.addEventListener("message", function(e){
-
-  if(e.data === "mail-read-refresh"){
-    checkNewMail();
-  }
-
-});
-
-
-
-/* ВХОД В ВЕСТИБЮЛЬ */
-
-const entrance=document.getElementById('entrance-zone');
-const fade=document.getElementById('fade');
-
-entrance.addEventListener('click',()=>{
-  /* СЧЁТЧИК ВХОДА ВО ДВОРЕЦ */
-
-let count = localStorage.getItem('dvorets_entered_count') || 0;
-
-count = parseInt(count,10) + 1;
-
-localStorage.setItem('dvorets_entered_count', count);
-  const doorSound=document.getElementById('door-sound');
-  if(doorSound){
-    doorSound.currentTime=0;
-    doorSound.play().catch(()=>{});
-  }
-
-  fade.classList.add('active');
-  setTimeout(()=>{
-    window.location.href='vestibul/vestibul.html';
-  },1200);
-});
-
-
-/* ПОЧТА НЕКСА — БЮСТ ТОЛЬКО ОТКРЫВАЕТ ОКНО */
-const mailBust = document.getElementById('mail-bust-zone');
-
-if(mailBust){
-  mailBust.addEventListener('click',()=>{
-    const pochta = document.getElementById('pochta-layer');
-    if(!pochta) return;
-
-    if(pochta.classList.contains('open')){
-      pochta.classList.remove('open');
-      pochta.src = '';
-      setTimeout(checkNewMail, 500);
-    }else{
-      pochta.src = 'pochta/pochtanex.html';
-      pochta.classList.add('open');
-
-      setTimeout(checkNewMail, 1500);
+    function loadConfig() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.links && parsed.links.length) cfg.links = parsed.links;
+          if (parsed.names && parsed.names.length) cfg.names = parsed.names;
+          if (parsed.x !== undefined) cfg.x = parsed.x;
+          if (parsed.y !== undefined) cfg.y = parsed.y;
+        }
+      } catch (e) {}
+      if (cfg.x !== null && cfg.y !== null) {
+        try { window.moveTo(cfg.x, cfg.y); } catch(e) {}
+      }
     }
-  });
-}
 
-/* ВСЕ 7 БАШЕН */
+    window.saveConfig = function() {
+      for (let i = 0; i < 12; i++) {
+        const nameEl = document.getElementById('name' + i);
+        const linkEl = document.getElementById('link' + i);
+        if (nameEl) cfg.names[i] = nameEl.value;
+        if (linkEl) cfg.links[i] = linkEl.value;
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+      } catch(e) {}
+    };
 
-const towerLinks=[
-  'bashnya_1/bashnya_1.html',
-  'bashnya_2/bashnya_2.html',
-  'bashnya_3/bashnya_3.html',
-  'bashnya_nex/index.html',
-  'bashnya_5/bashnya_5.html',
-  'bashnya_6/bashnya_6.html',
-  'bashnya_7/bashnya_7.html'
-];
-
-const flags=document.querySelectorAll('.flag-zone');
-
-flags.forEach((flag,index)=>{
-  flag.addEventListener('click',()=>{
-    fade.classList.add('active');
-    setTimeout(()=>{
-      window.location.href=towerLinks[index];
-    },700);
-  });
-});
-
-/* М.НЕКС */
-document.getElementById('nex-zone').addEventListener('click',()=>{
-
-  const afisha = document.getElementById('afisha-layer');
-
-  if(!afisha) return;
-
-  if(afisha.classList.contains('open')){
-
-    afisha.classList.remove('open');
-
-    /* очищаем окно */
-    afisha.src = '';
-
-  }else{
-
-    /* загружаем заново */
-    afisha.src = 'afisha_dvorets_nex.html';
-
-    afisha.classList.add('open');
-
-  }
-
-});
-
-/* Закрытие афиши из iframe */
-window.addEventListener('message', function(e){
-  if(e.data === 'close-afisha'){
-    const afisha = document.getElementById('afisha-layer');
-    if(afisha){
-      afisha.classList.remove('open');
+    function createMonths() {
+      const root = document.getElementById('root');
+      const colors = ['#6ec1ff','#8ad1ff','#6bff9a','#b6ff6b','#fff36b','#ffc36b','#ff9a6b','#ff6b6b','#ff6bd6','#c96bff','#6b8cff','#6bdcff'];
+      const cx = 105, cy = 122, rx = 82, ry = 91;
+      for (let i = 0; i < 12; i++) {
+        const a = (-60 + i * 30) * Math.PI / 180;
+        const d = document.createElement('div');
+        d.className = 'month';
+        d.id = 'm' + i;
+        d.textContent = monthLabels[i];
+        d.style.left = (cx + rx * Math.cos(a) - 12) + 'px';
+        d.style.top = (cy + ry * Math.sin(a) - 12) + 'px';
+        d.style.background = colors[i];
+        root.appendChild(d);
+      }
     }
-  }
-});
 
-
-/* Закрытие почтового окна из iframe */
-window.addEventListener('message', function(e){
-  if(e.data === 'close-pochta'){
-    const pochta = document.getElementById('pochta-layer');
-    if(pochta){
-      pochta.classList.remove('open');
-      pochta.src = '';
+    function createWeek() {
+      const w = document.getElementById('week');
+      for (let i = 0; i < 7; i++) {
+        const d = document.createElement('div');
+        d.className = 'wday';
+        d.id = 'w' + i;
+        d.textContent = weekLabels[i];
+        w.appendChild(d);
+      }
     }
-  }
-});
 
-</script>
-<script>
+    function createLinks() {
+      const r = document.getElementById('linkRows');
+      for (let i = 0; i < 12; i++) {
+        const row = document.createElement('div');
+        row.className = 'linkRow';
+        row.innerHTML = '<span>' + (i+1) + '</span><label>имя</label><input class="linkName" id="name' + i + '" value=""><label>ссылка</label><input class="linkUrl" id="link' + i + '" value=""><button onclick="window.openLink(' + i + ')">ОК</button>';
+        r.appendChild(row);
+      }
+    }
 
-let nexVoicePlayed = false;
+    function updateClock() {
+      const d = new Date();
+      document.getElementById('dayNum').textContent = d.getDate();
+      document.getElementById('time').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      for (let i = 0; i < 12; i++) {
+        const el = document.getElementById('m' + i);
+        if (el) el.className = 'month' + (i === d.getMonth() ? ' active' : '');
+      }
+      const wd = (d.getDay() + 6) % 7;
+      for (let i = 0; i < 7; i++) {
+        const el = document.getElementById('w' + i);
+        if (el) el.className = 'wday' + (i === wd ? ' active' : '');
+      }
+    }
 
-function sayLittleNex(){
+    let t = 0;
+    function movePlanet() {
+      t += 0.014;
+      const cx = 105, cy = 122, rx = 88, ry = 98;
+      const wobble = 4 * Math.sin(t * 3.1) + 2 * Math.cos(t * 5.7);
+      const x = cx + (rx + wobble) * Math.cos(t) - 9;
+      const y = cy + (ry + 3 * Math.sin(t * 2.3)) * Math.sin(t) - 9;
+      const p = document.getElementById('planet');
+      if (p) {
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+      }
+    }
 
-  if(nexVoicePlayed) return;
+    window.showPanel = function() {
+      try { window.resizeTo(430, 455); } catch(e) {}
+      document.body.style.width = '430px';
+      document.body.style.height = '455px';
+      document.body.style.overflow = 'visible';
+      const rt = document.getElementById('root');
+      rt.style.width = '430px';
+      rt.style.height = '455px';
+      rt.style.overflow = 'visible';
+      rt.style.borderRadius = '0';
+      for (let i = 0; i < 12; i++) {
+        const nameEl = document.getElementById('name' + i);
+        const linkEl = document.getElementById('link' + i);
+        if (nameEl) nameEl.value = cfg.names[i] || '';
+        if (linkEl) linkEl.value = cfg.links[i] || '';
+      }
+      document.getElementById('linksPanel').style.display = 'block';
+    };
 
-  nexVoicePlayed = true;
+    window.hidePanel = function() {
+      saveConfig();
+      document.getElementById('linksPanel').style.display = 'none';
+      document.body.style.width = '210px';
+      document.body.style.height = '280px';
+      document.body.style.overflow = 'hidden';
+      const rt = document.getElementById('root');
+      rt.style.width = '210px';
+      rt.style.height = '280px';
+      rt.style.overflow = '';
+      rt.style.borderRadius = '48% / 50%';
+      try { window.resizeTo(210, 280); } catch(e) {}
+    };
 
-  speechSynthesis.cancel();
+    window.openLink = function(i) {
+      saveConfig();
+      const u = cfg.links[i];
+      if (u) {
+        try {
+          window.open(u, '_blank');
+        } catch(e) {
+          location.href = u;
+        }
+      }
+    };
 
-  const voice = new SpeechSynthesisUtterance(
-    "Hello. I am Little Nex. Click me to see the announcement. Or enter the Palace. Or find the Tower of Nex."
-  );
+    // Перетаскивание
+    let dragging = false, ox = 0, oy = 0;
+    const rootEl = document.getElementById('root');
+    rootEl.addEventListener('mousedown', function(e) {
+      const el = e.target;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'BUTTON' || el.id === 'closeX' ||
+          el.closest && el.closest('#linksPanel'))) {
+        return;
+      }
+      dragging = true;
+      ox = e.screenX - window.screenLeft;
+      oy = e.screenY - window.screenTop;
+    });
 
-  voice.lang = "en-US";
+    document.addEventListener('mouseup', function() {
+      if (dragging) {
+        dragging = false;
+        cfg.x = window.screenLeft;
+        cfg.y = window.screenTop;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg)); } catch(e) {}
+      }
+    });
 
-  voice.rate = 0.92;
-  voice.pitch = 1.02;
-  voice.volume = 1;
+    document.addEventListener('mousemove', function(e) {
+      if (dragging) {
+        window.moveTo(e.screenX - ox, e.screenY - oy);
+      }
+    });
 
-  setTimeout(()=>{
-    speechSynthesis.speak(voice);
-  },300);
+    document.getElementById('planet').addEventListener('click', function(e) {
+      showPanel();
+      e.stopPropagation();
+    });
 
-}
+    document.getElementById('clickZone').addEventListener('click', function(e) {
+      if (window.startBubbles) {
+        window.startBubbles();
+      }
+      e.stopPropagation();
+    });
 
-document.addEventListener("click", sayLittleNex, {once:true});
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') hidePanel();
+    });
 
-</script>
+    // ===== БУЛЬКАНЬЕ =====
+    (function initBubbles() {
+      const container = document.getElementById('bubbleFullscreen');
+      const canvas = document.createElement('canvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      container.appendChild(canvas);
 
+      const ctx = canvas.getContext('2d');
+      let pulses = [];
+      let timeAnim = 0;
+      let animationId = null;
+      let isActive = false;
 
-</body>
-</html>
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resizeCanvas);
+
+      function createPulse(x, y) {
+        pulses.push({
+          x, y,
+          radius: 0,
+          alpha: 1,
+          speed: 0.8 + Math.random() * 1.5
+        });
+      }
+
+      function randomPulse() {
+        const w = canvas.width, h = canvas.height;
+        let baseZone = Math.random() < 0.7;
+        let x, y;
+        if (baseZone) {
+          x = w / 2 + (Math.random() - 0.5) * Math.min
