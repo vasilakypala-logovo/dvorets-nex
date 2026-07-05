@@ -53,5 +53,10 @@
     "icon": "006.png",
     "title": "LONDON",
     "file": "LONDON_scroll_PLANETKA.html"
+  },
+  {
+    "icon": "005.png",
+    "title": "",
+    "file": ""
   }
 ]
