@@ -1,7 +1,7 @@
 [
   {
     "icon": "005.png",
-    "title": "З О Л О Т Е Н Ь р/у",
+    "title": "Ð Ð Ð Ð Ð¢ Ð Ð Ð¬ Ñ/Ñ",
     "file": "index.html"
   },
   {
@@ -38,5 +38,10 @@
     "icon": "006.png",
     "title": "DE_VEGA",
     "file": "DE_VEGA_BROWSER_BOOK.html"
+  },
+  {
+    "icon": "006.png",
+    "title": "",
+    "file": ""
   }
 ]
