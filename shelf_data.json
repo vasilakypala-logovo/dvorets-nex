@@ -28,5 +28,10 @@
     "icon": "006.png",
     "title": "GALALAY_browser",
     "file": "GALALAY_browser.html"
+  },
+  {
+    "icon": "002.png",
+    "title": "",
+    "file": ""
   }
 ]
