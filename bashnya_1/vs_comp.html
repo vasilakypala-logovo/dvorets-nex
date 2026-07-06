@@ -43,46 +43,41 @@ body {
   justify-content: center;
 }
 
-/* Контейнер центрируется через flex, масштабирование применяется через JS */
 .app {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 8px;
-  transform-origin: center; /* масштабирование от центра */
+  gap: 8px;
+  padding: 6px 10px;
+  transform-origin: center;
 }
 
-.panel, .side {
+/* --- Шапка --- */
+.panel {
   background: linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 20px;
   box-shadow: 0 18px 44px rgba(0,0,0,0.35);
-  padding: 12px 14px;
-}
-
-.side {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 8px 12px;
 }
 
 h1 {
   margin: 0 0 2px;
   font-weight: normal;
-  letter-spacing: 1.4px;
-  font-size: 1.5rem;
+  letter-spacing: 1.2px;
+  font-size: 1.4rem;
 }
 
 .subtitle {
   color: var(--muted);
-  margin-bottom: 8px;
-  line-height: 1.3;
-  font-size: 0.85rem;
+  margin-bottom: 6px;
+  line-height: 1.2;
+  font-size: 0.75rem;
 }
 
+/* --- Игровое поле --- */
 .board-wrap {
   position: relative;
   border-radius: 18px;
@@ -90,7 +85,8 @@ h1 {
   background:
     radial-gradient(circle at 50% 50%, rgba(255,255,255,0.035), rgba(255,255,255,0.01)),
     linear-gradient(to bottom, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  padding: 8px;
+  padding: 6px;
+  flex: 1 1 auto;
 }
 
 .fog-layer {
@@ -117,16 +113,16 @@ svg.links {
 .grid {
   position: relative;
   width: 100%;
-  height: 280px;
+  height: 340px;
   z-index: 2;
 }
 
 .node {
   position: absolute;
-  width: 40px;
-  height: 40px;
-  margin-left: -20px;
-  margin-top: -20px;
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  margin-top: -24px;
   border-radius: 50%;
   border: 1px solid rgba(255,255,255,0.14);
   background:
@@ -135,7 +131,7 @@ svg.links {
   align-items: center;
   justify-content: center;
   color: #d7ccb1;
-  font-size: 10px;
+  font-size: 12px;
   user-select: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
@@ -151,16 +147,16 @@ svg.links {
 }
 
 .node.sun {
-  width: 50px;
-  height: 50px;
-  margin-left: -25px;
-  margin-top: -25px;
+  width: 60px;
+  height: 60px;
+  margin-left: -30px;
+  margin-top: -30px;
   background:
     radial-gradient(circle at 35% 35%, var(--sunCore) 0%, var(--sunMid) 50%, var(--sunEdge) 100%);
   border-color: rgba(255, 228, 147, 0.92);
   color: #2b1d05;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 16px;
   box-shadow:
     0 0 18px rgba(255, 216, 120, 0.42),
     0 0 34px var(--sunGlow),
@@ -218,7 +214,7 @@ svg.links {
   flex-wrap: wrap;
   color: var(--muted);
   font-size: 11px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .legend span::before {
@@ -231,29 +227,26 @@ svg.links {
 .legend .l-sun::before { color: var(--sunMid); }
 .legend .l-reach::before { color: var(--reach); }
 
-.card {
-  padding: 8px 12px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-.row {
+/* --- Нижняя панель: компас + кнопки --- */
+.bottom-panel {
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 8px 8px;
 }
 
-.small { color: var(--muted); font-size: 12px; }
-.value { font-size: 16px; color: var(--text); }
+.compass-wrapper {
+  flex: 0 0 auto;
+}
 
 .compass {
   position: relative;
   width: 160px;
   height: 160px;
-  margin: 0 auto;
   border-radius: 50%;
   border: 4px solid var(--gold2);
   background:
@@ -326,21 +319,40 @@ svg.links {
 
 .wind-name {
   text-align: center;
-  margin-top: 6px;
-  font-size: 16px;
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+/* ----- КНОПКИ (увеличены) ----- */
+.btn-group-left, .btn-group-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 60px;
+}
+
+.btn-group-left {
+  align-items: stretch;
+}
+.btn-group-right {
+  align-items: stretch;
 }
 
 .btn {
   border: none;
   border-radius: 999px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 13px;
+  padding: 12px 8px;
+  font-size: 14px;
+  font-weight: bold;
   color: #17120b;
   background: linear-gradient(to bottom, #e8ce92 0%, #b88c43 100%);
   box-shadow: 0 6px 14px rgba(0,0,0,0.25);
-  flex: 1;
-  min-width: 70px;
+  width: 100%;
+  text-align: center;
+  min-height: 48px;
+  cursor: pointer;
+  line-height: 1.2;
 }
 
 .btn:disabled {
@@ -348,9 +360,18 @@ svg.links {
   cursor: not-allowed;
 }
 
+/* Карточки статуса и футер */
+.card {
+  padding: 4px 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
 .status {
-  line-height: 1.4;
-  font-size: 14px;
+  line-height: 1.3;
+  font-size: 13px;
+  min-height: 2.4em;
 }
 
 .win {
@@ -360,9 +381,24 @@ svg.links {
 
 .foot {
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.3;
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
 }
+
+/* Информация о раунде и ходе — в шапке */
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.top-row .info-item {
+  display: flex;
+  gap: 12px;
+}
+.small { color: var(--muted); font-size: 12px; }
+.value { font-size: 16px; color: var(--text); }
 
 @keyframes sunPulse {
   0% { transform: scale(1); }
@@ -370,35 +406,61 @@ svg.links {
   100% { transform: scale(1); }
 }
 
+/* ---------- Адаптив для очень маленьких экранов ---------- */
 @media (max-width: 480px) {
-  .app { max-width: 100%; padding: 4px; }
-  .panel, .side { padding: 8px 10px; border-radius: 16px; }
+  .app { max-width: 100%; padding: 4px 6px; }
+  .panel { padding: 6px 10px; border-radius: 16px; }
   h1 { font-size: 1.2rem; }
-  .subtitle { font-size: 0.7rem; }
-  .board-wrap { padding: 4px; }
-  .grid { height: 220px; }
-  .node { width: 32px; height: 32px; margin-left: -16px; margin-top: -16px; font-size: 8px; }
-  .node.sun { width: 40px; height: 40px; margin-left: -20px; margin-top: -20px; font-size: 11px; }
+  .subtitle { font-size: 0.65rem; }
+  .grid { height: 260px; }
+  .node { width: 36px; height: 36px; margin-left: -18px; margin-top: -18px; font-size: 9px; }
+  .node.sun { width: 46px; height: 46px; margin-left: -23px; margin-top: -23px; font-size: 13px; }
   .compass { width: 130px; height: 130px; border-width: 3px; }
   .ring { inset: 8px; }
   .label { font-size: 8px; width: 18px; margin-left: -9px; margin-top: -6px; }
   .needle { height: 52px; width: 5px; }
   .needle-back { height: 40px; width: 4px; }
   .center-dot { width: 10px; height: 10px; }
-  .wind-name { font-size: 14px; }
-  .btn { font-size: 11px; padding: 6px 8px; }
-  .card { padding: 6px 8px; }
+  .wind-name { font-size: 12px; }
+  .btn { 
+    font-size: 12px; 
+    padding: 10px 4px; 
+    min-height: 40px; 
+  }
   .small { font-size: 10px; }
   .value { font-size: 14px; }
   .status { font-size: 12px; }
   .foot { font-size: 10px; }
+}
+
+@media (max-width: 380px) {
+  .grid { height: 200px; }
+  .node { width: 28px; height: 28px; margin-left: -14px; margin-top: -14px; font-size: 7px; }
+  .node.sun { width: 36px; height: 36px; margin-left: -18px; margin-top: -18px; font-size: 10px; }
+  .compass { width: 100px; height: 100px; border-width: 3px; }
+  .ring { inset: 6px; }
+  .label { font-size: 7px; width: 14px; margin-left: -7px; margin-top: -5px; }
+  .needle { height: 40px; width: 4px; }
+  .needle-back { height: 32px; width: 3px; }
+  .center-dot { width: 8px; height: 8px; }
+  .btn { 
+    font-size: 10px; 
+    padding: 8px 2px; 
+    min-height: 34px; 
+  }
 }
 </style>
 </head>
 <body>
 <div class="app" id="appContainer">
   <div class="panel">
-    <h1>ВЕТЕР СТРАНСТВИЙ</h1>
+    <div class="top-row">
+      <h1 style="margin:0;">ВЕТЕР СТРАНСТВИЙ</h1>
+      <div class="info-item">
+        <div><span class="small">Раунд</span><br><span class="value" id="roundText">1</span></div>
+        <div><span class="small">Ход</span><br><span class="value" id="turnText">ветер</span></div>
+      </div>
+    </div>
     <div class="subtitle">Два странника. Один светящийся узел в центре. Кто первым займёт место под солнцем — тому вектор судьбы указал верный путь.</div>
 
     <div class="board-wrap">
@@ -410,37 +472,18 @@ svg.links {
     <div class="legend">
       <span class="l-me">Я</span>
       <span class="l-nex">Некс</span>
-      <span class="l-sun">место под солнцем</span>
-      <span class="l-reach">доступный ход</span>
+      <span class="l-sun">☀</span>
+      <span class="l-reach">доступно</span>
     </div>
   </div>
 
-  <div class="side">
-    <!-- Раунд и ход -->
-    <div class="card">
-      <div class="row">
-        <div>
-          <div class="small">Раунд</div>
-          <div class="value" id="roundText">1</div>
-        </div>
-        <div>
-          <div class="small">Сейчас ходит</div>
-          <div class="value" id="turnText">ветер</div>
-        </div>
-      </div>
+  <!-- Нижняя панель: компас + кнопки -->
+  <div class="bottom-panel">
+    <div class="btn-group-left">
+      <button class="btn" id="spinBtn">Пустить ветер</button>
     </div>
 
-    <!-- Кнопки -->
-    <div class="card">
-      <div class="row stack-mobile">
-        <button class="btn" id="spinBtn">Пустить ветер</button>
-        <button class="btn" id="skipBtn">Пропустить ход</button>
-        <button class="btn" id="restartBtn">Заново</button>
-      </div>
-    </div>
-
-    <!-- Компас -->
-    <div class="card">
+    <div class="compass-wrapper">
       <div class="compass">
         <div class="ring"></div>
         <div class="label" style="transform: translate(-50%, -50%) translateY(-64px);">С</div>
@@ -457,20 +500,23 @@ svg.links {
         </div>
         <div class="center-dot"></div>
       </div>
-      <div class="wind-name" id="windText">Ветер ещё не задан</div>
+      <div class="wind-name" id="windText">Ветер ждёт</div>
     </div>
 
-    <!-- Статус -->
-    <div class="card status" id="statusText">
-      Нажмите <strong>«Пустить ветер»</strong>.<br>
-      Ветер укажет направление только для текущего игрока.<br>
-      Шаг — строго на один соседний узел.
+    <div class="btn-group-right">
+      <button class="btn" id="skipBtn">Пропустить</button>
+      <button class="btn" id="restartBtn">Заново</button>
     </div>
+  </div>
 
-    <div class="foot">
-      В центре поля сияет узел <strong>ПОД СОЛНЦЕМ</strong>.<br>
-      Ветер дует игрокам поочерёдно. За один ход можно пройти только на один узел в указанном направлении — если этот ход существует.
-    </div>
+  <!-- Статус и футер -->
+  <div class="card status" id="statusText">
+    Нажмите <strong>«Пустить ветер»</strong>.<br>
+    Шаг — строго на один соседний узел.
+  </div>
+  <div class="foot">
+    В центре поля сияет узел <strong>ПОД СОЛНЦЕМ</strong>.<br>
+    Ветер дует игрокам поочерёдно. За один ход можно пройти только на один узел в указанном направлении — если этот ход существует.
   </div>
 </div>
 
@@ -512,25 +558,22 @@ let rotation = 0;
 let round = 1;
 let winner = null;
 
-// --- Масштабирование для вертикального влезания с центрированием ---
+// Масштабирование для вертикального влезания с центрированием
 function fitApp() {
   const app = appContainer;
   const vh = window.innerHeight;
   const vw = window.innerWidth;
 
-  // Сбросим масштаб, чтобы измерить реальную высоту
   app.style.transform = 'scale(1)';
-  app.style.transformOrigin = 'center'; // масштабируем от центра
+  app.style.transformOrigin = 'center';
 
-  // Даём браузеру пересчитать layout
   const rect = app.getBoundingClientRect();
   const appHeight = rect.height;
   const appWidth = rect.width;
 
-  // Вычисляем коэффициенты масштабирования по ширине и высоте с учётом небольших полей
   const scaleX = (vw - 16) / appWidth;
   const scaleY = (vh - 16) / appHeight;
-  let scale = Math.min(scaleX, scaleY, 1); // не более 1 (не увеличиваем)
+  let scale = Math.min(scaleX, scaleY, 1);
 
   if (scale < 1) {
     app.style.transform = `scale(${scale})`;
@@ -539,7 +582,6 @@ function fitApp() {
   }
 }
 
-// --- Остальная логика игры (без изменений) ---
 function inBounds(x, y) {
   return x >= 0 && x < SIZE && y >= 0 && y < SIZE;
 }
@@ -808,14 +850,13 @@ function setup() {
   initNodes();
   drawLinks();
   restartGame();
-  fitApp(); // масштабируем после отрисовки
+  fitApp();
 }
 
 spinBtn.addEventListener("click", nextWind);
 skipBtn.addEventListener("click", skipTurn);
 restartBtn.addEventListener("click", setup);
 window.addEventListener("resize", () => {
-  // Пересчитываем узлы при изменении размеров, затем масштабируем
   initNodes();
   drawLinks();
   drawBoard();
