@@ -1,0 +1,561 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Редактор «Садок Игрушек Некса»</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #1e1e1e;
+      padding: 20px 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+      color: #e0e0e0;
+    }
+    h1 {
+      text-align: center;
+      color: #d0d0d0;
+      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    }
+    .section {
+      background: #2a2a2a;
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      border: 1px solid #3d3d3d;
+    }
+    .section h2 {
+      margin-top: 0;
+      font-size: 19px;
+      color: #c0c0c0;
+      border-bottom: 2px solid #3d3d3d;
+      padding-bottom: 8px;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+    .upload-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .upload-area input[type="file"] {
+      flex: 1;
+      min-width: 180px;
+      padding: 6px 0;
+      color: #b0b0b0;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding-left: 8px;
+    }
+    .upload-area input[type="file"]::file-selector-button {
+      background: #3a3a3a;
+      color: #d0d0d0;
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .upload-area input[type="file"]::file-selector-button:hover {
+      background: #4a4a4a;
+    }
+    .upload-area button {
+      padding: 10px 24px;
+      background: #4a4a4a;
+      color: #e0e0e0;
+      border: 1px solid #5a5a5a;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      font-size: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+    .upload-area button:hover {
+      background: #5a5a5a;
+      border-color: #7a7a7a;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      resize: vertical;
+      margin-top: 10px;
+      box-sizing: border-box;
+      background: #222;
+      color: #d0d0d0;
+    }
+    textarea:focus {
+      border-color: #777;
+      outline: none;
+      background: #1f1f1f;
+    }
+    .file-name {
+      font-weight: 600;
+      color: #c0c0c0;
+      margin-left: 6px;
+    }
+    .grid9 {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .col {
+      background: #242424;
+      border-radius: 10px;
+      padding: 12px 10px 14px;
+      border: 1px solid #3a3a3a;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .col:hover {
+      border-color: #6a6a6a;
+      background: #282828;
+    }
+    .col .word-label {
+      font-weight: 700;
+      font-size: 14px;
+      color: #d0d0d0;
+      margin-bottom: 6px;
+      display: block;
+      text-align: center;
+      background: #3a3a3a;
+      border-radius: 6px;
+      padding: 4px 0;
+    }
+    .col input[type="text"] {
+      width: 100%;
+      padding: 8px 6px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: 0.15s;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      margin-bottom: 6px;
+    }
+    .col input[type="text"]:focus {
+      border-color: #8a8a8a;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(120,120,120,0.25);
+      background: #1f1f1f;
+    }
+    .col .phrase-label {
+      font-size: 11px;
+      display: block;
+      margin-top: 2px;
+      margin-bottom: 1px;
+      font-weight: 600;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    /* Цвета для лейблов фраз */
+    .phrase-label.color-blue {
+      color: #7cb8f0;
+      background: #1a2a3a;
+    }
+    .phrase-label.color-green {
+      color: #7cdc8c;
+      background: #1a2a1a;
+    }
+    .phrase-label.color-yellow {
+      color: #f0d870;
+      background: #2a2a1a;
+    }
+    .phrase-label.color-red {
+      color: #f07a7a;
+      background: #2a1a1a;
+    }
+    .col .phrase-input {
+      margin-bottom: 4px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 22px;
+      justify-content: center;
+    }
+    .actions button {
+      padding: 12px 32px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+    .btn-save {
+      background: #4a6a5a;
+      color: #e8e8e8;
+    }
+    .btn-save:hover {
+      background: #5a7a6a;
+    }
+    .btn-clear {
+      background: #7a5a4a;
+      color: #e8e8e8;
+    }
+    .btn-clear:hover {
+      background: #8a6a5a;
+    }
+    .btn-reset {
+      background: #4a4a5a;
+      color: #e0e0e0;
+    }
+    .btn-reset:hover {
+      background: #5a5a6a;
+    }
+    .status {
+      margin-top: 16px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: none;
+      font-weight: 500;
+      font-size: 15px;
+    }
+    .status.success {
+      display: block;
+      background: #2a4a3a;
+      border: 1px solid #5a8a6a;
+      color: #b0e0c0;
+    }
+    .status.error {
+      display: block;
+      background: #4a2a2a;
+      border: 1px solid #8a4a4a;
+      color: #e0b0b0;
+    }
+    .status.info {
+      display: block;
+      background: #2a3a4a;
+      border: 1px solid #5a7a8a;
+      color: #b0d0e0;
+    }
+    @media (max-width: 1000px) {
+      .grid9 {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+    @media (max-width: 700px) {
+      .grid9 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 460px) {
+      .grid9 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      h1 {
+        font-size: 20px;
+      }
+    }
+    .col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .col-index {
+      font-size: 12px;
+      color: #777;
+      font-weight: 600;
+    }
+    .word-badge {
+      background: #3a3a3a;
+      color: #c0c0c0;
+      font-size: 10px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border: 1px solid #4a4a4a;
+    }
+    .word-input-main {
+      font-weight: 600 !important;
+      background: #1f1f1f !important;
+      border-color: #4a4a4a !important;
+      margin-bottom: 10px !important;
+    }
+    .word-input-main:focus {
+      background: #252525 !important;
+    }
+    .section p {
+      color: #aaa;
+    }
+    .section code {
+      background: #2a2a2a;
+      color: #c0c0c0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #3d3d3d;
+    }
+    button[onclick="parseFromTextarea()"] {
+      background: #5a4a6a !important;
+      color: #e0e0e0;
+      border: 1px solid #6a5a7a;
+      padding: 8px 22px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+    button[onclick="parseFromTextarea()"]:hover {
+      background: #6a5a7a !important;
+      border-color: #8a7a9a;
+    }
+    .upload-area button:last-of-type {
+      background: #4a4a5a;
+    }
+    .upload-area button:last-of-type:hover {
+      background: #5a5a6a;
+    }
+  </style>
+</head>
+<body>
+<h1>🧸 РЕДАКТОР ОБУЧЕНИЯ АНГЛИЙСКОМУ 1 ч. (замени слова на новые)</h1>
+
+<div class="section">
+  <h2>1. Загрузите ваш файл <code>index.html</code></h2>
+  <div class="upload-area">
+    <input type="file" id="fileInput" accept=".html,.htm">
+    <button onclick="loadFile()">📂 Загрузить</button>
+    <span class="file-name" id="fileName">(файл не выбран)</span>
+  </div>
+  <p style="margin:12px 0 4px; font-size:14px; color:#aaa;">Или вставьте код вручную:</p>
+  <textarea id="template" placeholder="Вставьте сюда содержимое index.html …"></textarea>
+  <button onclick="parseFromTextarea()" style="margin-top:8px;">🔍 Извлечь слова из кода</button>
+</div>
+
+<div class="section">
+  <h2>2. Поменяй слова и фразы в ячейках на новые и нажми "Сохранить как index"</h2>
+  <div id="grid9" class="grid9"></div>
+</div>
+
+<div class="actions">
+  <button class="btn-save" onclick="generate()">💾 Сохранить как index.html</button>
+  <button class="btn-clear" onclick="clearAll()">🗑️ Очистить поля</button>
+  <button class="btn-reset" onclick="resetToLoaded()">↺ Вернуть загруженные</button>
+</div>
+
+<div id="status" class="status"></div>
+
+<script>
+  // ---------- ПОСТРОЕНИЕ 9 КОЛОНОК ----------
+  const grid9 = document.getElementById('grid9');
+  let originalHtml = '';
+  let oldWords = [];
+  let oldPhrases = [];
+
+  // Функция определения цвета для лейбла фразы по индексу (0..35)
+  function getColorClass(index) {
+    // Индексы 0,4,8,12,16,20,24,28,32 → синий (фраза 1,5,9,13,17,21,25,29,33)
+    if (index % 4 === 0) return 'color-blue';
+    // Индексы 1,5,9,13,17,21,25,29,33 → зеленый (фраза 2,6,10,14,18,22,26,30,34)
+    if (index % 4 === 1) return 'color-green';
+    // Индексы 2,6,10,14,18,22,26,30,34 → желтый (фраза 3,7,11,15,19,23,27,31,35)
+    if (index % 4 === 2) return 'color-yellow';
+    // Индексы 3,7,11,15,19,23,27,31,35 → красный (фраза 4,8,12,16,20,24,28,32,36)
+    return 'color-red';
+  }
+
+  for (let col = 0; col < 9; col++) {
+    const colDiv = document.createElement('div');
+    colDiv.className = 'col';
+    const header = document.createElement('div');
+    header.className = 'col-header';
+    header.innerHTML = `<span class="col-index">#${col + 1}</span><span class="word-badge">СЛОВО</span>`;
+    colDiv.appendChild(header);
+
+    const wordInput = document.createElement('input');
+    wordInput.type = 'text';
+    wordInput.id = 'c' + col;
+    wordInput.className = 'word-input-main';
+    wordInput.placeholder = 'слово ' + (col + 1);
+    colDiv.appendChild(wordInput);
+
+    for (let p = 0; p < 4; p++) {
+      const globalIndex = col * 4 + p; // 0..35
+      const label = document.createElement('span');
+      label.className = 'phrase-label ' + getColorClass(globalIndex);
+      label.textContent = 'фраза ' + (globalIndex + 1);
+      colDiv.appendChild(label);
+
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.id = 'w' + globalIndex;
+      inp.className = 'phrase-input';
+      inp.placeholder = 'фраза ' + (globalIndex + 1);
+      colDiv.appendChild(inp);
+    }
+    grid9.appendChild(colDiv);
+  }
+
+  // ---------- ЗАГРУЗКА ----------
+  function loadFile() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (!file) { showStatus('Выберите файл сначала.', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const content = e.target.result;
+      document.getElementById('template').value = content;
+      document.getElementById('fileName').textContent = file.name;
+      parseContent(content);
+    };
+    reader.readAsText(file);
+  }
+
+  function parseFromTextarea() {
+    const content = document.getElementById('template').value;
+    if (!content.trim()) { showStatus('Поле с кодом пустое. Вставьте содержимое index.html.', 'error'); return; }
+    parseContent(content);
+  }
+
+  // ---------- ПАРСИНГ ----------
+  function parseContent(html) {
+    try {
+      const wordRegex = /<div\s+class="word"\s+onclick="openTV\('([^']*)'\)">([^<]*)<\/div>/g;
+      const words = [];
+      let m;
+      while ((m = wordRegex.exec(html)) !== null) {
+        words.push(m[1].trim() || m[2].trim());
+      }
+      if (words.length !== 9) throw new Error(`Найдено ${words.length} кнопок, ожидается 9.`);
+
+      const transRegex = /\[\s*"([^"]*)"\s*,\s*(\d+)\s*\]/g;
+      const phrases = [];
+      let m2;
+      while ((m2 = transRegex.exec(html)) !== null) {
+        phrases.push(m2[1].trim());
+      }
+      if (phrases.length !== 36) throw new Error(`Найдено ${phrases.length} фраз, ожидается 36.`);
+
+      originalHtml = html;
+      oldWords = words.slice();
+      oldPhrases = phrases.slice();
+
+      for (let i = 0; i < 9; i++) document.getElementById('c' + i).value = words[i] || '';
+      for (let i = 0; i < 36; i++) document.getElementById('w' + i).value = phrases[i] || '';
+
+      document.getElementById('fileName').textContent = ' (загружено)';
+      showStatus(`✅ Успешно загружено! 9 слов и 36 фраз.`, 'success');
+    } catch (e) {
+      showStatus('❌ Ошибка при разборе: ' + e.message, 'error');
+    }
+  }
+
+  // ---------- ЭКРАНИРОВАНИЕ ----------
+  function escapeJS(str) {
+    return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+  }
+  function escapeHTMLAttr(str) {
+    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ---------- ГЕНЕРАЦИЯ (с заменой ключей) ----------
+  function generate() {
+    if (!originalHtml) {
+      showStatus('Сначала загрузите прототип (файл или вставьте код).', 'error');
+      return;
+    }
+
+    const newWords = [];
+    for (let i = 0; i < 9; i++) {
+      const val = document.getElementById('c' + i).value.trim();
+      if (!val) { showStatus(`⚠️ Слово ${i + 1} не может быть пустым.`, 'error'); return; }
+      newWords.push(val);
+    }
+    const newPhrases = [];
+    for (let i = 0; i < 36; i++) {
+      const val = document.getElementById('w' + i).value.trim();
+      if (!val) { showStatus(`⚠️ Фраза ${i + 1} не может быть пустой.`, 'error'); return; }
+      newPhrases.push(val);
+    }
+
+    let newHtml = originalHtml;
+
+    let wordIndex = 0;
+    newHtml = newHtml.replace(
+      /<div\s+class="word"\s+onclick="openTV\('([^']*)'\)">([^<]*)<\/div>/g,
+      function(match, oldAttr, oldText) {
+        const raw = newWords[wordIndex] || oldAttr;
+        const escaped = escapeHTMLAttr(raw);
+        wordIndex++;
+        return `<div class="word" onclick="openTV('${escaped}')">${escaped}</div>`;
+      }
+    );
+
+    for (let i = 0; i < 9; i++) {
+      const oldKey = oldWords[i];
+      const newKey = newWords[i];
+      const escapedNewKey = escapeJS(newKey);
+      const regex = new RegExp(`"${oldKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\s*:\\s*\\[`, 'g');
+      newHtml = newHtml.replace(regex, `"${escapedNewKey}": [`);
+    }
+
+    let phraseIndex = 0;
+    newHtml = newHtml.replace(
+      /\[\s*"([^"]*)"\s*,\s*(\d+)\s*\]/g,
+      function(match, oldPhrase, number) {
+        const raw = newPhrases[phraseIndex] || oldPhrase;
+        const escaped = escapeJS(raw);
+        phraseIndex++;
+        return `["${escaped}", ${number}]`;
+      }
+    );
+
+    const blob = new Blob([newHtml], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'index.html';
+    a.click();
+    showStatus('✅ Новый файл index.html с вашими словами успешно скачан!', 'success');
+  }
+
+  // ---------- ВСПОМОГАТЕЛЬНЫЕ ----------
+  function showStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status ' + type;
+    el.style.display = 'block';
+  }
+  function clearAll() {
+    for (let i = 0; i < 9; i++) document.getElementById('c' + i).value = '';
+    for (let i = 0; i < 36; i++) document.getElementById('w' + i).value = '';
+    document.getElementById('template').value = '';
+    originalHtml = ''; oldWords = []; oldPhrases = [];
+    document.getElementById('fileName').textContent = '(нет файла)';
+    showStatus('Поля очищены.', 'info');
+  }
+  function resetToLoaded() {
+    if (!oldWords.length || !oldPhrases.length) {
+      showStatus('Нет загруженных данных. Сначала загрузите прототип.', 'error');
+      return;
+    }
+    for (let i = 0; i < 9; i++) document.getElementById('c' + i).value = oldWords[i] || '';
+    for (let i = 0; i < 36; i++) document.getElementById('w' + i).value = oldPhrases[i] || '';
+    showStatus('Восстановлены исходные слова из прототипа.', 'info');
+  }
+</script>
+</body>
+</html>
