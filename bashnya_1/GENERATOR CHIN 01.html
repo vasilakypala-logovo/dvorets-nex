@@ -1,0 +1,551 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор теми</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #0b0f1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        .generator {
+            background: #151e2b;
+            padding: 40px 50px;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px #2f4057 inset;
+            width: 460px;
+            text-align: center;
+            transition: 0.2s;
+        }
+        h1 {
+            font-weight: 400;
+            font-size: 28px;
+            letter-spacing: 2px;
+            color: #b8d0e0;
+            margin-top: 0;
+            margin-bottom: 28px;
+            text-shadow: 0 2px 0 #0a0f16;
+        }
+        h1 span {
+            font-weight: 300;
+            color: #7c9bb8;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        label {
+            font-size: 15px;
+            font-weight: 400;
+            color: #a3bdd6;
+            letter-spacing: 0.5px;
+            text-align: left;
+        }
+        input {
+            background: #0f1622;
+            border: 1px solid #2f405a;
+            border-radius: 60px;
+            padding: 16px 22px;
+            font-size: 18px;
+            color: #eaf0f7;
+            outline: none;
+            transition: 0.2s;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+        input:focus {
+            border-color: #6d94c0;
+            box-shadow: 0 0 0 3px rgba(80, 140, 220, 0.25);
+            background: #121b2b;
+        }
+        input::placeholder {
+            color: #4c627c;
+            font-weight: 300;
+        }
+        .btn {
+            background: #2c4b70;
+            border: none;
+            border-radius: 60px;
+            padding: 16px 24px;
+            font-size: 20px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 1.5px;
+            box-shadow: 0 6px 0 #14212f, 0 4px 12px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            margin-top: 6px;
+        }
+        .btn:hover {
+            background: #3a608b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #14212f, 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #14212f;
+        }
+        .hint {
+            margin-top: 22px;
+            font-size: 14px;
+            color: #5f7897;
+            border-top: 1px solid #1d2b3d;
+            padding-top: 20px;
+            letter-spacing: 0.3px;
+        }
+        .hint code {
+            background: #101a28;
+            padding: 4px 12px;
+            border-radius: 40px;
+            color: #9db9da;
+            font-size: 14px;
+            border: 1px solid #283b52;
+        }
+        .status {
+            margin-top: 16px;
+            font-size: 15px;
+            color: #8bb3d9;
+            min-height: 24px;
+        }
+        .status.error {
+            color: #e07b7b;
+        }
+        .status.success {
+            color: #7bcfa6;
+        }
+    </style>
+</head>
+<body>
+    <div class="generator">
+        <h1>⚙️ <span>ГЕНЕРАТОР</span> ТЕМИ</h1>
+
+        <div class="input-group">
+            <label for="themeInput">Назва теми</label>
+            <input type="text" id="themeInput" placeholder="напр. ГОРОД, САД, КОСМОС" value="ГОРОД">
+        </div>
+
+        <button class="btn" id="createBtn">📁 СТВОРИТИ</button>
+        <div id="statusMessage" class="status">готово</div>
+        <div class="hint">
+            ⚡ <code>city.png</code> залишається незмінним
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            const themeInput = document.getElementById('themeInput');
+            const createBtn = document.getElementById('createBtn');
+            const statusDiv = document.getElementById('statusMessage');
+
+            // ------------------------------------------------------------------
+            // ШАБЛОН HTML з підключенням до kust1, kust2, kust3
+            // ------------------------------------------------------------------
+            function getTemplate(themeName) {
+                const safeTheme = String(themeName).trim() || "ТЕМА";
+                return '<!DOCTYPE html>\n' +
+                '<html lang="uk">\n' +
+                '<head>\n' +
+                '<meta charset="UTF-8">\n' +
+                '<title>' + safeTheme + '</title>\n' +
+                '\n' +
+                '<style>\n' +
+                '\n' +
+                'body{\n' +
+                '    margin:0;\n' +
+                '    background:black;\n' +
+                '    overflow:hidden;\n' +
+                '}\n' +
+                '\n' +
+                '#scene{\n' +
+                '    position:relative;\n' +
+                '    width:1366px;\n' +
+                '    height:768px;\n' +
+                '    margin:auto;\n' +
+                '    overflow:hidden;\n' +
+                '}\n' +
+                '\n' +
+                '#bg{\n' +
+                '    position:absolute;\n' +
+                '    top:0;\n' +
+                '    left:0;\n' +
+                '    width:100%;\n' +
+                '    height:100%;\n' +
+                '    display:block;\n' +
+                '    z-index:0;\n' +
+                '}\n' +
+                '\n' +
+                '.portal{\n' +
+                '    position:absolute;\n' +
+                '    width:46px;\n' +
+                '    height:46px;\n' +
+                '    border:none;\n' +
+                '    border-radius:50%;\n' +
+                '    background:white;\n' +
+                '    font-size:24px;\n' +
+                '    font-weight:bold;\n' +
+                '    color:black;\n' +
+                '    cursor:pointer;\n' +
+                '    animation:breathe 3s infinite ease-in-out;\n' +
+                '    box-shadow:\n' +
+                '    0 0 10px white,\n' +
+                '    0 0 20px white,\n' +
+                '    0 0 40px white,\n' +
+                '    0 0 70px white;\n' +
+                '    z-index:5;\n' +
+                '    text-decoration:none;\n' +
+                '    display:flex;\n' +
+                '    align-items:center;\n' +
+                '    justify-content:center;\n' +
+                '}\n' +
+                '\n' +
+                '.p1{ left:110px; top:430px; }\n' +
+                '.p2{ left:670px; top:120px; }\n' +
+                '.p3{ left:1120px; top:335px; }\n' +
+                '\n' +
+                '@keyframes breathe{\n' +
+                '0%{ transform:scale(0.9); opacity:0.7; }\n' +
+                '50%{ transform:scale(1.25); opacity:1; }\n' +
+                '100%{ transform:scale(0.9); opacity:0.7; }\n' +
+                '}\n' +
+                '\n' +
+                '#topTitle{\n' +
+                '    position:absolute;\n' +
+                '    top:25px;\n' +
+                '    width:100%;\n' +
+                '    text-align:center;\n' +
+                '    font-family:"Trebuchet MS", "Verdana", Arial, sans-serif;\n' +
+                '    font-size:34px;\n' +
+                '    font-weight:600;\n' +
+                '    letter-spacing:4px;\n' +
+                '    color:#1f4d2a;\n' +
+                '    z-index:9999;\n' +
+                '}\n' +
+                '\n' +
+                '#topTitle .box{\n' +
+                '    display:inline-block;\n' +
+                '    padding:10px 22px;\n' +
+                '    border:2px solid #1f4d2a;\n' +
+                '    border-radius:10px;\n' +
+                '    background:rgba(0, 0, 0, 0.35);\n' +
+                '    box-shadow:\n' +
+                '        0 0 10px rgba(0,255,120,0.15),\n' +
+                '        inset 0 0 10px rgba(0,255,120,0.08);\n' +
+                '}\n' +
+                '\n' +
+                '#topTitle span{\n' +
+                '    margin-left:14px;\n' +
+                '    font-size:28px;\n' +
+                '    color:#2e7d4a;\n' +
+                '    font-weight:500;\n' +
+                '}\n' +
+                '\n' +
+                '#title{\n' +
+                '    position:absolute;\n' +
+                '    left:0;\n' +
+                '    bottom:60px;\n' +
+                '    width:100%;\n' +
+                '    text-align:center;\n' +
+                '    font-family:"Segoe UI", "Helvetica Neue", Arial, sans-serif;\n' +
+                '    font-size:66px;\n' +
+                '    font-weight:200;\n' +
+                '    letter-spacing:6px;\n' +
+                '    color:#2a3f7a;\n' +
+                '    z-index:9999;\n' +
+                '    text-shadow:\n' +
+                '        0 0 2px #ffffff,\n' +
+                '        0 0 6px #ffffff,\n' +
+                '        0 0 12px rgba(255,255,255,0.9),\n' +
+                '        0 0 20px rgba(40,70,160,0.6),\n' +
+                '        0 0 40px rgba(30,60,150,0.5),\n' +
+                '        0 0 80px rgba(20,40,120,0.4);\n' +
+                '    animation:neonPulse 1.8s infinite ease-in-out;\n' +
+                '}\n' +
+                '\n' +
+                '@keyframes neonPulse{\n' +
+                '0%{\n' +
+                '    filter: brightness(1);\n' +
+                '    text-shadow:\n' +
+                '        0 0 2px #ffffff,\n' +
+                '        0 0 6px #ffffff,\n' +
+                '        0 0 12px rgba(255,255,255,0.8),\n' +
+                '        0 0 20px rgba(40,70,160,0.5),\n' +
+                '        0 0 40px rgba(30,60,150,0.4);\n' +
+                '}\n' +
+                '50%{\n' +
+                '    filter: brightness(1.25);\n' +
+                '    text-shadow:\n' +
+                '        0 0 2px #ffffff,\n' +
+                '        0 0 8px #ffffff,\n' +
+                '        0 0 16px rgba(255,255,255,0.9),\n' +
+                '        0 0 30px rgba(80,120,220,0.7),\n' +
+                '        0 0 60px rgba(50,90,200,0.6),\n' +
+                '        0 0 120px rgba(30,60,160,0.4);\n' +
+                '}\n' +
+                '100%{\n' +
+                '    filter: brightness(1);\n' +
+                '    text-shadow:\n' +
+                '        0 0 2px #ffffff,\n' +
+                '        0 0 6px #ffffff,\n' +
+                '        0 0 12px rgba(255,255,255,0.8),\n' +
+                '        0 0 20px rgba(40,70,160,0.5),\n' +
+                '        0 0 40px rgba(30,60,150,0.4);\n' +
+                '}\n' +
+                '}\n' +
+                '\n' +
+                '/* Стилі для посилань-кнопок */\n' +
+                'a.portal {\n' +
+                '    text-decoration: none;\n' +
+                '    color: black;\n' +
+                '}\n' +
+                '\n' +
+                'a.portal:hover {\n' +
+                '    transform: scale(1.3);\n' +
+                '    transition: transform 0.2s;\n' +
+                '}\n' +
+                '\n' +
+                '</style>\n' +
+                '\n' +
+                '</head>\n' +
+                '\n' +
+                '<body>\n' +
+                '\n' +
+                '<div id="scene">\n' +
+                '\n' +
+                '<img src="city.png" id="bg">\n' +
+                '\n' +
+                '<div id="topTitle">\n' +
+                '    <div class="box">\n' +
+                '        ' + safeTheme + ' <span>' + safeTheme + '</span>\n' +
+                '    </div>\n' +
+                '</div>\n' +
+                '\n' +
+                '<a href="kust1/index.html" class="portal p1">1</a>\n' +
+                '<a href="kust2/index.html" class="portal p2">2</a>\n' +
+                '<a href="kust3/index.html" class="portal p3">3</a>\n' +
+                '\n' +
+                '<div id="title">\n' +
+                'ВЧИСЬ ГОВОРИТИ АНГЛІЙСЬКОЮ\n' +
+                '</div>\n' +
+                '\n' +
+                '</div>\n' +
+                '\n' +
+                '</body>\n' +
+                '</html>';
+            }
+
+            // ------------------------------------------------------------------
+            // ФУНКЦИЯ ДЛЯ СОЗДАНИЯ ZIP
+            // ------------------------------------------------------------------
+            function createZip(themeName) {
+                const name = themeName.trim() || "theme";
+                const folderName = name;
+                
+                // Основний файл: папка_теми/tema.html (завжди tema.html!)
+                const mainFile = folderName + '/tema.html';
+                const htmlContent = getTemplate(name);
+
+                // Порожні HTML-файли всередині папки теми:
+                // папка_теми/kust1/index.html
+                // папка_теми/kust2/index.html
+                // папка_теми/kust3/index.html
+                const emptyDirs = ['kust1', 'kust2', 'kust3'];
+                const emptyFiles = emptyDirs.map(dir => folderName + '/' + dir + '/index.html');
+
+                // Набір файлів для ZIP: шлях -> вміст (рядок)
+                const files = new Map();
+                files.set(mainFile, htmlContent);
+
+                for (const filePath of emptyFiles) {
+                    files.set(filePath, ''); // Пустий файл
+                }
+
+                const encoder = new TextEncoder();
+
+                // Функція CRC32
+                function crc32(data) {
+                    let crc = 0xFFFFFFFF;
+                    const table = new Uint32Array(256);
+                    for (let i = 0; i < 256; i++) {
+                        let c = i;
+                        for (let j = 0; j < 8; j++) {
+                            c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+                        }
+                        table[i] = c;
+                    }
+                    for (let i = 0; i < data.length; i++) {
+                        crc = table[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+                    }
+                    return (crc ^ 0xFFFFFFFF) >>> 0;
+                }
+
+                // Збірка ZIP
+                const localHeaders = [];
+                const centralHeaders = [];
+                let offset = 0;
+                const allData = [];
+
+                for (const [path, content] of files) {
+                    const contentBytes = (typeof content === 'string')
+                        ? encoder.encode(content)
+                        : content;
+
+                    const pathBytes = encoder.encode(path);
+                    const crc = crc32(contentBytes);
+                    const compSize = contentBytes.length;
+                    const gpFlag = 0x0800; // UTF-8
+
+                    // Local File Header
+                    const lfh = new Uint8Array(30 + pathBytes.length);
+                    let pos = 0;
+                    lfh.set([0x50, 0x4B, 0x03, 0x04], pos); pos += 4;
+                    lfh.set([0x14, 0x00], pos); pos += 2;
+                    const gpBytes = new Uint8Array(2);
+                    new DataView(gpBytes.buffer).setUint16(0, gpFlag, true);
+                    lfh.set(gpBytes, pos); pos += 2;
+                    lfh.set([0x00, 0x00], pos); pos += 2;
+                    lfh.set([0x00, 0x00], pos); pos += 2;
+                    lfh.set([0x00, 0x00], pos); pos += 2;
+                    const crcBytes = new Uint8Array(4);
+                    new DataView(crcBytes.buffer).setUint32(0, crc, true);
+                    lfh.set(crcBytes, pos); pos += 4;
+                    const sizeBytes = new Uint8Array(4);
+                    new DataView(sizeBytes.buffer).setUint32(0, compSize, true);
+                    lfh.set(sizeBytes, pos); pos += 4;
+                    lfh.set(sizeBytes, pos); pos += 4;
+                    const nameLen = new Uint8Array(2);
+                    new DataView(nameLen.buffer).setUint16(0, pathBytes.length, true);
+                    lfh.set(nameLen, pos); pos += 2;
+                    lfh.set([0x00, 0x00], pos); pos += 2;
+                    lfh.set(pathBytes, pos);
+
+                    // Central Directory Header
+                    const cdh = new Uint8Array(46 + pathBytes.length);
+                    pos = 0;
+                    cdh.set([0x50, 0x4B, 0x01, 0x02], pos); pos += 4;
+                    cdh.set([0x14, 0x00], pos); pos += 2;
+                    cdh.set([0x14, 0x00], pos); pos += 2;
+                    cdh.set(gpBytes, pos); pos += 2;
+                    cdh.set([0x00, 0x00], pos); pos += 2;
+                    cdh.set([0x00, 0x00], pos); pos += 2;
+                    cdh.set([0x00, 0x00], pos); pos += 2;
+                    cdh.set(crcBytes, pos); pos += 4;
+                    cdh.set(sizeBytes, pos); pos += 4;
+                    cdh.set(sizeBytes, pos); pos += 4;
+                    cdh.set(nameLen, pos); pos += 2;
+                    cdh.set([0x00, 0x00], pos); pos += 2;
+                    cdh.set([0x00, 0x00], pos); pos += 2;
+                    cdh.set([0x00, 0x00], pos); pos += 2;
+                    cdh.set([0x00, 0x00], pos); pos += 2;
+                    cdh.set([0x00, 0x00, 0x00, 0x00], pos); pos += 4;
+                    const offsetBytes = new Uint8Array(4);
+                    new DataView(offsetBytes.buffer).setUint32(0, offset, true);
+                    cdh.set(offsetBytes, pos); pos += 4;
+                    cdh.set(pathBytes, pos);
+
+                    localHeaders.push(lfh);
+                    centralHeaders.push(cdh);
+                    allData.push(lfh);
+                    allData.push(contentBytes);
+                    offset += lfh.length + contentBytes.length;
+                }
+
+                // EOCD
+                const eocd = new Uint8Array(22);
+                let epos = 0;
+                eocd.set([0x50, 0x4B, 0x05, 0x06], epos); epos += 4;
+                eocd.set([0x00, 0x00], epos); epos += 2;
+                eocd.set([0x00, 0x00], epos); epos += 2;
+                eocd.set([files.size, 0x00], epos); epos += 2;
+                eocd.set([files.size, 0x00], epos); epos += 2;
+                const cdSize = new Uint8Array(4);
+                const totalCdhLen = centralHeaders.reduce((sum, h) => sum + h.length, 0);
+                new DataView(cdSize.buffer).setUint32(0, totalCdhLen, true);
+                eocd.set(cdSize, epos); epos += 4;
+                const cdOffset = new Uint8Array(4);
+                new DataView(cdOffset.buffer).setUint32(0, offset, true);
+                eocd.set(cdOffset, epos); epos += 4;
+                eocd.set([0x00, 0x00], epos);
+
+                for (const h of centralHeaders) {
+                    allData.push(h);
+                }
+                allData.push(eocd);
+
+                const totalLength = allData.reduce((sum, part) => sum + part.length, 0);
+                const result = new Uint8Array(totalLength);
+                let off = 0;
+                for (const part of allData) {
+                    result.set(part, off);
+                    off += part.length;
+                }
+                return new Blob([result], { type: 'application/zip' });
+            }
+
+            // ------------------------------------------------------------------
+            // ОБРОБКА ПОДІЙ
+            // ------------------------------------------------------------------
+            function downloadZip(themeName) {
+                const name = themeName.trim() || "theme";
+
+                try {
+                    statusDiv.className = 'status';
+                    statusDiv.textContent = '⏳ створення архіву...';
+
+                    const zipBlob = createZip(name);
+
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(zipBlob);
+                    link.download = name + '.zip';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ ' + name + '.zip завантажено!';
+                } catch (err) {
+                    console.error(err);
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = '❌ помилка: ' + err.message;
+                }
+            }
+
+            createBtn.addEventListener('click', function() {
+                const val = themeInput.value;
+                if (!val.trim()) {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = '⚠️ введіть назву теми';
+                    return;
+                }
+                downloadZip(val);
+            });
+
+            themeInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    createBtn.click();
+                }
+            });
+
+            themeInput.focus();
+            themeInput.select();
+            statusDiv.textContent = 'очікуємо назву...';
+
+        })();
+    </script>
+</body>
+</html>
