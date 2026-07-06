@@ -1,0 +1,553 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Редактор САДОК ИГРУШЕК</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    background: #1a1a1a;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    color: #00d4ff;
+    text-align: center;
+    margin-top: 0;
+}
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+    background: #252525;
+    padding: 10px;
+    border-radius: 8px;
+    align-items: center;
+}
+
+button {
+    background: #007acc;
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #0099ff;
+}
+
+button.generate {
+    background: #b85c00;
+}
+
+button.generate:hover {
+    background: #e07000;
+}
+
+#status {
+    background: #2a2a2a;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    border-left: 4px solid #ffb347;
+    white-space: pre-wrap;
+    min-height: 50px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.cell {
+    background: #252525;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 8px;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cell.empty {
+    opacity: 0.5;
+}
+
+/* ===== ЯРКИЕ ЦВЕТА ДЛЯ ИНДЕКСОВ ===== */
+.index {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* Синий: 1,5,9,13,17,21,25,29,33 (index % 4 === 1) */
+.index.color-blue {
+    color: #4df;
+    background: #003366;
+    border: 1px solid #4df;
+    box-shadow: 0 0 15px rgba(68, 221, 255, 0.3);
+}
+
+/* Зеленый: 2,6,10,14,18,22,26,30,34 (index % 4 === 2) */
+.index.color-green {
+    color: #5f5;
+    background: #003300;
+    border: 1px solid #5f5;
+    box-shadow: 0 0 15px rgba(85, 255, 85, 0.3);
+}
+
+/* Желтый: 3,7,11,15,19,23,27,31,35 (index % 4 === 3) */
+.index.color-yellow {
+    color: #ffdd44;
+    background: #332200;
+    border: 1px solid #ffdd44;
+    box-shadow: 0 0 15px rgba(255, 221, 68, 0.3);
+}
+
+/* Красный: 4,8,12,16,20,24,28,32,36 (index % 4 === 0) */
+.index.color-red {
+    color: #ff5555;
+    background: #330000;
+    border: 1px solid #ff5555;
+    box-shadow: 0 0 15px rgba(255, 85, 85, 0.3);
+}
+
+.ukr {
+    color: #8cf;
+    min-height: 40px;
+    word-break: break-word;
+}
+
+.eng-input input {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid #555;
+    color: white;
+    padding: 4px;
+    border-radius: 4px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🧩 РЕДАКТОР ОБУЧЕНИЯ АНГЛИСКОМУ 2ч. (генерация chik)</h1>
+
+<div class="toolbar">
+    <button onclick="loadFile()">📂 Загрузить index.html</button>
+    <button onclick="translateAll()">🌍 Перевести на English</button>
+    <button class="generate" onclick="generateAll()">⚙️ Генерировать 36 chik</button>
+    <input type="file" id="fileInput" style="display:none" accept=".html,.htm" onchange="handleFile(event)">
+</div>
+
+<div id="status">📁 Нажмите "Загрузить index.html" и выберите файл, нажмите "Перевести на English", дождитесь перевода и нажмите "Генерировать 36 chik"</div>
+
+<div class="grid-container" id="grid"></div>
+
+<script>
+// ============ ФУНКЦИЯ ДЛЯ ОПРЕДЕЛЕНИЯ ЦВЕТА ============
+function getColorClass(index) {
+    // Индексы: 1,5,9,13,17,21,25,29,33 → синий (index % 4 === 1)
+    if (index % 4 === 1) return 'color-blue';
+    // Индексы: 2,6,10,14,18,22,26,30,34 → зеленый (index % 4 === 2)
+    if (index % 4 === 2) return 'color-green';
+    // Индексы: 3,7,11,15,19,23,27,31,35 → желтый (index % 4 === 3)
+    if (index % 4 === 3) return 'color-yellow';
+    // Индексы: 4,8,12,16,20,24,28,32,36 → красный (index % 4 === 0)
+    return 'color-red';
+}
+
+// ============ СОЗДАНИЕ СЕТКИ ============
+function createGrid() {
+    var grid = document.getElementById('grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    for (var i = 1; i <= 36; i++) {
+        var cell = document.createElement('div');
+        cell.className = 'cell empty';
+        cell.dataset.index = i;
+
+        var colorClass = getColorClass(i);
+        cell.innerHTML = '<div class="index ' + colorClass + '">#' + i + '</div><div class="ukr">—</div><div class="eng-input"><input disabled placeholder="English"></div>';
+
+        grid.appendChild(cell);
+    }
+}
+
+// Создаём сетку при загрузке
+createGrid();
+
+// ============ ХРАНИЛИЩЕ ============
+var currentItems = [];
+
+// ============ ЗАГРУЗКА ФАЙЛА ============
+function loadFile() {
+    document.getElementById('fileInput').click();
+}
+
+function handleFile(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        parseIndex(ev.target.result);
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+}
+
+// ============ ПАРСЕР ============
+function parseIndex(text) {
+    try {
+        var start = text.indexOf('translations');
+        if (start === -1) throw new Error('translations not found');
+
+        start = text.indexOf('{', start);
+
+        var count = 0, end = -1;
+        for (var i = start; i < text.length; i++) {
+            if (text[i] === '{') count++;
+            if (text[i] === '}') {
+                count--;
+                if (count === 0) { end = i; break; }
+            }
+        }
+
+        if (end === -1) throw new Error('Cannot find translations object');
+
+        var objText = text.slice(start, end + 1);
+        var obj = Function('return ' + objText)();
+
+        var items = [];
+
+        for (var k in obj) {
+            if (Array.isArray(obj[k])) {
+                for (var j = 0; j < obj[k].length; j++) {
+                    var pair = obj[k][j];
+                    if (Array.isArray(pair) && pair.length >= 2) {
+                        items.push({
+                            ukr: pair[0],
+                            index: pair[1],
+                            eng: ''
+                        });
+                    }
+                }
+            }
+        }
+
+        if (items.length === 0) throw new Error('No translation pairs found');
+
+        items.sort(function(a,b) { return a.index - b.index; });
+        fillGrid(items);
+
+        document.getElementById('status').textContent = 
+            '✅ Загружено: ' + items.length + ' слов. Нажмите "Перевести" или "Генерировать".';
+
+    } catch (e) {
+        document.getElementById('status').textContent = '❌ Ошибка: ' + e.message;
+        console.error(e);
+    }
+}
+
+// ============ ЗАПОЛНЕНИЕ СЕТКИ ============
+function fillGrid(items) {
+    currentItems = items;
+    var cells = document.querySelectorAll('.cell');
+
+    cells.forEach(function(c) {
+        c.className = 'cell empty';
+        c.querySelector('.ukr').textContent = '—';
+        var input = c.querySelector('input');
+        input.value = '';
+        input.disabled = true;
+    });
+
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var cell = cells[item.index - 1];
+        if (!cell) continue;
+
+        cell.className = 'cell';
+        cell.querySelector('.ukr').textContent = item.ukr;
+
+        var input = cell.querySelector('input');
+        input.disabled = false;
+        if (item.eng) input.value = item.eng;
+    }
+}
+
+// ============ ПЕРЕВОД ============
+async function translateText(text) {
+    var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=uk&tl=en&dt=t&q=' + encodeURIComponent(text);
+    var res = await fetch(url);
+    var data = await res.json();
+    return data[0].map(function(x) { return x[0]; }).join('');
+}
+
+async function translateAll() {
+    var cells = document.querySelectorAll('.cell');
+    document.getElementById('status').textContent = '⏳ Перевод...';
+
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        var ukr = cell.querySelector('.ukr').textContent;
+        var input = cell.querySelector('input');
+
+        if (!input || input.disabled) continue;
+        if (!ukr || ukr === '—') continue;
+
+        try {
+            var tr = await translateText(ukr);
+            input.value = tr;
+            var idx = parseInt(cell.dataset.index);
+            var item = currentItems.find(function(it) { return it.index === idx; });
+            if (item) item.eng = tr;
+        } catch {
+            input.value = 'ERROR';
+        }
+
+        await new Promise(function(r) { setTimeout(r, 120); });
+    }
+
+    document.getElementById('status').textContent = '✅ Перевод готов. Можно генерировать.';
+}
+
+// ============ ГЕНЕРАЦИЯ ============
+function generateAll() {
+    var cells = document.querySelectorAll('.cell');
+    var hasEmpty = false;
+
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        var input = cell.querySelector('input');
+        if (!input.disabled && input.value.trim() === '') {
+            hasEmpty = true;
+            break;
+        }
+    }
+
+    if (hasEmpty) {
+        document.getElementById('status').textContent = '⚠️ Сначала заполните все английские переводы (нажмите "Перевести").';
+        return;
+    }
+
+    var items = [];
+    for (var i = 0; i < cells.length; i++) {
+        var cell = cells[i];
+        var index = parseInt(cell.dataset.index);
+        var ukr = cell.querySelector('.ukr').textContent;
+        var eng = cell.querySelector('input').value;
+        if (eng && ukr && ukr !== '—') {
+            items.push({ index: index, ukr: ukr, eng: eng });
+        }
+    }
+
+    if (items.length === 0) {
+        document.getElementById('status').textContent = '❌ Нет данных для генерации.';
+        return;
+    }
+
+    // Шаблон (используем обычные кавычки, чтобы избежать конфликтов)
+    var template = '<!DOCTYPE html>\n';
+    template += '<html lang="ru">\n';
+    template += '<head>\n';
+    template += '<meta charset="UTF-8">\n';
+    template += '<title>Malina TV</title>\n';
+    template += '\n';
+    template += '<style>\n';
+    template += '    html, body {\n';
+    template += '        margin: 0;\n';
+    template += '        padding: 0;\n';
+    template += '        width: 100%;\n';
+    template += '        height: 100%;\n';
+    template += '        overflow: hidden;\n';
+    template += '        font-family: Arial, sans-serif;\n';
+    template += '    }\n';
+    template += '\n';
+    template += '    body {\n';
+    template += '        background: url("chikino.png") center center no-repeat;\n';
+    template += '        background-size: cover;\n';
+    template += '    }\n';
+    template += '\n';
+    template += '    #overlay {\n';
+    template += '        position: fixed;\n';
+    template += '        top: 0;\n';
+    template += '        left: 0;\n';
+    template += '        width: 100%;\n';
+    template += '        height: 100%;\n';
+    template += '        z-index: 10;\n';
+    template += '    }\n';
+    template += '\n';
+    template += '    #word {\n';
+    template += '        position: absolute;\n';
+    template += '        top: 40%;\n';
+    template += '        left: 50%;\n';
+    template += '        transform: translate(-50%, -50%);\n';
+    template += '        font-size: 90px;\n';
+    template += '        color: #4df;\n';
+    template += '        text-shadow: 0 0 10px #4df, 0 0 20px #4df, 0 0 40px #0ff;\n';
+    template += '        animation: blink 2s infinite;\n';
+    template += '        pointer-events: none;\n';
+    template += '    }\n';
+    template += '\n';
+    template += '    @keyframes blink {\n';
+    template += '        0%, 100% { opacity: 1; }\n';
+    template += '        50% { opacity: 0.2; }\n';
+    template += '    }\n';
+    template += '\n';
+    template += '    #uaWord {\n';
+    template += '        position: absolute;\n';
+    template += '        top: 62%;\n';
+    template += '        left: 50%;\n';
+    template += '        transform: translate(-50%, -50%);\n';
+    template += '        font-size: 28px;\n';
+    template += '        color: rgba(255,255,255,0.7);\n';
+    template += '        letter-spacing: 2px;\n';
+    template += '        text-shadow: 0 0 5px rgba(255,255,255,0.2);\n';
+    template += '        pointer-events: none;\n';
+    template += '    }\n';
+    template += '\n';
+    template += '    .btn {\n';
+    template += '        position: absolute;\n';
+    template += '        bottom: 40px;\n';
+    template += '        width: 150px;\n';
+    template += '        height: 60px;\n';
+    template += '        border-radius: 18px;\n';
+    template += '        border: 2px solid rgba(255,255,255,0.35);\n';
+    template += '        color: white;\n';
+    template += '        font-size: 20px;\n';
+    template += '        cursor: pointer;\n';
+    template += '        z-index: 50;\n';
+    template += '        box-shadow: inset 0 2px 6px rgba(255,255,255,0.25),\n';
+    template += '                    inset 0 -4px 10px rgba(0,0,0,0.4),\n';
+    template += '                    0 6px 15px rgba(0,0,0,0.5);\n';
+    template += '    }\n';
+    template += '\n';
+    template += '    #blueBtn {\n';
+    template += '        left: calc(50% - 170px);\n';
+    template += '        background: linear-gradient(145deg, #1a4dff, #0026a3);\n';
+    template += '    }\n';
+    template += '\n';
+    template += '    #redBtn {\n';
+    template += '        left: calc(50% + 20px);\n';
+    template += '        background: linear-gradient(145deg, #ff3b3b, #a30000);\n';
+    template += '    }\n';
+    template += '</style>\n';
+    template += '</head>\n';
+    template += '\n';
+    template += '<body>\n';
+    template += '\n';
+    template += '<div id="overlay">\n';
+    template += '    <div id="word">__ENG__</div>\n';
+    template += '    <div id="uaWord">__UKR__</div>\n';
+    template += '\n';
+    template += '    <button id="blueBtn" class="btn">🔊</button>\n';
+    template += '    <button id="redBtn" class="btn">повернення</button>\n';
+    template += '</div>\n';
+    template += '\n';
+    template += '<script>\n';
+    template += '    document.getElementById("blueBtn").onclick = function() {\n';
+    template += '        const utter = new SpeechSynthesisUtterance("__ENG__");\n';
+    template += '        utter.lang = "en-US";\n';
+    template += '        speechSynthesis.speak(utter);\n';
+    template += '    };\n';
+    template += '\n';
+    template += '    document.getElementById("redBtn").onclick = function() {\n';
+    template += '        window.location.href = "../index.html";\n';
+    template += '    };\n';
+    template += '<\/script>\n';
+    template += '\n';
+    template += '</body>\n';
+    template += '</html>';
+
+    var files = {};
+    var fileNames = [];
+
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var eng = item.eng.trim();
+        var ukr = item.ukr.trim();
+        var num = item.index;
+
+        var content = template.replace(/__ENG__/g, eng);
+        content = content.replace(/__UKR__/g, ukr);
+
+        var fileName = 'chik' + num + '.html';
+        files[fileName] = content;
+        fileNames.push(fileName);
+    }
+
+    if (typeof JSZip === 'undefined') {
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        script.onload = function() {
+            createAndDownloadZip(files, fileNames);
+        };
+        document.head.appendChild(script);
+        document.getElementById('status').textContent = '⏳ Загрузка JSZip...';
+    } else {
+        createAndDownloadZip(files, fileNames);
+    }
+}
+
+function createAndDownloadZip(files, names) {
+    try {
+        var zip = new JSZip();
+        var folder = zip.folder('perevod');
+
+        for (var i = 0; i < names.length; i++) {
+            var name = names[i];
+            folder.file(name, files[name]);
+        }
+
+        zip.generateAsync({ type: 'blob' })
+            .then(function(blob) {
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'perevod.zip';
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(function() {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                }, 100);
+                document.getElementById('status').textContent = '✅ Скачан архив perevod.zip с ' + names.length + ' файлами.';
+            })
+            .catch(function(err) {
+                document.getElementById('status').textContent = '❌ Ошибка ZIP: ' + err.message;
+                console.error(err);
+            });
+    } catch (err) {
+        document.getElementById('status').textContent = '❌ Ошибка: ' + err.message;
+        console.error(err);
+    }
+}
+
+// Подгружаем JSZip при старте
+if (typeof JSZip === 'undefined') {
+    var script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    document.head.appendChild(script);
+}
+
+console.log('Редактор загружен. Сетка создана.');
+</script>
+
+</body>
+</html>
