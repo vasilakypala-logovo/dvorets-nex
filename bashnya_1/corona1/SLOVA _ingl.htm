@@ -262,7 +262,9 @@ canvas {
 <canvas id="c"></canvas>
 
 <script>
-// ===== ІГРОВА МЕХАНІКА (не змінюється) =====
+// ============================================================
+// ІГРОВА МЕХАНІКА (з озвучкою букв та фінальним повторенням)
+// ============================================================
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const ENGLISH_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -275,6 +277,11 @@ let time = 0;
 let running = false;
 let gameFinished = false;
 let audioCtx = null;
+
+// Флаги для фінального озвучування
+let isCompletedSpeaking = false;
+let completedSpeechTimeout = null;
+let completedUtterance = null;
 
 const wordContainer = document.getElementById('word');
 const hint = document.getElementById('hint');
@@ -325,6 +332,64 @@ function createFirework(cx, cy) {
     }
 }
 
+// ---------- Озвучування окремої літери ----------
+function speakLetter(letter) {
+    if (!window.speechSynthesis) return;
+    const utterance = new SpeechSynthesisUtterance(letter);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+    utterance.volume = 0.6;
+    window.speechSynthesis.speak(utterance);
+}
+
+// ---------- Фінальне повторення слова ----------
+function startCompletedSpeaking(word) {
+    if (!window.speechSynthesis) return;
+    stopCompletedSpeaking();
+
+    function speak() {
+        if (!isCompletedSpeaking) return;
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.8;
+        utterance.onend = () => {
+            if (isCompletedSpeaking) {
+                completedSpeechTimeout = setTimeout(() => {
+                    if (isCompletedSpeaking) speak();
+                }, 1500);
+            }
+        };
+        utterance.onerror = () => {
+            if (isCompletedSpeaking) {
+                completedSpeechTimeout = setTimeout(() => {
+                    if (isCompletedSpeaking) speak();
+                }, 1500);
+            }
+        };
+        completedUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    isCompletedSpeaking = true;
+    speak();
+}
+
+function stopCompletedSpeaking() {
+    isCompletedSpeaking = false;
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
+    if (completedSpeechTimeout) {
+        clearTimeout(completedSpeechTimeout);
+        completedSpeechTimeout = null;
+    }
+    completedUtterance = null;
+}
+
+// ---------- Запуск гри ----------
 function startGameWithWord(word) {
     target = word.toUpperCase();
     if (!target) return;
@@ -338,6 +403,9 @@ function startGameWithWord(word) {
     particles = [];
     gameFinished = false;
     running = true;
+
+    // Зупинити фінальне озвучування, якщо воно було
+    stopCompletedSpeaking();
 
     document.getElementById('preparation').classList.remove('active');
     document.getElementById('menu').classList.add('hidden');
@@ -361,6 +429,7 @@ function startGameWithWord(word) {
     }
 }
 
+// Перевірка літери
 function checkLetter(letter) {
     if (gameFinished) return;
 
@@ -375,18 +444,23 @@ function checkLetter(letter) {
         }
     }
 
+    // Перемога
     if (found.every(v => v === true)) {
         gameFinished = true;
         running = false;
         hint.textContent = '🎉 Вітаю! Слово зібрано!';
         restartBtn.style.display = 'block';
+        // Салют
         createFirework(canvas.width / 2, canvas.height / 2);
         setTimeout(() => createFirework(canvas.width * 0.2, canvas.height * 0.3), 200);
         setTimeout(() => createFirework(canvas.width * 0.8, canvas.height * 0.3), 400);
         setTimeout(() => createFirework(canvas.width * 0.5, canvas.height * 0.15), 600);
+        // Запускаємо фінальне озвучування
+        startCompletedSpeaking(target);
     }
 }
 
+// Створення хвилі
 function createPulse() {
     const x = canvas.width / 2 + (Math.random() - 0.5) * Math.min(canvas.width, canvas.height) * 0.6;
     const y = canvas.height / 2 + (Math.random() - 0.5) * Math.min(canvas.width, canvas.height) * 0.6;
@@ -394,9 +468,16 @@ function createPulse() {
     if (Math.random() < 0.50) {
         letter = ENGLISH_ALPHABET[Math.floor(Math.random() * ENGLISH_ALPHABET.length)];
     }
+
+    // Озвучуємо літеру, якщо вона потрібна
+    if (letter !== null && target.includes(letter)) {
+        speakLetter(letter);
+    }
+
     pulses.push({ x, y, r: 0, a: 1, speed: 1 + Math.random() * 2.5, letter });
 }
 
+// Обробка кліків/тапів
 function handleCanvasTap(e) {
     e.preventDefault();
     if (!running || gameFinished) return;
@@ -425,7 +506,9 @@ function handleCanvasTap(e) {
 canvas.addEventListener('click', handleCanvasTap);
 canvas.addEventListener('touchstart', handleCanvasTap, { passive: false });
 
+// Кнопка "Заново" – зупиняє фінальне озвучування і повертає в меню
 restartBtn.addEventListener('click', () => {
+    stopCompletedSpeaking();
     document.getElementById('menu').classList.remove('hidden');
     document.getElementById('preparation').classList.remove('active');
     wordContainer.innerHTML = '';
@@ -439,6 +522,7 @@ restartBtn.addEventListener('click', () => {
     document.getElementById('wordInput').focus();
 });
 
+// Анімаційний цикл
 function animate() {
     requestAnimationFrame(animate);
     ctx.fillStyle = 'rgba(10, 10, 30, 0.12)';
@@ -504,7 +588,9 @@ function animate() {
 animate();
 
 
-// ===== ПІДГОТОВЧИЙ ЕТАП (українська версія) =====
+// ============================================================
+// ПІДГОТОВЧИЙ ЕТАП (українська версія, без змін)
+// ============================================================
 const wordInput = document.getElementById('wordInput');
 const translateBtn = document.getElementById('translateBtn');
 const preparationScreen = document.getElementById('preparation');
@@ -516,9 +602,7 @@ let speechUtterance = null;
 let speechTimeout = null;
 let isSpeaking = false;
 
-// Визначення мови: українська, російська чи англійська
 function detectLanguage(word) {
-    // Специфічні українські літери
     if (/[іїєґ]/i.test(word)) return 'uk';
     if (/[а-яё]/i.test(word)) return 'ru';
     return 'en';
@@ -529,7 +613,6 @@ async function translateToEnglish(word) {
     if (lang === 'en') {
         return word.toUpperCase();
     }
-    // Визначаємо пару для перекладу
     const from = (lang === 'uk') ? 'uk' : 'ru';
     try {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${from}|en`;
@@ -537,11 +620,8 @@ async function translateToEnglish(word) {
         const data = await response.json();
         if (data.responseData && data.responseData.translatedText) {
             let translated = data.responseData.translatedText.toUpperCase();
-            // Залишаємо тільки букви A-Z
             translated = translated.replace(/[^A-Z]/g, '');
-            if (translated.length === 0) {
-                throw new Error('Пустий переклад');
-            }
+            if (translated.length === 0) throw new Error('Пустий переклад');
             return translated;
         } else {
             throw new Error('Переклад не вдався');
