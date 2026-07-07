@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ГАЛЕРЕЯ ТИХИХ ЛУН</title>
+<title>ГАЛЕРЕЯ ПОРТРЕТОВ</title>
 <style>
 :root{
   --bg:#020203;
@@ -54,7 +54,7 @@ body:after{background:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 20%,
 </head>
 <body>
 <div class="fog"></div>
-<div class="title">ГАЛЕРЕЯ ТИХИХ ЛУН</div>
+<div class="title">ГАЛЕРЕЯ ПОРТРЕТОВ </div>
 <div class="help">← → листать • клик по картине — просмотр • табличка редактируется и сохраняется</div>
 <button class="nav prev" id="prev">‹</button>
 <button class="nav next" id="next">›</button>
@@ -64,7 +64,7 @@ body:after{background:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 20%,
     <div class="frameBirth" id="birth">
       <div class="frame">
         <div class="pictureBox" id="box">
-          <img id="img" alt="Картина галереи Тихих Лун" draggable="false">
+          <img id="img" alt="Картина галереи портретов" draggable="false">
           <div class="miss" id="miss"></div>
         </div>
       </div>
@@ -94,7 +94,7 @@ function pad(n){return String(n).padStart(2,'0')}
 function read(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
 function write(){localStorage.setItem(KEY,JSON.stringify(captions))}
 function clean(s){return String(s||'').replace(/\s+/g,' ').trim()}
-function def(i){return {title:i===1?'ПЕРВАЯ КАРТИНА ТИХИХ ЛУН':'Тихая луна '+pad(i), author:'Василий Михайлович'}}
+function def(i){return {title:i===1?'ПЕРВЫЙ ПРТРЕТ':' '+pad(i), author:''}}
 function getCap(i){return captions[pad(i)]||def(i)}
 function saveCap(){captions[pad(current)]={title:clean(nameEl.textContent)||def(current).title,author:clean(authorEl.textContent)||def(current).author};write();saveNote.textContent='Сохранено для картины '+pad(current)+'.'}
 function candidates(i){let p=pad(i), arr=[]; if(i===1){exts.forEach(e=>arr.push('01.'+e)); arr.push('01')} exts.forEach(e=>arr.push(FOLDER+p+'.'+e)); arr.push(FOLDER+p); return arr}
