@@ -38,23 +38,22 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Текст центрується всередині зони */
 }
 
-/* Стиль підписів */
+/* Стиль підписів — зменшений удвічі */
 .zone .label {
-    font-size: clamp(1.2rem, 3.5vw, 2.8rem);
+    font-size: clamp(0.6rem, 1.8vw, 1.4rem);
     font-weight: bold;
     color: #fff9e6;
-    text-shadow: 0 0 10px #ffd700, 0 0 20px #ffaa00, 0 0 40px #ff8800;
+    text-shadow: 0 0 8px #ffd700, 0 0 16px #ffaa00, 0 0 30px #ff8800;
     letter-spacing: 0.06em;
     text-align: center;
     line-height: 1.2;
-    pointer-events: none; /* щоб клік проходив на батьківський div */
+    pointer-events: none;
     animation: glowPulse 2.5s ease-in-out infinite alternate;
 }
 
-/* Різні затримки для кожної зони, щоб мигали не синхронно */
+/* Різні затримки для кожної зони */
 .zone:nth-child(1) .label { animation-delay: 0s; }
 .zone:nth-child(2) .label { animation-delay: 0.7s; }
 .zone:nth-child(3) .label { animation-delay: 1.4s; }
@@ -64,11 +63,11 @@ img {
 
 @keyframes glowPulse {
     0% {
-        text-shadow: 0 0 10px #ffd700, 0 0 20px #ffaa00, 0 0 40px #ff8800;
+        text-shadow: 0 0 8px #ffd700, 0 0 16px #ffaa00, 0 0 30px #ff8800;
         opacity: 1;
     }
     100% {
-        text-shadow: 0 0 20px #ffd700, 0 0 40px #ffaa00, 0 0 80px #ff6600;
+        text-shadow: 0 0 16px #ffd700, 0 0 30px #ffaa00, 0 0 60px #ff6600;
         opacity: 0.6;
     }
 }
@@ -100,7 +99,6 @@ img {
 
     <!-- Карта -->
     <img src="plan.png" alt="САДОК ІГРАШОК">
-
 
     <!-- ========================= -->
     <!-- АКТИВНІ ЗОНИ з підписами -->
