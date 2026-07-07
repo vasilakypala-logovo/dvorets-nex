@@ -1,9 +1,11 @@
-﻿﻿<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Корона – игра</title>
+<!-- Добавляем пустой favicon, чтобы браузер не запрашивал favicon.ico и не было ошибки CSP -->
+<link rel="icon" href="data:,">
 
 <style>
 * {
@@ -492,7 +494,6 @@ function animate() {
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, pt.radius * pt.life, 0, Math.PI * 2);
         ctx.fillStyle = pt.color;
-        ctx.fill();
         ctx.shadowColor = pt.color;
         ctx.shadowBlur = 10;
         ctx.fill();
