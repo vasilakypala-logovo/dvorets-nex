@@ -1,0 +1,504 @@
+﻿﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Корона – собери слово</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at 50% 50%, #1a1a3a, #0a0a1a);
+    color: #fff;
+    height: 100vh;
+    width: 100vw;
+}
+
+canvas {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* Стартовый экран (меню) */
+#menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    /* Раскомментируйте строку ниже, чтобы установить свою картинку */
+    /* background-image: url('ваша_картинка.jpg'); */
+    background-size: cover;
+    background-position: center;
+    backdrop-filter: blur(2px);
+    padding: 20px;
+    transition: opacity 0.6s ease;
+}
+
+#menu.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#menu h1 {
+    font-size: clamp(2rem, 10vw, 4rem);
+    margin: 0 0 10px 0;
+    text-shadow: 0 0 20px rgba(0,200,255,0.6);
+    letter-spacing: 4px;
+}
+
+#menu .sub {
+    font-size: clamp(1rem, 4vw, 1.8rem);
+    opacity: 0.8;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+#menu input {
+    font-size: clamp(1.5rem, 6vw, 2.8rem);
+    width: min(300px, 80%);
+    padding: 12px 10px;
+    text-align: center;
+    border: 2px solid #88ddff;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    outline: none;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 20px rgba(0,150,255,0.3);
+    text-transform: uppercase; /* автоматически переводим в заглавные */
+}
+
+#menu input::placeholder {
+    color: rgba(255,255,255,0.4);
+    text-transform: none;
+}
+
+#menu button {
+    font-size: clamp(1.5rem, 6vw, 2.8rem);
+    padding: 12px 40px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(0,100,255,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+    touch-action: manipulation;
+}
+
+#menu button:active {
+    transform: scale(0.94);
+    box-shadow: 0 0 15px rgba(0,100,255,0.3);
+}
+
+/* Слоты для букв */
+#word {
+    position: absolute;
+    top: 5%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 10px;
+    pointer-events: none;
+}
+
+.slot {
+    display: inline-flex;
+    width: clamp(42px, 12vw, 60px);
+    height: clamp(50px, 14vw, 70px);
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.8rem, 8vw, 3.5rem);
+    font-weight: bold;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(2px);
+    box-shadow: 0 0 15px rgba(0,150,255,0.2);
+    transition: border-color 0.3s, background 0.3s;
+    pointer-events: none;
+    font-family: Arial, sans-serif;
+}
+
+.slot.filled {
+    border-color: #50ff90;
+    background: rgba(0,255,100,0.15);
+    box-shadow: 0 0 25px rgba(0,255,100,0.3);
+}
+
+/* Подсказка */
+#hint {
+    position: absolute;
+    bottom: 5%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 5;
+    font-size: clamp(0.9rem, 3vw, 1.4rem);
+    opacity: 0.6;
+    pointer-events: none;
+    text-shadow: 0 0 10px #000;
+}
+
+/* Кнопка "Заново" */
+#restartBtn {
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    font-size: clamp(1.2rem, 5vw, 2rem);
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    display: none;
+    touch-action: manipulation;
+    transition: 0.3s;
+}
+
+#restartBtn:active {
+    transform: translateX(-50%) scale(0.94);
+}
+</style>
+</head>
+
+<body>
+
+<!-- Меню (стартовый экран) -->
+<div id="menu">
+    <h1>♛ КОРОНА</h1>
+    <div class="sub">Введите слово русскими буквами</div>
+    <input id="wordInput" type="text" inputmode="text" placeholder="Например, МОСКВА" autofocus>
+    <button id="playBtn">ИГРАТЬ</button>
+</div>
+
+<!-- Слоты для букв -->
+<div id="word"></div>
+
+<!-- Подсказка -->
+<div id="hint">🔵 Нажимай на круги с нужными буквами</div>
+
+<!-- Кнопка "Заново" -->
+<button id="restartBtn">↺ Заново</button>
+
+<!-- Холст для анимации -->
+<canvas id="c"></canvas>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// Русский алфавит (заглавные)
+const RUSSIAN_ALPHABET = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
+
+let target = '';            // загаданное слово (строка из заглавных букв)
+let found = [];            // массив булевых отметок для слотов
+let pulses = [];           // массив волн
+let particles = [];        // массив частиц для салюта
+let time = 0;
+let running = false;
+let gameFinished = false;
+let audioCtx = null;
+
+// DOM-элементы
+const menu = document.getElementById('menu');
+const wordInput = document.getElementById('wordInput');
+const playBtn = document.getElementById('playBtn');
+const wordContainer = document.getElementById('word');
+const hint = document.getElementById('hint');
+const restartBtn = document.getElementById('restartBtn');
+
+// Размер холста
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ---------- Звук ----------
+function playBeep() {
+    try {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.08);
+    } catch(e) {}
+}
+
+// ---------- Салют ----------
+function createFirework(cx, cy) {
+    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff9f43', '#00d2d3', '#01a3a4', '#f368e0'];
+    const count = 150;
+    for (let i = 0; i < count; i++) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = 2 + Math.random() * 6;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        particles.push({
+            x: cx, y: cy,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            radius: 2 + Math.random() * 4,
+            color: color,
+            life: 1.0,
+            decay: 0.008 + Math.random() * 0.015,
+            gravity: 0.06
+        });
+    }
+}
+
+// ---------- Запуск игры ----------
+function startGame() {
+    let raw = wordInput.value.trim().toUpperCase();
+    // Проверяем, что введены только русские буквы
+    const russianRegex = /^[А-ЯЁ]+$/;
+    if (!raw || !russianRegex.test(raw)) {
+        alert('Пожалуйста, введите слово только русскими буквами (заглавными).');
+        return;
+    }
+    target = raw;
+
+    found = new Array(target.length).fill(false);
+    pulses = [];
+    particles = [];
+    gameFinished = false;
+    running = true;
+
+    menu.classList.add('hidden');
+    wordContainer.innerHTML = '';
+    for (let i = 0; i < target.length; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.dataset.index = i;
+        wordContainer.appendChild(slot);
+    }
+
+    hint.style.display = 'block';
+    hint.textContent = '🔵 Нажимай на круги с нужными буквами';
+    restartBtn.style.display = 'none';
+    wordInput.blur();
+
+    if (!audioCtx) {
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch(e) {}
+    }
+}
+
+// Проверка буквы
+function checkLetter(letter) {
+    if (gameFinished) return;
+
+    for (let i = 0; i < target.length; i++) {
+        if (target[i] === letter && !found[i]) {
+            found[i] = true;
+            const slots = document.querySelectorAll('.slot');
+            slots[i].textContent = letter;
+            slots[i].classList.add('filled');
+            playBeep(); // звук при верной букве
+            break;
+        }
+    }
+
+    if (found.every(v => v === true)) {
+        gameFinished = true;
+        running = false;
+        hint.textContent = '🎉 Поздравляю! Слово собрано!';
+        restartBtn.style.display = 'block';
+        // Салют
+        createFirework(canvas.width / 2, canvas.height / 2);
+        setTimeout(() => createFirework(canvas.width * 0.2, canvas.height * 0.3), 200);
+        setTimeout(() => createFirework(canvas.width * 0.8, canvas.height * 0.3), 400);
+        setTimeout(() => createFirework(canvas.width * 0.5, canvas.height * 0.15), 600);
+    }
+}
+
+// Создание волны с буквой
+function createPulse() {
+    const x = canvas.width / 2 + (Math.random() - 0.5) * Math.min(canvas.width, canvas.height) * 0.6;
+    const y = canvas.height / 2 + (Math.random() - 0.5) * Math.min(canvas.width, canvas.height) * 0.6;
+
+    let letter = null;
+    // 50% волн несут букву
+    if (Math.random() < 0.50) {
+        letter = RUSSIAN_ALPHABET[Math.floor(Math.random() * RUSSIAN_ALPHABET.length)];
+    }
+
+    pulses.push({
+        x, y,
+        r: 0,
+        a: 1,
+        speed: 1 + Math.random() * 2.5,
+        letter: letter
+    });
+}
+
+// Обработка клика/тапа
+function handleCanvasTap(e) {
+    e.preventDefault();
+    if (!running || gameFinished) return;
+
+    let clientX, clientY;
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+
+    for (let i = pulses.length - 1; i >= 0; i--) {
+        const p = pulses[i];
+        const dx = clientX - p.x;
+        const dy = clientY - p.y;
+        if (Math.sqrt(dx * dx + dy * dy) < 45) {
+            if (p.letter !== null) {
+                checkLetter(p.letter);
+            }
+            pulses.splice(i, 1);
+            break;
+        }
+    }
+}
+
+canvas.addEventListener('click', handleCanvasTap);
+canvas.addEventListener('touchstart', handleCanvasTap, { passive: false });
+
+playBtn.addEventListener('click', startGame);
+wordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        startGame();
+    }
+});
+
+restartBtn.addEventListener('click', () => {
+    menu.classList.remove('hidden');
+    wordContainer.innerHTML = '';
+    running = false;
+    gameFinished = false;
+    pulses = [];
+    particles = [];
+    hint.textContent = '🔵 Нажимай на круги с нужными буквами';
+    restartBtn.style.display = 'none';
+    wordInput.value = '';
+    wordInput.focus();
+});
+
+// Анимационный цикл
+function animate() {
+    requestAnimationFrame(animate);
+
+    ctx.fillStyle = 'rgba(10, 10, 30, 0.12)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (running && !gameFinished) {
+        time += 0.01;
+        if (Math.random() < 0.035) {
+            createPulse();
+        }
+    }
+
+    // Рисуем волны
+    for (let i = pulses.length - 1; i >= 0; i--) {
+        const p = pulses[i];
+        p.r += p.speed;
+        p.a -= 0.007;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        const isTarget = p.letter !== null && target.includes(p.letter);
+        ctx.strokeStyle = isTarget
+            ? `rgba(80, 255, 150, ${p.a})`
+            : `rgba(200, 200, 255, ${p.a * 0.6})`;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        if (p.letter !== null) {
+            ctx.font = `bold ${Math.min(36, p.r * 0.8)}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = isTarget
+                ? `rgba(80, 255, 150, ${p.a})`
+                : `rgba(255, 255, 255, ${p.a * 0.8})`;
+            ctx.fillText(p.letter, p.x, p.y);
+        }
+
+        if (p.a <= 0) {
+            pulses.splice(i, 1);
+        }
+    }
+
+    // Салют
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.vy += pt.gravity;
+        pt.vx *= 0.99;
+        pt.vy *= 0.99;
+        pt.life -= pt.decay;
+
+        if (pt.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+        }
+
+        ctx.globalAlpha = pt.life;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.radius * pt.life, 0, Math.PI * 2);
+        ctx.fillStyle = pt.color;
+        ctx.shadowColor = pt.color;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1.0;
+    }
+}
+
+animate();
+
+window.addEventListener('load', () => {
+    wordInput.focus();
+});
+</script>
+</body>
+</html>
