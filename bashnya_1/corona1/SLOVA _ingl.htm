@@ -1,9 +1,9 @@
 ﻿﻿<!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Корона – собери слово (EN)</title>
+<title>Корона – збери слово (EN)</title>
 <link rel="icon" href="data:,">
 
 <style>
@@ -245,24 +245,24 @@ canvas {
 
 <div id="menu">
     <h1>♛ КОРОНА</h1>
-    <div class="sub">ВВЕДИТЕ СЛОВО</div>
-    <input id="wordInput" type="text" inputmode="text" placeholder="Например, APPLE или ДОМ" autofocus>
-    <button class="translate-btn" id="translateBtn">ПЕРЕВЕСТИ</button>
+    <div class="sub">ВВЕДІТЬ СЛОВО</div>
+    <input id="wordInput" type="text" inputmode="text" placeholder="Наприклад, ДІМ або APPLE" autofocus>
+    <button class="translate-btn" id="translateBtn">ПЕРЕКЛАСТИ</button>
 </div>
 
 <div id="preparation">
     <div class="word-display" id="wordDisplay">HOUSE</div>
-    <button class="play-btn" id="playBtn">ИГРАТЬ</button>
+    <button class="play-btn" id="playBtn">ГРАТИ</button>
 </div>
 
 <div id="word"></div>
-<div id="hint">🔵 Нажимай на круги с нужными буквами</div>
+<div id="hint">🔵 Натискай на круги з потрібними літерами</div>
 <button id="restartBtn">↺ Заново</button>
 
 <canvas id="c"></canvas>
 
 <script>
-// ===== ИГРОВАЯ МЕХАНИКА (не меняется) =====
+// ===== ІГРОВА МЕХАНІКА (не змінюється) =====
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const ENGLISH_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -329,7 +329,7 @@ function startGameWithWord(word) {
     target = word.toUpperCase();
     if (!target) return;
     if (!/^[A-Z]+$/.test(target)) {
-        alert('Слово должно содержать только английские буквы!');
+        alert('Слово повинно містити тільки англійські літери!');
         return;
     }
 
@@ -351,7 +351,7 @@ function startGameWithWord(word) {
     }
 
     hint.style.display = 'block';
-    hint.textContent = '🔵 Нажимай на круги с нужными буквами';
+    hint.textContent = '🔵 Натискай на круги з потрібними літерами';
     restartBtn.style.display = 'none';
 
     if (!audioCtx) {
@@ -378,7 +378,7 @@ function checkLetter(letter) {
     if (found.every(v => v === true)) {
         gameFinished = true;
         running = false;
-        hint.textContent = '🎉 Поздравляю! Слово собрано!';
+        hint.textContent = '🎉 Вітаю! Слово зібрано!';
         restartBtn.style.display = 'block';
         createFirework(canvas.width / 2, canvas.height / 2);
         setTimeout(() => createFirework(canvas.width * 0.2, canvas.height * 0.3), 200);
@@ -433,7 +433,7 @@ restartBtn.addEventListener('click', () => {
     gameFinished = false;
     pulses = [];
     particles = [];
-    hint.textContent = '🔵 Нажимай на круги с нужными буквами';
+    hint.textContent = '🔵 Натискай на круги з потрібними літерами';
     restartBtn.style.display = 'none';
     document.getElementById('wordInput').value = '';
     document.getElementById('wordInput').focus();
@@ -504,7 +504,7 @@ function animate() {
 animate();
 
 
-// ===== ПОДГОТОВИТЕЛЬНЫЙ ЭТАП =====
+// ===== ПІДГОТОВЧИЙ ЕТАП (українська версія) =====
 const wordInput = document.getElementById('wordInput');
 const translateBtn = document.getElementById('translateBtn');
 const preparationScreen = document.getElementById('preparation');
@@ -516,34 +516,39 @@ let speechUtterance = null;
 let speechTimeout = null;
 let isSpeaking = false;
 
+// Визначення мови: українська, російська чи англійська
 function detectLanguage(word) {
+    // Специфічні українські літери
+    if (/[іїєґ]/i.test(word)) return 'uk';
     if (/[а-яё]/i.test(word)) return 'ru';
     return 'en';
 }
 
 async function translateToEnglish(word) {
-    if (detectLanguage(word) === 'en') {
+    const lang = detectLanguage(word);
+    if (lang === 'en') {
         return word.toUpperCase();
     }
+    // Визначаємо пару для перекладу
+    const from = (lang === 'uk') ? 'uk' : 'ru';
     try {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=ru|en`;
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${from}|en`;
         const response = await fetch(url);
         const data = await response.json();
         if (data.responseData && data.responseData.translatedText) {
-            // Очищаем от лишних символов, оставляем только буквы
             let translated = data.responseData.translatedText.toUpperCase();
-            // Убираем всё, кроме букв A-Z
+            // Залишаємо тільки букви A-Z
             translated = translated.replace(/[^A-Z]/g, '');
             if (translated.length === 0) {
-                throw new Error('Пустой перевод');
+                throw new Error('Пустий переклад');
             }
             return translated;
         } else {
-            throw new Error('Перевод не удался');
+            throw new Error('Переклад не вдався');
         }
     } catch (error) {
-        console.warn('Ошибка перевода:', error);
-        alert('Не удалось перевести слово. Пожалуйста, введите его на английском вручную.');
+        console.warn('Помилка перекладу:', error);
+        alert('Не вдалося перекласти слово. Будь ласка, введіть його англійською вручну.');
         return null;
     }
 }
@@ -606,33 +611,32 @@ function showPreparation(word) {
 translateBtn.addEventListener('click', async () => {
     const rawWord = wordInput.value.trim();
     if (!rawWord) {
-        alert('Введите слово!');
+        alert('Введіть слово!');
         return;
     }
 
     let englishWord;
-    if (detectLanguage(rawWord) === 'ru') {
-        translateBtn.textContent = 'ПЕРЕВОД...';
+    const lang = detectLanguage(rawWord);
+    if (lang !== 'en') {
+        translateBtn.textContent = 'ПЕРЕКЛАД...';
         translateBtn.disabled = true;
         englishWord = await translateToEnglish(rawWord);
-        translateBtn.textContent = 'ПЕРЕВЕСТИ';
+        translateBtn.textContent = 'ПЕРЕКЛАСТИ';
         translateBtn.disabled = false;
         if (!englishWord) {
             return;
         }
     } else {
         englishWord = rawWord.toUpperCase();
-        // Оставляем только буквы
         englishWord = englishWord.replace(/[^A-Z]/g, '');
         if (englishWord.length === 0) {
-            alert('Введите слово на английском, используя только буквы.');
+            alert('Введіть слово англійською, використовуючи тільки літери.');
             return;
         }
     }
 
-    // Дополнительная проверка
     if (!/^[A-Z]+$/.test(englishWord)) {
-        alert('Слово должно содержать только английские буквы!');
+        alert('Слово повинно містити тільки англійські літери!');
         return;
     }
 
