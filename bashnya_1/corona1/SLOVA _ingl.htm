@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Корона – собери слово (EN)</title>
-<!-- Добавляем пустой favicon, чтобы избежать ошибки CSP -->
+<!-- Пустой favicon для CSP -->
 <link rel="icon" href="data:,">
 
 <style>
@@ -32,6 +32,62 @@ canvas {
     z-index: 1;
 }
 
+/* ===== НОВЫЙ ЭКРАН ПОДГОТОВКИ ===== */
+#preparation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    display: none; /* по умолчанию скрыт */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 10, 30, 0.85);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    text-align: center;
+}
+
+#preparation.active {
+    display: flex;
+}
+
+#preparation .word-display {
+    font-size: clamp(3rem, 15vw, 8rem);
+    font-weight: bold;
+    color: #fff9e6;
+    text-shadow: 0 0 20px #ffd700, 0 0 40px #ffaa00;
+    letter-spacing: 0.1em;
+    transition: text-shadow 0.3s ease;
+    margin-bottom: 30px;
+}
+
+/* пульсация при произнесении */
+#preparation .word-display.pulse {
+    text-shadow: 0 0 40px #ffd700, 0 0 80px #ffaa00, 0 0 120px #ff8800;
+}
+
+#preparation .play-btn {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    padding: 20px 60px;
+    border: none;
+    border-radius: 60px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 40px rgba(0,100,255,0.6);
+    transition: transform 0.2s, box-shadow 0.2s;
+    touch-action: manipulation;
+    margin-top: 20px;
+}
+
+#preparation .play-btn:active {
+    transform: scale(0.94);
+}
+
+/* ===== МЕНЮ ВВОДА ===== */
 #menu {
     position: absolute;
     top: 0;
@@ -44,7 +100,6 @@ canvas {
     align-items: center;
     justify-content: center;
     background: rgba(0,0,0,0.5);
-    /* Добавляем фоновое изображение reka.jpg */
     background-image: url('reka.jpg');
     background-size: cover;
     background-position: center;
@@ -94,25 +149,25 @@ canvas {
     letter-spacing: normal;
 }
 
-#menu button {
-    font-size: clamp(1.5rem, 6vw, 2.8rem);
-    padding: 12px 40px;
-    margin-top: 20px;
+#menu .translate-btn {
+    font-size: clamp(1.2rem, 4vw, 2rem);
+    padding: 10px 30px;
+    margin-top: 15px;
     border: none;
     border-radius: 50px;
-    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    background: linear-gradient(45deg, #f7971e, #ffd200);
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 0 30px rgba(0,100,255,0.5);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 20px rgba(255, 200, 0, 0.4);
+    transition: transform 0.2s;
     touch-action: manipulation;
 }
 
-#menu button:active {
+#menu .translate-btn:active {
     transform: scale(0.94);
-    box-shadow: 0 0 15px rgba(0,100,255,0.3);
 }
 
+/* ===== ОСТАЛЬНЫЕ СТИЛИ (игровые) ===== */
 #word {
     position: absolute;
     top: 5%;
@@ -193,24 +248,37 @@ canvas {
 
 <body>
 
+<!-- МЕНЮ ВВОДА -->
 <div id="menu">
     <h1>♛ КОРОНА</h1>
-    <div class="sub">Введите слово английскими буквами</div>
-    <input id="wordInput" type="text" inputmode="text" placeholder="" autofocus>
-    <button id="playBtn">ИГРАТЬ</button>
+    <div class="sub">ВВЕДИТЕ СЛОВО</div>
+    <input id="wordInput" type="text" inputmode="text" placeholder="Например, APPLE или ДОМ" autofocus>
+    <button class="translate-btn" id="translateBtn">ПЕРЕВЕСТИ</button>
+    <!-- Старая кнопка ИГРАТЬ удалена -->
 </div>
 
+<!-- ЭКРАН ПОДГОТОВКИ -->
+<div id="preparation">
+    <div class="word-display" id="wordDisplay">HOUSE</div>
+    <button class="play-btn" id="playBtn">ИГРАТЬ</button>
+</div>
+
+<!-- ИГРОВЫЕ СЛОТЫ -->
 <div id="word"></div>
 <div id="hint">🔵 Нажимай на круги с нужными буквами</div>
 <button id="restartBtn">↺ Заново</button>
 
+<!-- ХОЛСТ -->
 <canvas id="c"></canvas>
 
 <script>
+// ============================================================
+// 1. ИГРОВАЯ МЕХАНИКА (НЕ МЕНЯЕМ)
+// ============================================================
+
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 
-// Английский алфавит (заглавные)
 const ENGLISH_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 let target = '';
@@ -222,9 +290,7 @@ let running = false;
 let gameFinished = false;
 let audioCtx = null;
 
-const menu = document.getElementById('menu');
-const wordInput = document.getElementById('wordInput');
-const playBtn = document.getElementById('playBtn');
+// DOM-элементы игры
 const wordContainer = document.getElementById('word');
 const hint = document.getElementById('hint');
 const restartBtn = document.getElementById('restartBtn');
@@ -236,7 +302,6 @@ function resize() {
 resize();
 window.addEventListener('resize', resize);
 
-// Звук
 function playBeep() {
     try {
         if (!audioCtx) {
@@ -255,7 +320,6 @@ function playBeep() {
     } catch(e) {}
 }
 
-// Салют
 function createFirework(cx, cy) {
     const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#ff9f43', '#00d2d3', '#01a3a4', '#f368e0'];
     const count = 150;
@@ -276,15 +340,15 @@ function createFirework(cx, cy) {
     }
 }
 
-// Запуск
-function startGame() {
-    let raw = wordInput.value.trim().toUpperCase();
-    const englishRegex = /^[A-Z]+$/;
-    if (!raw || !englishRegex.test(raw)) {
-        alert('Пожалуйста, введите слово только английскими буквами (заглавными).');
+// Старт игры с переданным словом
+function startGameWithWord(word) {
+    target = word.toUpperCase();
+    if (!target) return;
+    // Проверка, что только буквы
+    if (!/^[A-Z]+$/.test(target)) {
+        alert('Слово должно содержать только английские буквы!');
         return;
     }
-    target = raw;
 
     found = new Array(target.length).fill(false);
     pulses = [];
@@ -292,7 +356,11 @@ function startGame() {
     gameFinished = false;
     running = true;
 
-    menu.classList.add('hidden');
+    // Скрываем подготовительный экран и меню
+    document.getElementById('preparation').classList.remove('active');
+    document.getElementById('menu').classList.add('hidden');
+
+    // Создаём слоты
     wordContainer.innerHTML = '';
     for (let i = 0; i < target.length; i++) {
         const slot = document.createElement('div');
@@ -304,7 +372,6 @@ function startGame() {
     hint.style.display = 'block';
     hint.textContent = '🔵 Нажимай на круги с нужными буквами';
     restartBtn.style.display = 'none';
-    wordInput.blur();
 
     if (!audioCtx) {
         try {
@@ -313,7 +380,6 @@ function startGame() {
     }
 }
 
-// Проверка буквы
 function checkLetter(letter) {
     if (gameFinished) return;
 
@@ -340,7 +406,6 @@ function checkLetter(letter) {
     }
 }
 
-// Создание волны
 function createPulse() {
     const x = canvas.width / 2 + (Math.random() - 0.5) * Math.min(canvas.width, canvas.height) * 0.6;
     const y = canvas.height / 2 + (Math.random() - 0.5) * Math.min(canvas.width, canvas.height) * 0.6;
@@ -359,7 +424,6 @@ function createPulse() {
     });
 }
 
-// Обработка касаний
 function handleCanvasTap(e) {
     e.preventDefault();
     if (!running || gameFinished) return;
@@ -390,16 +454,10 @@ function handleCanvasTap(e) {
 canvas.addEventListener('click', handleCanvasTap);
 canvas.addEventListener('touchstart', handleCanvasTap, { passive: false });
 
-playBtn.addEventListener('click', startGame);
-wordInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        startGame();
-    }
-});
-
 restartBtn.addEventListener('click', () => {
-    menu.classList.remove('hidden');
+    // Возврат в меню ввода
+    document.getElementById('menu').classList.remove('hidden');
+    document.getElementById('preparation').classList.remove('active');
     wordContainer.innerHTML = '';
     running = false;
     gameFinished = false;
@@ -407,11 +465,10 @@ restartBtn.addEventListener('click', () => {
     particles = [];
     hint.textContent = '🔵 Нажимай на круги с нужными буквами';
     restartBtn.style.display = 'none';
-    wordInput.value = '';
-    wordInput.focus();
+    document.getElementById('wordInput').value = '';
+    document.getElementById('wordInput').focus();
 });
 
-// Анимация
 function animate() {
     requestAnimationFrame(animate);
 
@@ -425,7 +482,6 @@ function animate() {
         }
     }
 
-    // Волны
     for (let i = pulses.length - 1; i >= 0; i--) {
         const p = pulses[i];
         p.r += p.speed;
@@ -455,7 +511,6 @@ function animate() {
         }
     }
 
-    // Салют
     for (let i = particles.length - 1; i >= 0; i--) {
         const pt = particles[i];
         pt.x += pt.vx;
@@ -484,9 +539,187 @@ function animate() {
 
 animate();
 
+
+// ============================================================
+// 2. НОВЫЙ ПОДГОТОВИТЕЛЬНЫЙ ЭТАП
+// ============================================================
+
+const wordInput = document.getElementById('wordInput');
+const translateBtn = document.getElementById('translateBtn');
+const preparationScreen = document.getElementById('preparation');
+const wordDisplay = document.getElementById('wordDisplay');
+const playBtn = document.getElementById('playBtn');
+
+let currentEnglishWord = '';
+let speechUtterance = null;
+let speechTimeout = null;
+let isSpeaking = false;
+
+// Определение языка (русский или английский)
+function detectLanguage(word) {
+    // Если есть хотя бы одна кириллическая буква – считаем русским
+    if (/[а-яё]/i.test(word)) {
+        return 'ru';
+    }
+    return 'en';
+}
+
+// Перевод через бесплатный API MyMemory
+async function translateToEnglish(word) {
+    // Если слово уже на английском – возвращаем как есть
+    if (detectLanguage(word) === 'en') {
+        return word.toUpperCase();
+    }
+
+    try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=ru|en`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.responseData && data.responseData.translatedText) {
+            return data.responseData.translatedText.toUpperCase();
+        } else {
+            throw new Error('Перевод не удался');
+        }
+    } catch (error) {
+        console.warn('Ошибка перевода:', error);
+        // В случае ошибки предлагаем пользователю ввести слово вручную на английском
+        alert('Не удалось перевести слово. Пожалуйста, введите его на английском вручную.');
+        return null;
+    }
+}
+
+// Озвучивание с повторением
+function startSpeaking(word) {
+    if (!window.speechSynthesis) {
+        console.warn('SpeechSynthesis не поддерживается');
+        return;
+    }
+
+    // Останавливаем предыдущее озвучивание
+    stopSpeaking();
+
+    function speak() {
+        if (!isSpeaking) return; // если игра началась – останавливаем
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.8;
+
+        // Пульсация при начале произнесения
+        wordDisplay.classList.add('pulse');
+        utterance.onstart = () => {
+            wordDisplay.classList.add('pulse');
+        };
+        utterance.onend = () => {
+            wordDisplay.classList.remove('pulse');
+            // Пауза 1.5 секунды и повтор
+            if (isSpeaking) {
+                speechTimeout = setTimeout(() => {
+                    if (isSpeaking) speak();
+                }, 1500);
+            }
+        };
+        utterance.onerror = () => {
+            wordDisplay.classList.remove('pulse');
+            if (isSpeaking) {
+                speechTimeout = setTimeout(() => {
+                    if (isSpeaking) speak();
+                }, 1500);
+            }
+        };
+
+        speechUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    isSpeaking = true;
+    speak();
+}
+
+function stopSpeaking() {
+    isSpeaking = false;
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
+    if (speechTimeout) {
+        clearTimeout(speechTimeout);
+        speechTimeout = null;
+    }
+    wordDisplay.classList.remove('pulse');
+}
+
+// Показать экран подготовки
+function showPreparation(word) {
+    currentEnglishWord = word;
+    wordDisplay.textContent = word;
+    preparationScreen.classList.add('active');
+    // Запускаем озвучивание
+    startSpeaking(word);
+}
+
+// Обработчик кнопки "Перевести"
+translateBtn.addEventListener('click', async () => {
+    const rawWord = wordInput.value.trim();
+    if (!rawWord) {
+        alert('Введите слово!');
+        return;
+    }
+
+    // Определяем язык и переводим при необходимости
+    let englishWord;
+    if (detectLanguage(rawWord) === 'ru') {
+        // Перевод
+        translateBtn.textContent = 'ПЕРЕВОД...';
+        translateBtn.disabled = true;
+        englishWord = await translateToEnglish(rawWord);
+        translateBtn.textContent = 'ПЕРЕВЕСТИ';
+        translateBtn.disabled = false;
+        if (!englishWord) {
+            // Если перевод не удался, оставляем возможность ввести вручную
+            return;
+        }
+    } else {
+        englishWord = rawWord.toUpperCase();
+    }
+
+    // Проверяем, что слово состоит только из английских букв
+    if (!/^[A-Z]+$/.test(englishWord)) {
+        alert('Слово должно содержать только английские буквы!');
+        return;
+    }
+
+    // Показываем экран подготовки
+    showPreparation(englishWord);
+});
+
+// Также можно нажать Enter в поле ввода для перевода
+wordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        translateBtn.click();
+    }
+});
+
+// Обработчик кнопки "ИГРАТЬ" на экране подготовки
+playBtn.addEventListener('click', () => {
+    // Останавливаем озвучивание
+    stopSpeaking();
+    // Запускаем игру с текущим словом
+    startGameWithWord(currentEnglishWord);
+});
+
+// При загрузке фокус на поле ввода
 window.addEventListener('load', () => {
     wordInput.focus();
 });
+
+// ============================================================
+// 3. АДАПТАЦИЯ СТАРОЙ ЛОГИКИ (убираем старую кнопку)
+// ============================================================
+// Старая кнопка "ИГРАТЬ" больше не используется, всё через подготовку.
+// Также удаляем старый обработчик, если был.
+// (он уже не используется)
 </script>
 </body>
 </html>
