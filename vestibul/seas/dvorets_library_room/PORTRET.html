@@ -94,7 +94,7 @@ function pad(n){return String(n).padStart(2,'0')}
 function read(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
 function write(){localStorage.setItem(KEY,JSON.stringify(captions))}
 function clean(s){return String(s||'').replace(/\s+/g,' ').trim()}
-function def(i){return {title:i===1?'ПЕРВЫЙ ПРТРЕТ':' '+pad(i), author:''}}
+function def(i){return {title:i===1?'ПЕРВЫЙ ПОРТРЕТ':' '+pad(i), author:''}}
 function getCap(i){return captions[pad(i)]||def(i)}
 function saveCap(){captions[pad(current)]={title:clean(nameEl.textContent)||def(current).title,author:clean(authorEl.textContent)||def(current).author};write();saveNote.textContent='Сохранено для картины '+pad(current)+'.'}
 function candidates(i){let p=pad(i), arr=[]; if(i===1){exts.forEach(e=>arr.push('01.'+e)); arr.push('01')} exts.forEach(e=>arr.push(FOLDER+p+'.'+e)); arr.push(FOLDER+p); return arr}
