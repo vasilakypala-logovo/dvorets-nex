@@ -24,16 +24,12 @@ html,body{
 /* Экран телефона */
 #phone{
     position:relative;
-
     width:390px;
     height:844px;
-
     max-width:100vw;
     max-height:100vh;
-
     background:url("reka.jpg") center center no-repeat;
     background-size:cover;
-
     overflow:hidden;
 }
 
@@ -41,36 +37,27 @@ html,body{
 #menu{
     position:absolute;
     inset:0;
-
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-
-    gap:150px;
+    gap:60px;  /* уменьшил зазор, чтобы три кнопки влезли */
 }
 
 /* Кнопки */
 .btn{
     width:70%;
     max-width:280px;
-
     padding:18px;
-
     text-align:center;
     text-decoration:none;
-
     font-size:32px;
     font-weight:bold;
     color:white;
-
     border:2px solid rgba(255,255,255,0.7);
     border-radius:18px;
-
     background:rgba(0,0,0,0.18);
-
     backdrop-filter:blur(2px);
-
     box-sizing:border-box;
 }
 
@@ -94,6 +81,11 @@ html,body{
 
         <a class="btn" href="slova.htm">
             СЛОВА
+        </a>
+
+        <!-- Новая кнопка "ENGLISH" -->
+        <a class="btn" href="SLOVA%20_ingl.htm">
+            ENGLISH
         </a>
 
     </div>
