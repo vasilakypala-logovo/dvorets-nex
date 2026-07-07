@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ГАЛЕРЕЯ ТИХИХ ЛУН</title>
+<style>
+:root{
+  --bg:#020203;
+  --silver:rgba(230,235,245,.92);
+  --muted:rgba(220,226,238,.56);
+  --wood1:#160804;
+  --wood2:#3e1d0d;
+  --wood3:#74411e;
+  --copper1:#e0a25b;
+  --copper2:#a35d2b;
+  --copper3:#54250e;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:white;font-family:Georgia,"Times New Roman",serif}
+body{
+  background:
+    radial-gradient(circle at 50% 18%,rgba(210,220,255,.08),transparent 30%),
+    radial-gradient(circle at 16% 76%,rgba(120,130,180,.055),transparent 36%),
+    radial-gradient(circle at 82% 67%,rgba(100,90,140,.06),transparent 34%),
+    linear-gradient(to bottom,#060609,#020203 48%,#000 100%);
+}
+body:before,body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:20}
+body:before{background:linear-gradient(to right,rgba(0,0,0,.95),rgba(0,0,0,.22) 13%,transparent 27%,transparent 73%,rgba(0,0,0,.22) 87%,rgba(0,0,0,.95))}
+body:after{background:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 20%,transparent 72%,rgba(0,0,0,.72))}
+.fog{position:fixed;inset:0;z-index:10;pointer-events:none;background:radial-gradient(circle at 35% 40%,rgba(255,255,255,.035),transparent 26%),radial-gradient(circle at 70% 58%,rgba(220,230,255,.03),transparent 30%);animation:fog 14s ease-in-out infinite alternate}
+@keyframes fog{from{transform:translateX(-1.2%) scale(1)}to{transform:translateX(1.2%) scale(1.025)}}
+.title{position:fixed;top:3.5vh;left:50%;transform:translateX(-50%);z-index:40;white-space:nowrap;letter-spacing:clamp(4px,.75vw,11px);font-size:clamp(19px,2.1vw,36px);color:var(--silver);text-shadow:0 0 18px rgba(215,225,255,.23);pointer-events:none}
+.help{position:fixed;bottom:2.4vh;left:50%;transform:translateX(-50%);z-index:40;padding:8px 14px;border:1px solid rgba(220,225,240,.1);border-radius:999px;background:rgba(0,0,0,.35);color:var(--muted);font-size:13px;letter-spacing:1px;pointer-events:none}
+.stage{position:absolute;inset:0;z-index:15;display:grid;grid-template-columns:minmax(280px,1fr) minmax(245px,320px);gap:clamp(20px,3vw,48px);align-items:center;justify-items:center;padding:10vh 8vw 8vh}
+.frameOuter{width:100%;height:100%;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.frameBirth{opacity:0;filter:blur(14px);transform:scale(1.12);animation:birth 3.2s ease forwards}
+@keyframes birth{0%{opacity:0;filter:blur(16px);transform:scale(1.14)}45%{opacity:.45}100%{opacity:1;filter:blur(0);transform:scale(1)}}
+.frame{position:relative;max-width:100%;max-height:100%;padding:clamp(15px,1.7vw,28px);border-radius:18px;background:radial-gradient(circle at 17% 15%,rgba(255,210,145,.18),transparent 13%),repeating-linear-gradient(38deg,rgba(255,210,155,.06) 0 7px,transparent 8px 23px),linear-gradient(140deg,var(--wood1),var(--wood2) 38%,#120603 63%,var(--wood3));box-shadow:0 35px 90px rgba(0,0,0,.75),inset 0 0 0 2px rgba(255,210,140,.08),inset 0 0 0 10px rgba(0,0,0,.32),inset 0 0 30px rgba(0,0,0,.7)}
+.frame:before{content:"";position:absolute;inset:8px;border:7px ridge rgba(120,66,28,.75);border-radius:14px;pointer-events:none;z-index:2}
+.frame:after{content:"";position:absolute;inset:22px;border:2px solid rgba(235,180,105,.15);border-radius:6px;pointer-events:none;z-index:3}
+.pictureBox{position:relative;z-index:1;background:#010101;border-radius:7px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 45px rgba(0,0,0,.75)}
+.pictureBox img{display:block;max-width:calc(84vw - 360px);max-height:70vh;width:auto;height:auto;object-fit:contain;background:#000;user-select:none;-webkit-user-drag:none;cursor:pointer}
+.pictureBox .miss{display:none;align-items:center;justify-content:center;width:min(720px,60vw);height:min(520px,64vh);padding:30px;color:rgba(235,235,245,.6);text-align:center;letter-spacing:1px;background:radial-gradient(circle at 50% 42%,rgba(220,230,255,.08),transparent 28%),#040404}
+.pictureBox.noImage img{display:none}.pictureBox.noImage .miss{display:flex}
+.plaque{position:relative;z-index:35;width:100%;max-width:320px;min-height:245px;padding:32px 23px 22px;border-radius:18px 7px 18px 7px;color:#1d0e05;background:radial-gradient(circle at 21% 16%,rgba(255,235,180,.58),transparent 9%),repeating-linear-gradient(105deg,rgba(255,255,255,.09) 0 3px,rgba(0,0,0,.025) 4px 11px),linear-gradient(145deg,var(--copper1),var(--copper2) 48%,var(--copper3));box-shadow:0 19px 44px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,238,190,.52),inset 0 -4px 10px rgba(55,20,4,.4);opacity:0;animation:plaqueBirth 1.6s ease forwards;animation-delay:2.2s}
+@keyframes plaqueBirth{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.label{margin:4px 0 8px;font-size:12px;letter-spacing:1.7px;text-transform:uppercase;opacity:.58}.edit{width:100%;min-height:34px;padding:7px 8px;border-radius:9px;outline:none;background:rgba(255,240,190,.08);border:1px solid rgba(55,22,8,.16)}.edit:focus{background:rgba(255,247,210,.2);border-color:rgba(55,22,8,.45)}
+.artTitle{font-size:clamp(21px,2vw,30px);line-height:1.14;font-weight:bold}.author{font-size:clamp(15px,1.1vw,18px);line-height:1.25;opacity:.85}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}.btn{border:1px solid rgba(45,20,8,.45);border-radius:999px;padding:8px 12px;background:rgba(255,228,170,.2);color:#211006;font-family:Georgia,serif;cursor:pointer}.btn:hover{background:rgba(255,238,190,.42)}.note{min-height:18px;margin-top:9px;font-size:12px;opacity:.64}
+.nav{position:fixed;top:50%;transform:translateY(-50%);z-index:45;width:56px;height:86px;border:1px solid rgba(230,210,180,.2);border-radius:999px;background:rgba(15,10,8,.44);color:rgba(245,235,220,.78);font-size:42px;cursor:pointer}.nav:hover{background:rgba(70,38,18,.55);color:white}.prev{left:2.6vw}.next{right:2.6vw}.counter{position:fixed;right:3vw;top:14vh;z-index:45;color:rgba(226,232,241,.68);letter-spacing:2px;font-size:14px;background:rgba(5,5,7,.28);border:1px solid rgba(215,225,240,.08);border-radius:999px;padding:10px 13px;pointer-events:none}
+.viewer{position:fixed;inset:0;z-index:80;display:none;background:rgba(0,0,0,.88);align-items:center;justify-content:center}.viewer.open{display:flex}.viewer img{max-width:96vw;max-height:92vh;object-fit:contain;border:14px solid #160804;box-shadow:0 25px 90px rgba(0,0,0,.9),0 0 0 2px rgba(220,160,90,.22);cursor:zoom-out}.close{position:fixed;top:22px;right:26px;z-index:85;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.4);color:white;font-size:28px;cursor:pointer}
+@media(max-width:980px){.stage{grid-template-columns:1fr;grid-template-rows:1fr auto;padding:9vh 6vw 7vh;gap:16px}.pictureBox img{max-width:82vw;max-height:58vh}.plaque{max-width:min(88vw,620px);min-height:120px;padding:26px 18px 16px}.help{display:none}.counter{top:auto;bottom:2vh}.nav{width:44px;height:66px;font-size:32px}.prev{left:1.2vw}.next{right:1.2vw}}
+</style>
+</head>
+<body>
+<div class="fog"></div>
+<div class="title">ГАЛЕРЕЯ ТИХИХ ЛУН</div>
+<div class="help">← → листать • клик по картине — просмотр • табличка редактируется и сохраняется</div>
+<button class="nav prev" id="prev">‹</button>
+<button class="nav next" id="next">›</button>
+<div class="counter"><span id="now">01</span> / <span id="all">52</span></div>
+<main class="stage">
+  <div class="frameOuter">
+    <div class="frameBirth" id="birth">
+      <div class="frame">
+        <div class="pictureBox" id="box">
+          <img id="img" alt="Картина галереи Тихих Лун" draggable="false">
+          <div class="miss" id="miss"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="plaque">
+    <div class="label">название</div>
+    <div class="edit artTitle" id="name" contenteditable="true" spellcheck="false"></div>
+    <div class="label">автор</div>
+    <div class="edit author" id="author" contenteditable="true" spellcheck="false"></div>
+    <div class="buttons"><button class="btn" id="save">Сохранить</button><button class="btn" id="reset">Сбросить</button></div>
+    <div class="note" id="saveNote">Правьте текст прямо на табличке.</div>
+  </aside>
+</main>
+<section class="viewer" id="viewer"><button class="close" id="close">×</button><img id="big" alt="Просмотр картины" draggable="false"></section>
+<script>
+const TOTAL=52;
+const FOLDER='MOON_1/';
+const KEY='tihie_luny_clean_captions_v1';
+const exts=['jpg','JPG','jpeg','JPEG','png','PNG','webp','WEBP','gif','GIF'];
+let current=1, activeSrc='', captions=read();
+const img=document.getElementById('img'), box=document.getElementById('box'), miss=document.getElementById('miss');
+const now=document.getElementById('now'), all=document.getElementById('all'), nameEl=document.getElementById('name'), authorEl=document.getElementById('author'), saveNote=document.getElementById('saveNote');
+const viewer=document.getElementById('viewer'), big=document.getElementById('big');
+all.textContent=String(TOTAL).padStart(2,'0');
+function pad(n){return String(n).padStart(2,'0')}
+function read(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+function write(){localStorage.setItem(KEY,JSON.stringify(captions))}
+function clean(s){return String(s||'').replace(/\s+/g,' ').trim()}
+function def(i){return {title:i===1?'ПЕРВАЯ КАРТИНА ТИХИХ ЛУН':'Тихая луна '+pad(i), author:'Василий Михайлович'}}
+function getCap(i){return captions[pad(i)]||def(i)}
+function saveCap(){captions[pad(current)]={title:clean(nameEl.textContent)||def(current).title,author:clean(authorEl.textContent)||def(current).author};write();saveNote.textContent='Сохранено для картины '+pad(current)+'.'}
+function candidates(i){let p=pad(i), arr=[]; if(i===1){exts.forEach(e=>arr.push('01.'+e)); arr.push('01')} exts.forEach(e=>arr.push(FOLDER+p+'.'+e)); arr.push(FOLDER+p); return arr}
+function load(i){activeSrc='';box.classList.remove('noImage');img.style.opacity='.2';let list=candidates(i), k=0;function next(){if(k>=list.length){img.removeAttribute('src');img.style.opacity='1';box.classList.add('noImage');miss.textContent='Не найден файл '+pad(i)+' — положите его рядом как 01.jpg или в папку MOON_1 как '+pad(i)+'.jpg';return}let src=list[k++];img.onload=()=>{activeSrc=src;img.style.opacity='1'};img.onerror=next;img.src=src}next()}
+function render(){let c=getCap(current);now.textContent=pad(current);nameEl.textContent=c.title;authorEl.textContent=c.author;saveNote.textContent='Правьте текст прямо на табличке.';load(current); if(current!==1){document.getElementById('birth').style.animation='none';document.getElementById('birth').style.opacity='1';document.getElementById('birth').style.filter='none';document.getElementById('birth').style.transform='none'}}
+function go(d){saveCap();current+=d;if(current<1)current=TOTAL;if(current>TOTAL)current=1;render()}
+document.getElementById('prev').onclick=()=>go(-1);document.getElementById('next').onclick=()=>go(1);document.getElementById('save').onclick=saveCap;document.getElementById('reset').onclick=()=>{delete captions[pad(current)];write();render();saveNote.textContent='Табличка сброшена.'};
+[nameEl,authorEl].forEach(el=>{el.addEventListener('input',()=>{saveCap();saveNote.textContent='Запись сохранена в памяти.'});el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveCap();el.blur()}})});
+img.onclick=()=>{if(!activeSrc)return;big.src=activeSrc;viewer.classList.add('open')};document.getElementById('close').onclick=()=>viewer.classList.remove('open');viewer.onclick=e=>{if(e.target===viewer||e.target===big)viewer.classList.remove('open')};
+window.onkeydown=e=>{if(viewer.classList.contains('open')){if(e.key==='Escape')viewer.classList.remove('open');return}if(document.activeElement===nameEl||document.activeElement===authorEl)return;if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1)};
+window.addEventListener('beforeunload',saveCap);render();
+</script>
+</body>
+</html>
