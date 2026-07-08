@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
@@ -1023,6 +1023,7 @@
             }
         }
 
+        // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ =====
         function handlePortalChoice(chosenIndex) {
             if (!state.waitingForPortal) return;
             const isCorrect = (chosenIndex === state.portalTargetIndex);
@@ -1035,19 +1036,28 @@
             setTimeout(() => {
                 hidePortalModal();
                 if (isCorrect) {
+                    // Правильный ответ – переходим на целевую сторону, клетка 1
                     state.currentSideIndex = state.portalTargetIndex;
                     state.currentCell = 1;
                     writeLog('🌀 ПОРТАЛ → ' + COLORS[state.currentSideIndex].name + ' 1 (правильно)');
+                    updateInfo();
+                    renderGrid();
+                    animatePiece();
+                    playMoveSound();
+                    // Проверяем, не стал ли этот переход финальным попаданием в дом
+                    if (checkHomeReached()) return; // если дом – победа, игра завершена
                 } else {
+                    // Неправильный ответ – возвращаем в дом, но НЕ считаем это победой
                     state.currentSideIndex = state.homeColorIndex;
                     state.currentCell = 1;
                     writeLog('❌ Ошибка! Возврат в дом ' + COLORS[state.currentSideIndex].name + ' 1');
+                    updateInfo();
+                    renderGrid();
+                    animatePiece();
+                    playMoveSound();
+                    // НЕ вызываем checkHomeReached() – игра продолжается
                 }
-                updateInfo();
-                renderGrid();
-                animatePiece();
-                playMoveSound();
-                if (checkHomeReached()) return;
+                // Если игра не завершена и активна – разблокируем кнопку броска
                 if (!state.isGameOver && state.isGameActive) {
                     rollBtn.disabled = false;
                 }
