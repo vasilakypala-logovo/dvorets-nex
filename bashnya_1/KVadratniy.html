@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Квадратный туман — Пространственное мышление 2.0</title>
     <style>
-        /* ===== все стили (оставляем без изменений, добавляем новые для пешки) ===== */
+        /* ===== все стили (без изменений) ===== */
         * { box-sizing: border-box; user-select: none; }
         body {
             margin: 0;
@@ -255,7 +255,6 @@
             50% { transform: scale(1.4) rotate(-10deg); opacity: 1; }
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
-        /* исчезновение – делаем через удаление, но можем добавить класс для анимации, но мы просто перерисовываем */
 
         /* ===== ДЕРЕВЯННЫЙ ШАР-КУБИК ===== */
         .dice-area {
@@ -680,7 +679,6 @@
             return audioCtx;
         }
 
-        // Звук "пи-ик" (кнопка)
         function playClickSound() {
             try {
                 const ctx = ensureAudio();
@@ -697,11 +695,9 @@
             } catch(e) {}
         }
 
-        // Звук "Цик!" (шаг фишки)
         function playMoveSound() {
             try {
                 const ctx = ensureAudio();
-                // Ударный компонент (квадратная волна)
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'square';
@@ -713,7 +709,6 @@
                 osc.start(ctx.currentTime);
                 osc.stop(ctx.currentTime + 0.1);
 
-                // Шумовой компонент для резкости
                 const bufferSize = ctx.sampleRate * 0.05;
                 const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
                 const data = buffer.getChannelData(0);
@@ -732,7 +727,6 @@
             } catch(e) {}
         }
 
-        // Звук победы "там-там-та-та-там"
         function playWinSound() {
             try {
                 const ctx = ensureAudio();
@@ -867,12 +861,11 @@
                     }
                     div.textContent = cellNumber;
 
-                    // Добавляем пешку в текущую клетку
                     if (cellNumber === state.currentCell) {
                         div.classList.add('active');
                         const piece = document.createElement('span');
                         piece.className = 'piece';
-                        piece.textContent = '♟'; // шахматная пешка
+                        piece.textContent = '♟';
                         div.appendChild(piece);
                     }
 
@@ -881,12 +874,10 @@
             }
         }
 
-        // Анимация появления пешки (вызывать после renderGrid)
         function animatePiece() {
             const piece = document.querySelector('.cell.active .piece');
             if (piece) {
                 piece.classList.remove('piece-enter');
-                // форсируем reflow
                 void piece.offsetWidth;
                 piece.classList.add('piece-enter');
                 setTimeout(() => {
@@ -981,7 +972,7 @@
         }
 
         // ============================================================
-        //  ПОРТАЛ
+        //  ПОРТАЛ НА 9 (с вопросом)
         // ============================================================
         function showPortalModal(remaining) {
             portalEffect.classList.add('active');
@@ -1023,7 +1014,6 @@
             }
         }
 
-        // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ =====
         function handlePortalChoice(chosenIndex) {
             if (!state.waitingForPortal) return;
             const isCorrect = (chosenIndex === state.portalTargetIndex);
@@ -1036,7 +1026,6 @@
             setTimeout(() => {
                 hidePortalModal();
                 if (isCorrect) {
-                    // Правильный ответ – переходим на целевую сторону, клетка 1
                     state.currentSideIndex = state.portalTargetIndex;
                     state.currentCell = 1;
                     writeLog('🌀 ПОРТАЛ → ' + COLORS[state.currentSideIndex].name + ' 1 (правильно)');
@@ -1044,10 +1033,8 @@
                     renderGrid();
                     animatePiece();
                     playMoveSound();
-                    // Проверяем, не стал ли этот переход финальным попаданием в дом
-                    if (checkHomeReached()) return; // если дом – победа, игра завершена
+                    if (checkHomeReached()) return;
                 } else {
-                    // Неправильный ответ – возвращаем в дом, но НЕ считаем это победой
                     state.currentSideIndex = state.homeColorIndex;
                     state.currentCell = 1;
                     writeLog('❌ Ошибка! Возврат в дом ' + COLORS[state.currentSideIndex].name + ' 1');
@@ -1055,9 +1042,8 @@
                     renderGrid();
                     animatePiece();
                     playMoveSound();
-                    // НЕ вызываем checkHomeReached() – игра продолжается
+                    // Игра продолжается
                 }
-                // Если игра не завершена и активна – разблокируем кнопку броска
                 if (!state.isGameOver && state.isGameActive) {
                     rollBtn.disabled = false;
                 }
@@ -1076,7 +1062,36 @@
         }
 
         // ============================================================
-        //  ДВИЖЕНИЕ ФИШКИ
+        //  ПОРТАЛ НА 6 (автоматический, случайный цвет)
+        // ============================================================
+        function handleSixPortal() {
+            state.isAnimating = true;
+            rollBtn.disabled = true;
+
+            const randomIndex = Math.floor(Math.random() * COLORS.length);
+            writeLog('🌀 ПОРТАЛ НА 6! Переход на 3 (' + COLORS[randomIndex].name + ')');
+            state.currentSideIndex = randomIndex;
+            state.currentCell = 3;
+
+            // Эффект вспышки
+            portalEffect.classList.add('active');
+            setTimeout(() => {
+                portalEffect.classList.remove('active');
+            }, 600);
+
+            updateInfo();
+            renderGrid();
+            animatePiece();
+            playMoveSound();
+
+            state.isAnimating = false;
+            if (!state.isGameOver && state.isGameActive) {
+                rollBtn.disabled = false;
+            }
+        }
+
+        // ============================================================
+        //  ДВИЖЕНИЕ ФИШКИ (с учётом остановки на 6)
         // ============================================================
         async function moveSteps(count) {
             if (state.isAnimating) return;
@@ -1091,7 +1106,6 @@
                     writeLog(COLORS[state.currentSideIndex].name + ' ' + state.currentCell);
                     renderGrid();
                     updateInfo();
-                    // Анимация пешки и звук
                     animatePiece();
                     playMoveSound();
                     await delay(400);
@@ -1100,6 +1114,7 @@
                         return;
                     }
                 } else {
+                    // достигли 9 → портал с вопросом
                     const remaining = count - stepsMade;
                     state.portalRemainingSteps = remaining;
                     showPortalModal(remaining);
@@ -1107,6 +1122,16 @@
                     return;
                 }
             }
+
+            // Все шаги сделаны – проверяем, не остановились ли на 6
+            if (state.currentCell === 6 && stepsMade === count) {
+                // портал на 6 (автоматический)
+                handleSixPortal();
+                state.isAnimating = false;
+                return;
+            }
+
+            // Обычное завершение хода
             state.isAnimating = false;
             if (!state.isGameOver && state.isGameActive) {
                 rollBtn.disabled = false;
@@ -1122,7 +1147,6 @@
         // ============================================================
         async function rollDice() {
             if (!state.isGameActive || state.isGameOver || state.isAnimating || state.waitingForPortal) return;
-            // Звук нажатия кнопки
             playClickSound();
 
             const diceResult = Math.floor(Math.random() * 6) + 1;
@@ -1171,7 +1195,6 @@
             setDiceValue(1);
             updateInfo();
             renderGrid();
-            // Пешка на старте без анимации
         }
 
         function resetGame() {
