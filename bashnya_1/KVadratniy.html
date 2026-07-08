@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Квадратный туман — Пространственное мышление 2.0</title>
     <style>
-        /* ===== базовые стили (оставляем как есть) ===== */
+        /* ===== все стили (оставляем без изменений, добавляем новые для пешки) ===== */
         * { box-sizing: border-box; user-select: none; }
         body {
             margin: 0;
@@ -64,7 +64,7 @@
             opacity: 0.7;
         }
 
-        /* ===== ДЕРЕВЯННЫЕ ГНЁЗДА ДЛЯ ШАРОВ ===== */
+        /* Гнёзда с шарами */
         .home-selector {
             display: flex;
             gap: 18px;
@@ -78,7 +78,6 @@
             width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        /* Гнездо — деревянное кольцо */
         .color-socket {
             width: 66px;
             height: 66px;
@@ -94,7 +93,6 @@
             transition: all 0.2s ease;
             position: relative;
         }
-        /* текстура гнезда */
         .color-socket::before {
             content: '';
             position: absolute;
@@ -111,7 +109,6 @@
             background: radial-gradient(circle at 60% 20%, rgba(255,220,180,0.15), transparent 60%);
             pointer-events: none;
         }
-        /* сам шарик внутри гнезда */
         .color-ball {
             width: 46px;
             height: 46px;
@@ -153,7 +150,6 @@
             filter: grayscale(0.5);
             transform: scale(0.95);
         }
-        /* при выборе гнездо тоже подсвечивается */
         .color-socket.selected-socket {
             box-shadow:
                 inset 0 -4px 8px rgba(0,0,0,0.6),
@@ -162,7 +158,7 @@
                 0 0 60px rgba(255,215,0,0.1);
         }
 
-        /* ===== ИНФО-ПАНЕЛЬ (без изменений) ===== */
+        /* Инфо-панель */
         .info-bar {
             display: flex;
             flex-wrap: wrap;
@@ -181,7 +177,7 @@
         .info-bar span .label { color: #7a8aa5; font-weight: normal; }
         .info-bar span strong { color: #f0e6d0; font-weight: 600; }
 
-        /* ===== ИГРОВОЕ ПОЛЕ (без изменений) ===== */
+        /* Игровое поле */
         .grid-wrapper {
             background: rgba(10, 18, 30, 0.7);
             padding: 14px;
@@ -189,6 +185,7 @@
             box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7), 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
             backdrop-filter: blur(4px);
             margin-bottom: 16px;
+            position: relative;
         }
         .grid {
             display: grid;
@@ -240,7 +237,27 @@
             filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
         }
 
-        /* ===== ДЕРЕВЯННЫЙ ШАР-КУБИК (оставляем как есть) ===== */
+        /* ===== ПЕШКА ===== */
+        .piece {
+            display: inline-block;
+            font-size: 40px;
+            line-height: 1;
+            position: relative;
+            z-index: 3;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            transition: none;
+        }
+        .piece-enter {
+            animation: pieceAppear 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
+        }
+        @keyframes pieceAppear {
+            0% { transform: scale(0) rotate(40deg); opacity: 0; }
+            50% { transform: scale(1.4) rotate(-10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        /* исчезновение – делаем через удаление, но можем добавить класс для анимации, но мы просто перерисовываем */
+
+        /* ===== ДЕРЕВЯННЫЙ ШАР-КУБИК ===== */
         .dice-area {
             display: flex;
             align-items: center;
@@ -327,7 +344,7 @@
             100% { transform: rotate(360deg) scale(1); }
         }
 
-        /* ===== КНОПКИ ПОД ТЁМНОЕ ДЕРЕВО (МОРИЛКА) ===== */
+        /* ===== КНОПКИ (дерево) ===== */
         .btn {
             padding: 14px 34px;
             font-size: 20px;
@@ -341,7 +358,6 @@
             text-transform: uppercase;
             position: relative;
             overflow: hidden;
-            /* деревянная основа */
             background: radial-gradient(circle at 30% 25%, #7a5a3a, #3d2b1a 80%, #1f140a);
             box-shadow:
                 0 6px 0 #1f140a,
@@ -377,7 +393,6 @@
             transform: scale(1.02);
         }
         .btn-roll {
-            /* переопределяем только цвет акцента, но оставляем деревянную основу */
             background: radial-gradient(circle at 30% 25%, #7a5a3a, #3d2b1a 80%, #1f140a);
             box-shadow:
                 0 6px 0 #1f140a,
@@ -401,7 +416,7 @@
             display: none;
         }
 
-        /* ===== ЖУРНАЛ (без изменений) ===== */
+        /* Журнал */
         .log-container {
             width: 100%;
             margin-top: 12px;
@@ -427,7 +442,7 @@
         .log-box::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
         .log-box::-webkit-scrollbar-thumb { background: #6a7a9a; border-radius: 10px; }
 
-        /* ===== МОДАЛКИ (без изменений) ===== */
+        /* Модалки */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -578,6 +593,7 @@
             .game-container { padding: 16px; }
             .grid { width: 210px; height: 210px; gap: 6px; }
             .cell { font-size: 22px; border-radius: 10px; }
+            .piece { font-size: 30px; }
             .dice-box { width: 70px; height: 70px; }
             .dice-box .digit { font-size: 40px; }
             .btn { padding: 10px 20px; font-size: 16px; }
@@ -650,7 +666,97 @@
 
     <script>
         // ============================================================
-        //  КОНФИГУРАЦИЯ (без изменений)
+        //  ЗВУКИ (Web Audio)
+        // ============================================================
+        let audioCtx = null;
+
+        function ensureAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // Звук "пи-ик" (кнопка)
+        function playClickSound() {
+            try {
+                const ctx = ensureAudio();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = 1200;
+                gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.08);
+            } catch(e) {}
+        }
+
+        // Звук "Цик!" (шаг фишки)
+        function playMoveSound() {
+            try {
+                const ctx = ensureAudio();
+                // Ударный компонент (квадратная волна)
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.value = 150;
+                gain.gain.setValueAtTime(0.45, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.1);
+
+                // Шумовой компонент для резкости
+                const bufferSize = ctx.sampleRate * 0.05;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+                }
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+                const gainNoise = ctx.createGain();
+                gainNoise.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNoise.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+                noise.connect(gainNoise);
+                gainNoise.connect(ctx.destination);
+                noise.start(ctx.currentTime);
+                noise.stop(ctx.currentTime + 0.05);
+            } catch(e) {}
+        }
+
+        // Звук победы "там-там-та-та-там"
+        function playWinSound() {
+            try {
+                const ctx = ensureAudio();
+                const pattern = [1, 1, 0.5, 0.5, 1];
+                const freqs = [200, 200, 250, 250, 200];
+                let time = ctx.currentTime + 0.05;
+                for (let i = 0; i < pattern.length; i++) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.value = freqs[i];
+                    gain.gain.setValueAtTime(0.25, time);
+                    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15 * pattern[i]);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(time);
+                    osc.stop(time + 0.15 * pattern[i]);
+                    time += 0.15 * pattern[i] + 0.08;
+                }
+            } catch(e) {}
+        }
+
+        // ============================================================
+        //  КОНФИГУРАЦИЯ
         // ============================================================
         const COLORS = [
             { name: "Красная", hex: "#e74c3c" },
@@ -710,7 +816,7 @@
         const portalSpinner = document.getElementById('portalSpinner');
 
         // ============================================================
-        //  ВСПОМОГАТЕЛЬНЫЕ (без изменений)
+        //  ВСПОМОГАТЕЛЬНЫЕ
         // ============================================================
         function writeLog(text) {
             logBox.innerHTML += text + '\n';
@@ -726,6 +832,19 @@
             stepsDisplay.textContent = state.stepsCount;
         }
 
+        function adjustBrightness(hex, percent) {
+            let r = parseInt(hex.slice(1,3), 16);
+            let g = parseInt(hex.slice(3,5), 16);
+            let b = parseInt(hex.slice(5,7), 16);
+            r = Math.max(0, Math.min(255, r + percent));
+            g = Math.max(0, Math.min(255, g + percent));
+            b = Math.max(0, Math.min(255, b + percent));
+            return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+        }
+
+        // ============================================================
+        //  ОТРИСОВКА СЕТКИ С ПЕШКОЙ
+        // ============================================================
         function renderGrid() {
             gridEl.innerHTML = '';
             const colorHex = COLORS[state.currentSideIndex].hex;
@@ -747,22 +866,33 @@
                         div.style.color = '#fff';
                     }
                     div.textContent = cellNumber;
+
+                    // Добавляем пешку в текущую клетку
                     if (cellNumber === state.currentCell) {
                         div.classList.add('active');
+                        const piece = document.createElement('span');
+                        piece.className = 'piece';
+                        piece.textContent = '♟'; // шахматная пешка
+                        div.appendChild(piece);
                     }
+
                     gridEl.appendChild(div);
                 }
             }
         }
 
-        function adjustBrightness(hex, percent) {
-            let r = parseInt(hex.slice(1,3), 16);
-            let g = parseInt(hex.slice(3,5), 16);
-            let b = parseInt(hex.slice(5,7), 16);
-            r = Math.max(0, Math.min(255, r + percent));
-            g = Math.max(0, Math.min(255, g + percent));
-            b = Math.max(0, Math.min(255, b + percent));
-            return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+        // Анимация появления пешки (вызывать после renderGrid)
+        function animatePiece() {
+            const piece = document.querySelector('.cell.active .piece');
+            if (piece) {
+                piece.classList.remove('piece-enter');
+                // форсируем reflow
+                void piece.offsetWidth;
+                piece.classList.add('piece-enter');
+                setTimeout(() => {
+                    piece.classList.remove('piece-enter');
+                }, 400);
+            }
         }
 
         function setGameActive(active) {
@@ -779,11 +909,12 @@
             setGameActive(false);
             newGameBtn.style.display = 'inline-block';
             rollBtn.disabled = true;
+            playWinSound();
         }
         function hideWinModal() { winModal.classList.remove('active'); }
 
         // ============================================================
-        //  АНИМАЦИЯ ШАРА (без изменений)
+        //  АНИМАЦИЯ ШАРА-КУБИКА
         // ============================================================
         let currentDiceValue = 1;
 
@@ -801,7 +932,6 @@
 
             const startTime = performance.now();
             const duration = 2000;
-
             let currentVal = currentDiceValue;
 
             function step() {
@@ -851,7 +981,7 @@
         }
 
         // ============================================================
-        //  ПОРТАЛ (без изменений)
+        //  ПОРТАЛ
         // ============================================================
         function showPortalModal(remaining) {
             portalEffect.classList.add('active');
@@ -915,6 +1045,8 @@
                 }
                 updateInfo();
                 renderGrid();
+                animatePiece();
+                playMoveSound();
                 if (checkHomeReached()) return;
                 if (!state.isGameOver && state.isGameActive) {
                     rollBtn.disabled = false;
@@ -934,7 +1066,7 @@
         }
 
         // ============================================================
-        //  ДВИЖЕНИЕ (без изменений)
+        //  ДВИЖЕНИЕ ФИШКИ
         // ============================================================
         async function moveSteps(count) {
             if (state.isAnimating) return;
@@ -949,6 +1081,9 @@
                     writeLog(COLORS[state.currentSideIndex].name + ' ' + state.currentCell);
                     renderGrid();
                     updateInfo();
+                    // Анимация пешки и звук
+                    animatePiece();
+                    playMoveSound();
                     await delay(400);
                     if (checkHomeReached()) {
                         state.isAnimating = false;
@@ -973,10 +1108,13 @@
         function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
         // ============================================================
-        //  БРОСОК (без изменений)
+        //  БРОСОК КУБИКА
         // ============================================================
         async function rollDice() {
             if (!state.isGameActive || state.isGameOver || state.isAnimating || state.waitingForPortal) return;
+            // Звук нажатия кнопки
+            playClickSound();
+
             const diceResult = Math.floor(Math.random() * 6) + 1;
             state.throwsCount++;
             writeLog('\n======================');
@@ -991,7 +1129,7 @@
         }
 
         // ============================================================
-        //  ВЫБОР ДОМА И СБРОС (обновлены для работы с гнёздами)
+        //  ВЫБОР ДОМА И СБРОС
         // ============================================================
         function selectHome(index) {
             if (state.isGameActive || state.isGameOver || state.isAnimating) return;
@@ -1005,11 +1143,9 @@
             state.portalRemainingSteps = 0;
             state.portalTargetIndex = null;
 
-            // Обновляем выделение на гнёздах
             document.querySelectorAll('.color-socket').forEach((socket, i) => {
                 socket.classList.toggle('selected-socket', i === index);
             });
-            // Для обратной совместимости также выделяем сами шары
             document.querySelectorAll('.color-ball').forEach((ball, i) => {
                 ball.classList.toggle('selected', i === index);
             });
@@ -1025,6 +1161,7 @@
             setDiceValue(1);
             updateInfo();
             renderGrid();
+            // Пешка на старте без анимации
         }
 
         function resetGame() {
@@ -1058,7 +1195,7 @@
         }
 
         // ============================================================
-        //  ИНИЦИАЛИЗАЦИЯ (обновлена для создания гнёзд)
+        //  ИНИЦИАЛИЗАЦИЯ
         // ============================================================
         function initUI() {
             COLORS.forEach((color, index) => {
