@@ -6,6 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
     </script>
     <style>
+        /* ======= Стили (без изменений) ======= */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -114,6 +115,7 @@
             display: flex;
             gap: 6px;
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
         .lib-actions button {
             flex: 1;
@@ -145,6 +147,14 @@
         .lib-actions button.clear-btn:hover {
             background: #5a3f33;
             border-color: #b07a5a;
+        }
+        .lib-actions button.reload-btn {
+            background: #2f3d27;
+            border-color: #4a5a3a;
+        }
+        .lib-actions button.reload-btn:hover {
+            background: #3f5a33;
+            border-color: #8a9a6a;
         }
         #elements {
             display: flex;
@@ -557,6 +567,8 @@
             <div class="lib-actions">
                 <button id="addBtn">+ Добавить</button>
                 <button id="clearLibBtn" class="clear-btn">✕ Очистить</button>
+                <!-- Новая кнопка "Обновить библиотеку" -->
+                <button id="reloadLibBtn" class="reload-btn">⟳ Обновить</button>
             </div>
             <input type="file" id="loader" accept="image/*" multiple style="display:none;">
             <div id="elements"></div>
@@ -592,6 +604,7 @@
         (function() {
             'use strict';
 
+            // ========== Существующие глобальные переменные ==========
             const MAX_LIB_ITEMS = 20;
             let libraryItems = [];
             let nextId = 1;
@@ -604,13 +617,15 @@
             let isSelecting = false;
             let selectionStartX = 0, selectionStartY = 0;
 
-            let dragData = null; // { elId, offsetX, offsetY, element }
+            let dragData = null;
 
+            // ========== DOM-ссылки (без изменений) ==========
             const elementsContainer = document.getElementById('elements');
             const countSpan = document.getElementById('count');
             const loader = document.getElementById('loader');
             const addBtn = document.getElementById('addBtn');
             const clearLibBtn = document.getElementById('clearLibBtn');
+            const reloadLibBtn = document.getElementById('reloadLibBtn'); // новая кнопка
             const flowerCanvas = document.getElementById('flower-canvas');
             const emptyHint = document.getElementById('empty-hint');
             const resetCanvasBtn = document.getElementById('resetCanvasBtn');
@@ -627,7 +642,134 @@
             const clearSelectBtn = document.getElementById('clearSelectBtn');
             const selectionOverlay = document.getElementById('selection-overlay');
 
-            // ----- ПОЛНАЯ ФУНКЦИЯ УДАЛЕНИЯ ФОНА (из первой версии) -----
+            // =====================================================
+            // ========== НОВЫЙ МОДУЛЬ РАБОТЫ С INDEXEDDB ==========
+            // =====================================================
+
+            function openDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('TavrrosLibraryDB', 1);
+                    request.onupgradeneeded = function(e) {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('library')) {
+                            db.createObjectStore('library', { keyPath: 'id' });
+                        }
+                    };
+                    request.onsuccess = function(e) { resolve(e.target.result); };
+                    request.onerror = function(e) { reject(e.target.error); };
+                });
+            }
+
+            // Сохраняет массив элементов в хранилище (перезаписывает всё)
+            async function saveLibraryToDB(items) {
+                const db = await openDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction('library', 'readwrite');
+                    const store = tx.objectStore('library');
+                    // Очищаем всё, затем добавляем новые
+                    store.clear();
+                    items.forEach(item => store.add(item));
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = (e) => reject(e.target.error);
+                });
+            }
+
+            // Загружает все элементы из хранилища (возвращает массив)
+            async function loadLibraryFromDB() {
+                const db = await openDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction('library', 'readonly');
+                    const store = tx.objectStore('library');
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (e) => reject(e.target.error);
+                });
+            }
+
+            // Очищает хранилище
+            async function clearLibraryInDB() {
+                const db = await openDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction('library', 'readwrite');
+                    const store = tx.objectStore('library');
+                    store.clear();
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = (e) => reject(e.target.error);
+                });
+            }
+
+            // =====================================================
+            // ========== НОВАЯ ФУНКЦИЯ ИМПОРТА С СЕРВЕРА =========
+            // =====================================================
+
+            async function importFromServer() {
+                const totalFiles = 20;
+                const baseUrl = 'element/';
+
+                // Показываем оверлей загрузки
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.querySelector('span').textContent = 'Импорт элементов с сервера... 0/' + totalFiles;
+
+                const importedItems = [];
+                let loaded = 0;
+                let skipped = 0;
+
+                for (let i = 1; i <= totalFiles; i++) {
+                    const fileName = String(i).padStart(2, '0') + '.jpg';
+                    const fileUrl = baseUrl + fileName;
+
+                    try {
+                        const response = await fetch(fileUrl);
+                        if (!response.ok) {
+                            console.warn('Файл не найден:', fileUrl);
+                            skipped++;
+                            continue;
+                        }
+
+                        const blob = await response.blob();
+                        const dataURL = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+
+                        // Удаление фона (существующая функция)
+                        const processedDataURL = await removeBackgroundAndCrop(dataURL);
+                        importedItems.push({ id: nextId++, dataURL: processedDataURL });
+                        loaded++;
+
+                        loadingOverlay.querySelector('span').textContent =
+                            'Импорт элементов с сервера... ' + (loaded + skipped) + '/' + totalFiles;
+                    } catch (err) {
+                        console.warn('Ошибка загрузки файла ' + fileUrl, err);
+                        skipped++;
+                    }
+                }
+
+                // Сохраняем в IndexedDB
+                if (importedItems.length > 0) {
+                    try {
+                        await saveLibraryToDB(importedItems);
+                        console.log('Библиотека сохранена в IndexedDB');
+                    } catch (err) {
+                        console.error('Ошибка сохранения в IndexedDB:', err);
+                        alert('Не удалось сохранить библиотеку локально. Элементы будут доступны только в текущей сессии.');
+                    }
+                }
+
+                // Обновляем библиотеку в памяти и отображаем
+                libraryItems = importedItems;
+                renderLibrary();
+                updateEmptyHint();
+                loadingOverlay.style.display = 'none';
+                console.log(`Импортировано ${loaded} элементов, пропущено ${skipped}.`);
+            }
+
+            // =====================================================
+            // ========== СУЩЕСТВУЮЩАЯ ФУНКЦИЯ УДАЛЕНИЯ ФОНА ======
+            // =====================================================
+
             function removeBackgroundAndCrop(dataURL) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
@@ -798,66 +940,10 @@
                 });
             }
 
-            // ----- НОВАЯ ФУНКЦИЯ: загрузка элементов с сервера из папки element -----
-            async function loadElementsFromServer() {
-                const totalFiles = 20; // количество файлов 01.jpg ... 20.jpg
-                const baseUrl = 'element/';
+            // =====================================================
+            // ========== СУЩЕСТВУЮЩИЕ ФУНКЦИИ БИБЛИОТЕКИ =========
+            // =====================================================
 
-                // Показываем оверлей загрузки
-                loadingOverlay.style.display = 'flex';
-                loadingOverlay.querySelector('span').textContent = 'Загрузка элементов с сервера... 0/' + totalFiles;
-
-                let loaded = 0;
-                let skipped = 0;
-
-                for (let i = 1; i <= totalFiles; i++) {
-                    const fileName = String(i).padStart(2, '0') + '.jpg';
-                    const fileUrl = baseUrl + fileName;
-
-                    try {
-                        const response = await fetch(fileUrl);
-                        if (!response.ok) {
-                            // Если файл не найден (404) – пропускаем
-                            console.warn('Файл не найден:', fileUrl);
-                            skipped++;
-                            continue;
-                        }
-
-                        // Если достигнут лимит шкатулки – останавливаемся
-                        if (libraryItems.length >= MAX_LIB_ITEMS) {
-                            alert('Шкатулка заполнена (максимум ' + MAX_LIB_ITEMS + ' элементов). Остановлено.');
-                            break;
-                        }
-
-                        const blob = await response.blob();
-                        const dataURL = await new Promise((resolve, reject) => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(reader.result);
-                            reader.onerror = reject;
-                            reader.readAsDataURL(blob);
-                        });
-
-                        // Удаляем фон (как в оригинальной программе)
-                        const processedDataURL = await removeBackgroundAndCrop(dataURL);
-                        libraryItems.push({ id: nextId++, dataURL: processedDataURL });
-                        loaded++;
-
-                        // Обновляем счётчик в оверлее
-                        loadingOverlay.querySelector('span').textContent =
-                            'Загрузка элементов с сервера... ' + (loaded + skipped) + '/' + totalFiles;
-                    } catch (err) {
-                        console.warn('Ошибка загрузки файла ' + fileUrl, err);
-                        skipped++;
-                    }
-                }
-
-                // Скрываем оверлей и обновляем библиотеку
-                loadingOverlay.style.display = 'none';
-                renderLibrary();
-                console.log(`Загружено ${loaded} элементов, пропущено ${skipped} (несуществующие или ошибки).`);
-            }
-
-            // ----- библиотека (без изменений) -----
             function updateCounter() { countSpan.textContent = libraryItems.length; }
 
             function renderLibrary() {
@@ -888,8 +974,8 @@
                         clone.style.zIndex = '9999';
                         clone.style.width = rect.width + 'px';
                         clone.style.height = rect.height + 'px';
-                        clone.style.left = (e.clientX - rect.width/2) + 'px';
-                        clone.style.top = (e.clientY - rect.height/2) + 'px';
+                        clone.style.left = (e.clientX - rect.width / 2) + 'px';
+                        clone.style.top = (e.clientY - rect.height / 2) + 'px';
                         clone.style.opacity = '0.8';
                         clone.style.transform = 'scale(1.05)';
                         clone.style.borderColor = '#b8966a';
@@ -897,15 +983,16 @@
                         document.body.appendChild(clone);
 
                         const onMove = (ev) => {
-                            clone.style.left = (ev.clientX - rect.width/2) + 'px';
-                            clone.style.top = (ev.clientY - rect.height/2) + 'px';
+                            clone.style.left = (ev.clientX - rect.width / 2) + 'px';
+                            clone.style.top = (ev.clientY - rect.height / 2) + 'px';
                         };
                         const onUp = (ev) => {
                             document.removeEventListener('pointermove', onMove);
                             document.removeEventListener('pointerup', onUp);
                             clone.remove();
                             const canvasRect = flowerCanvas.getBoundingClientRect();
-                            const cx = ev.clientX, cy = ev.clientY;
+                            const cx = ev.clientX,
+                                cy = ev.clientY;
                             if (cx >= canvasRect.left && cx <= canvasRect.right &&
                                 cy >= canvasRect.top && cy <= canvasRect.bottom) {
                                 const x = cx - canvasRect.left;
@@ -947,7 +1034,10 @@
                 clearSelection();
             }
 
-            // ----- холст (добавление) -----
+            // =====================================================
+            // ========== СУЩЕСТВУЮЩИЕ ФУНКЦИИ ХОЛСТА =============
+            // =====================================================
+
             function addElementToCanvas(libId, xPercent, yPercent) {
                 const libItem = libraryItems.find(it => it.id === libId);
                 if (!libItem) return;
@@ -994,7 +1084,6 @@
                 emptyHint.classList.toggle('hidden', canvasElements.length > 0);
             }
 
-            // ----- рендер элементов -----
             function renderCanvas() {
                 flowerCanvas.querySelectorAll('.canvas-element').forEach(el => el.remove());
                 const sorted = [...canvasElements].sort((a, b) => a.zIndex - b.zIndex);
@@ -1015,8 +1104,8 @@
                     }
                     div.style.transform = transform;
                     div.style.zIndex = el.zIndex;
-                    div.style.marginLeft = -(el.width/2) + 'px';
-                    div.style.marginTop = -(el.height/2) + 'px';
+                    div.style.marginLeft = -(el.width / 2) + 'px';
+                    div.style.marginTop = -(el.height / 2) + 'px';
                     const img = document.createElement('img');
                     const libItem = libraryItems.find(it => it.id === el.libId);
                     img.src = libItem ? libItem.dataURL : '';
@@ -1043,7 +1132,8 @@
                     div.addEventListener('dblclick', function(e) {
                         if (selectMode) return;
                         const elem = canvasElements.find(el => el.id === parseInt(this.dataset.elId));
-                        if (elem) { elem.rotation = (elem.rotation + 15) % 360; renderCanvas(); }
+                        if (elem) { elem.rotation = (elem.rotation + 15) % 360;
+                            renderCanvas(); }
                     });
 
                     div.addEventListener('wheel', function(e) {
@@ -1063,7 +1153,6 @@
                 updateSelectionOverlay();
             }
 
-            // Глобальные обработчики для перетаскивания (Pointer Events)
             document.addEventListener('pointermove', function(e) {
                 if (!dragData) return;
                 const el = canvasElements.find(el => el.id === dragData.elId);
@@ -1085,7 +1174,10 @@
                 e.preventDefault();
             });
 
-            // ----- выделение и управление -----
+            // =====================================================
+            // ========== СУЩЕСТВУЮЩИЕ ФУНКЦИИ УПРАВЛЕНИЯ =========
+            // =====================================================
+
             function selectElement(id) {
                 flowerCanvas.querySelectorAll('.canvas-element').forEach(el => el.classList.remove('selected'));
                 if (id !== null) {
@@ -1145,7 +1237,10 @@
                 removeElementFromCanvas(selectedId);
             }
 
-            // ----- выделение области -----
+            // =====================================================
+            // ========== ВЫДЕЛЕНИЕ ОБЛАСТИ (без изменений) =======
+            // =====================================================
+
             function clearSelection() {
                 selection = null;
                 selectionOverlay.style.display = 'none';
@@ -1182,7 +1277,10 @@
                 selectionOverlay.style.display = 'block';
             }
 
-            // ----- сохранение -----
+            // =====================================================
+            // ========== СОХРАНЕНИЕ ИЗОБРАЖЕНИЯ (без изменений) ===
+            // =====================================================
+
             function saveImage() {
                 flowerCanvas.querySelectorAll('.canvas-element').forEach(el => el.classList.remove('selected', 'dragging'));
                 flowerCanvas.classList.add('saving');
@@ -1235,7 +1333,10 @@
                 });
             }
 
-            // ----- загрузка (ручная, через input) -----
+            // =====================================================
+            // ========== РУЧНАЯ ЗАГРУЗКА (без изменений) =========
+            // =====================================================
+
             loader.onchange = function() {
                 const files = this.files;
                 if (!files.length) return;
@@ -1277,8 +1378,29 @@
                 this.value = '';
             };
 
+            // =====================================================
+            // ========== ОБРАБОТЧИКИ СОБЫТИЙ (с добавлением новой кнопки) ===
+            // =====================================================
+
             addBtn.addEventListener('click', function() { loader.click(); });
             clearLibBtn.addEventListener('click', clearLibrary);
+
+            // Новая кнопка "Обновить библиотеку"
+            reloadLibBtn.addEventListener('click', async function() {
+                if (!confirm('Обновить библиотеку из папки element? Все текущие элементы в библиотеке будут заменены.')) return;
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.querySelector('span').textContent = 'Обновление библиотеки...';
+                try {
+                    await clearLibraryInDB();       // удаляем старую
+                    await importFromServer();       // заново импортируем
+                } catch (err) {
+                    console.error(err);
+                    alert('Ошибка обновления библиотеки.');
+                } finally {
+                    loadingOverlay.style.display = 'none';
+                }
+            });
+
             resetCanvasBtn.addEventListener('click', clearCanvas);
             saveBtn.addEventListener('click', saveImage);
             layerUpBtn.addEventListener('click', layerUp);
@@ -1292,7 +1414,10 @@
             selectBtn.addEventListener('click', function() { toggleSelectMode(!selectMode); });
             clearSelectBtn.addEventListener('click', function() { clearSelection(); });
 
-            // Рисование рамки выделения
+            // =====================================================
+            // ========== СОБЫТИЯ МЫШИ ДЛЯ ВЫДЕЛЕНИЯ (без изменений) =
+            // =====================================================
+
             flowerCanvas.addEventListener('pointerdown', function(e) {
                 if (!selectMode) {
                     if (e.target === flowerCanvas || e.target === emptyHint) selectElement(null);
@@ -1343,15 +1468,44 @@
 
             window.addEventListener('resize', function() { if (selection) updateSelectionOverlay(); });
 
-            // ----- инициализация -----
-            function init() {
-                renderLibrary();
-                renderCanvas();
-                updateEmptyHint();
-                clearSelection();
-                // Автоматически загружаем элементы из папки element
-                loadElementsFromServer();
+            // =====================================================
+            // ========== ИНИЦИАЛИЗАЦИЯ (изменена) ================
+            // =====================================================
+
+            async function init() {
+                // Сначала пытаемся загрузить библиотеку из IndexedDB
+                let storedItems = null;
+                try {
+                    storedItems = await loadLibraryFromDB();
+                } catch (err) {
+                    console.warn('Ошибка загрузки из IndexedDB:', err);
+                }
+
+                if (storedItems && storedItems.length > 0) {
+                    // Библиотека найдена – используем её
+                    libraryItems = storedItems;
+                    // Обновим nextId, чтобы не было коллизий
+                    if (libraryItems.length > 0) {
+                        const maxId = Math.max(...libraryItems.map(it => it.id));
+                        if (maxId >= nextId) nextId = maxId + 1;
+                    }
+                    renderLibrary();
+                    renderCanvas();
+                    updateEmptyHint();
+                    clearSelection();
+                    console.log('Загружена локальная библиотека из IndexedDB, элементов:', libraryItems.length);
+                } else {
+                    // Библиотеки нет – импортируем с сервера
+                    console.log('Локальная библиотека не найдена, выполняем импорт из папки element...');
+                    await importFromServer();
+                    // После импорта библиотека уже отрисована в importFromServer
+                    renderCanvas(); // холст пока пустой, но на всякий случай
+                    updateEmptyHint();
+                    clearSelection();
+                }
             }
+
+            // Запускаем инициализацию
             init();
 
         })();
