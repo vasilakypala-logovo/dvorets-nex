@@ -60,6 +60,11 @@ img {
 .zone:nth-child(4) .label { animation-delay: 0.3s; }
 .zone:nth-child(5) .label { animation-delay: 1.0s; }
 .zone:nth-child(6) .label { animation-delay: 1.8s; }
+/* Нові зони – додаткові затримки */
+.zone:nth-child(7) .label { animation-delay: 0.5s; }
+.zone:nth-child(8) .label { animation-delay: 1.2s; }
+.zone:nth-child(9) .label { animation-delay: 0.9s; }
+.zone:nth-child(10) .label { animation-delay: 1.6s; }
 
 @keyframes glowPulse {
     0% {
@@ -104,12 +109,28 @@ img {
     <!-- АКТИВНІ ЗОНИ з підписами -->
     <!-- ========================= -->
 
+    <!-- ----- НОВА ЗОНА 1: СЛУХА САД (над МАЛИНОЮ) ----- -->
+    <div class="zone"
+         title="Слуха сад"
+         style="left:4%; top:12%; width:18%; height:18%;"
+         onclick="go('sad.html')">
+        <span class="label">СЛУХА<br>САД</span>
+    </div>
+
     <!-- МАЛИНА ГРА -->
     <div class="zone"
          title="Малина"
          style="left:4%; top:28%; width:18%; height:30%;"
          onclick="go('index.html')">
         <span class="label">МАЛИНА<br>ГРА</span>
+    </div>
+
+    <!-- ----- НОВА ЗОНА 2: АКТИВНА ЗОНА (над СТВОРИТИ ГРУ) ----- -->
+    <div class="zone"
+         title="Активна зона"
+         style="left:24%; top:14%; width:15%; height:18%;"
+         onclick="go('zona.html')">
+        <span class="label">АКТИВНА<br>ЗОНА</span>
     </div>
 
     <!-- СТВОРИТИ ГРУ -->
@@ -120,12 +141,28 @@ img {
         <span class="label">СТВОРИТИ<br>ГРУ</span>
     </div>
 
+    <!-- ----- НОВА ЗОНА 3: УСЕ СТЕЖКИ (над ВІТЕР БУРЯ) ----- -->
+    <div class="zone"
+         title="Усе стежки"
+         style="left:52%; top:6%; width:20%; height:16%;"
+         onclick="go('stezki.html')">
+        <span class="label">УСЕ<br>СТЕЖКИ</span>
+    </div>
+
     <!-- ВІТЕР БУРЯ -->
     <div class="zone"
          title="Яблуня"
          style="left:52%; top:20%; width:20%; height:30%;"
          onclick="go('veter.html')">
         <span class="label">ВІТЕР<br>БУРЯ</span>
+    </div>
+
+    <!-- ----- НОВА ЗОНА 4: ДЕРЕВЯНИЙ (над ГРА В СЛОВА) ----- -->
+    <div class="zone"
+         title="Дерев'яний"
+         style="left:76%; top:14%; width:16%; height:18%;"
+         onclick="go('derevianiy.html')">
+        <span class="label">ДЕРЕВЯНИЙ</span>
     </div>
 
     <!-- ГРА В СЛОВА -->
