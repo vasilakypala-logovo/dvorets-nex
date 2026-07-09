@@ -563,7 +563,7 @@
     <div id="main">
         <div id="library">
             <h2>✦ Шкатулка</h2>
-            <div id="counter">элементов: <span id="count">0</span> / 20</div>
+            <div id="counter">элементов: <span id="count">0</span> / 30</div>
             <div class="lib-actions">
                 <button id="addBtn">+ Добавить</button>
                 <button id="clearLibBtn" class="clear-btn">✕ Очистить</button>
@@ -605,7 +605,7 @@
             'use strict';
 
             // ========== Существующие глобальные переменные ==========
-            const MAX_LIB_ITEMS = 20;
+            const MAX_LIB_ITEMS = 30;
             let libraryItems = [];
             let nextId = 1;
             let canvasElements = [];
@@ -703,7 +703,7 @@
             // =====================================================
 
             async function importFromServer() {
-                const totalFiles = 20;
+                const totalFiles = 30;
                 const baseUrl = 'element/';
 
                 // Показываем оверлей загрузки
