@@ -798,6 +798,65 @@
                 });
             }
 
+            // ----- НОВАЯ ФУНКЦИЯ: загрузка элементов с сервера из папки element -----
+            async function loadElementsFromServer() {
+                const totalFiles = 20; // количество файлов 01.jpg ... 20.jpg
+                const baseUrl = 'element/';
+
+                // Показываем оверлей загрузки
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.querySelector('span').textContent = 'Загрузка элементов с сервера... 0/' + totalFiles;
+
+                let loaded = 0;
+                let skipped = 0;
+
+                for (let i = 1; i <= totalFiles; i++) {
+                    const fileName = String(i).padStart(2, '0') + '.jpg';
+                    const fileUrl = baseUrl + fileName;
+
+                    try {
+                        const response = await fetch(fileUrl);
+                        if (!response.ok) {
+                            // Если файл не найден (404) – пропускаем
+                            console.warn('Файл не найден:', fileUrl);
+                            skipped++;
+                            continue;
+                        }
+
+                        // Если достигнут лимит шкатулки – останавливаемся
+                        if (libraryItems.length >= MAX_LIB_ITEMS) {
+                            alert('Шкатулка заполнена (максимум ' + MAX_LIB_ITEMS + ' элементов). Остановлено.');
+                            break;
+                        }
+
+                        const blob = await response.blob();
+                        const dataURL = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+
+                        // Удаляем фон (как в оригинальной программе)
+                        const processedDataURL = await removeBackgroundAndCrop(dataURL);
+                        libraryItems.push({ id: nextId++, dataURL: processedDataURL });
+                        loaded++;
+
+                        // Обновляем счётчик в оверлее
+                        loadingOverlay.querySelector('span').textContent =
+                            'Загрузка элементов с сервера... ' + (loaded + skipped) + '/' + totalFiles;
+                    } catch (err) {
+                        console.warn('Ошибка загрузки файла ' + fileUrl, err);
+                        skipped++;
+                    }
+                }
+
+                // Скрываем оверлей и обновляем библиотеку
+                loadingOverlay.style.display = 'none';
+                renderLibrary();
+                console.log(`Загружено ${loaded} элементов, пропущено ${skipped} (несуществующие или ошибки).`);
+            }
+
             // ----- библиотека (без изменений) -----
             function updateCounter() { countSpan.textContent = libraryItems.length; }
 
@@ -1176,7 +1235,7 @@
                 });
             }
 
-            // ----- загрузка -----
+            // ----- загрузка (ручная, через input) -----
             loader.onchange = function() {
                 const files = this.files;
                 if (!files.length) return;
@@ -1290,6 +1349,8 @@
                 renderCanvas();
                 updateEmptyHint();
                 clearSelection();
+                // Автоматически загружаем элементы из папки element
+                loadElementsFromServer();
             }
             init();
 
