@@ -28,7 +28,7 @@ html, body {
 #room {
     position: absolute;
     inset: 0;
-    background-image: url("room.jpg");
+    background-image: url("room2.jpg");
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -90,50 +90,50 @@ html, body {
 /* ЗЕРКАЛЬНОЕ РАСПОЛОЖЕНИЕ ЗОН (справа налево) */
 /* Балкон теперь справа */
 #indicator-z0 {
-    left: 96%;    /* зеркально от left: 3% */
+    left: 96%;
     top: 44%;
     transform: translate(-50%, -50%);
 }
 
 #z0 { 
-    left: 94.5%;  /* зеркально от 0.5% */
+    left: 94.5%;
     top: 28%; 
     width: 5%; 
     height: 35%; 
     z-index: 6; 
 }
 
-/* Зоны картин — зеркально */
+/* Зоны картин — зеркально, с новыми номерами 6-10 */
 #z1 { 
-    left: 80.6%;  /* зеркально от 9.4% (100 - 9.4 - 10.0 = 80.6) */
+    left: 80.6%;
     top: 24.6%; 
     width: 10.0%; 
     height: 42.8%; 
 }
 
 #z2 { 
-    left: 60.8%;  /* зеркально от 27.4% (100 - 27.4 - 11.8 = 60.8) */
+    left: 60.8%;
     top: 36.2%; 
     width: 11.8%; 
     height: 28.8%; 
 }
 
 #z3 { 
-    left: 41.0%;  /* зеркально от 43.0% (100 - 43.0 - 16.0 = 41.0) */
+    left: 41.0%;
     top: 31.6%; 
     width: 16.0%; 
     height: 37.6%; 
 }
 
 #z4 { 
-    left: 23.8%;  /* зеркально от 64.4% (100 - 64.4 - 11.8 = 23.8) */
+    left: 23.8%;
     top: 36.2%; 
     width: 11.8%; 
     height: 28.8%; 
 }
 
 #z5 { 
-    left: 4.8%;   /* зеркально от 85.0% (100 - 85.0 - 10.2 = 4.8) */
+    left: 4.8%;
     top: 24.8%; 
     width: 10.2%; 
     height: 42.6%; 
@@ -156,7 +156,7 @@ html, body {
 
 #hint {
     position: absolute;
-    right: 18px;   /* зеркально */
+    right: 18px;
     bottom: 14px;
     color: rgba(235,240,250,0.75);
     background: rgba(10,18,30,0.34);
@@ -166,7 +166,7 @@ html, body {
     user-select: none;
 }
 
-/* ===== Снежная планета (остаётся по центру) ===== */
+/* ===== Снежная планета ===== */
 #planet {
     position: absolute;
     bottom: 30px;
@@ -217,7 +217,7 @@ html, body {
 #backBtn {
     position: absolute;
     bottom: 30px;
-    left: 30px;    /* зеркально от right: 30px */
+    left: 30px;
     width: 64px;
     height: 64px;
     border-radius: 50%;
@@ -242,13 +242,12 @@ html, body {
     transform: scale(1.08);
 }
 
-/* Стрелка в кнопке назад тоже зеркально */
 #backBtn .arrow {
     display: inline-block;
-    transform: scaleX(-1); /* зеркалим стрелку, чтобы указывала вправо */
+    transform: scaleX(-1);
 }
 
-/* ===== Просмотрщик (без изменений) ===== */
+/* ===== Просмотрщик ===== */
 #viewer {
     position: fixed;
     inset: 0;
@@ -373,28 +372,27 @@ html, body {
 <body>
 
 <div id="stage">
-    <!-- Фон зеркально отражён -->
+    <!-- Фон room2.jpg -->
     <div id="room"></div>
     <div id="title">ГОСТИННАЯ ВОЛНЫ 2</div>
 
-    <!-- Индикатор балкона — теперь СПРАВА -->
+    <!-- Индикатор балкона — справа -->
     <div id="indicator-z0" class="zone-indicator">
         <div class="ball">
             <span class="arrow-up">↑</span>
         </div>
     </div>
 
-    <!-- Зоны с зеркальным расположением -->
+    <!-- Зоны с новыми номерами картин 6-10 -->
     <div class="zone" id="z0" onclick="location.href='dogbal/balconydog.html'"></div>
-    <div class="zone" id="z1" onclick="openWork(1)"></div>
-    <div class="zone" id="z2" onclick="openWork(2)"></div>
-    <div class="zone" id="z3" onclick="openWork(3)"></div>
-    <div class="zone" id="z4" onclick="openWork(4)"></div>
-    <div class="zone" id="z5" onclick="openWork(5)"></div>
+    <div class="zone" id="z1" onclick="openWork(6)"></div>  <!-- было 1 → 6 -->
+    <div class="zone" id="z2" onclick="openWork(7)"></div>  <!-- было 2 → 7 -->
+    <div class="zone" id="z3" onclick="openWork(8)"></div>  <!-- было 3 → 8 -->
+    <div class="zone" id="z4" onclick="openWork(9)"></div>  <!-- было 4 → 9 -->
+    <div class="zone" id="z5" onclick="openWork(10)"></div> <!-- было 5 → 10 -->
 
     <div id="planet" onclick="location.href='volna1.html'"></div>
     
-    <!-- Кнопка "Назад" — теперь СЛЕВА с зеркальной стрелкой -->
     <div id="backBtn" onclick="location.href='../vestibul.html'">
         <span class="arrow">←</span>
     </div>
@@ -402,7 +400,7 @@ html, body {
     <div id="hint">Клик по картине — открыть работу и табличку</div>
 </div>
 
-<!-- Просмотрщик (без изменений) -->
+<!-- Просмотрщик -->
 <div id="viewer" onclick="closeWork()">
     <div id="close">×</div>
     <img id="tablet" src="" alt="табличка">
