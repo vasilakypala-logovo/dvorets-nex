@@ -39,9 +39,61 @@ html, body {
     cursor: pointer;
     background: rgba(255,255,255,0);
     border: 2px solid rgba(255,255,255,0);
+    z-index: 5; /* чтобы зона была над шариком, но клик срабатывал */
 }
 
-#z0 { left: 0.5%; top: 28%; width: 5%; height: 35%; }
+/* === Стили для голубого шарика-указателя === */
+.zone-indicator {
+    position: absolute;
+    z-index: 4; /* под зоной, чтобы клик проходил сквозь */
+    pointer-events: none; /* чтобы не мешать клику по зоне */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: floatPulse 2s ease-in-out infinite;
+}
+
+.zone-indicator .ball {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #8ac4ff, #1a73e8);
+    box-shadow: 0 0 20px rgba(30, 144, 255, 0.6), 0 0 60px rgba(30, 144, 255, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zone-indicator .arrow-up {
+    font-size: 18px;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 0 8px rgba(0,0,0,0.5);
+    margin-top: -2px; /* небольшой сдвиг для визуального центрирования */
+}
+
+/* Анимация покачивания и свечения */
+@keyframes floatPulse {
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-6px) scale(1.05); }
+    100% { transform: translateY(0px) scale(1); }
+}
+
+.zone-indicator:hover .ball {
+    transform: scale(1.2);
+    box-shadow: 0 0 30px rgba(30, 144, 255, 0.8), 0 0 80px rgba(30, 144, 255, 0.5);
+}
+
+/* Позиционирование индикатора для z0 */
+#indicator-z0 {
+    left: 3%;    /* примерно центр левой зоны */
+    top: 44%;    /* по вертикали */
+    transform: translate(-50%, -50%);
+}
+
+#z0 { left: 0.5%; top: 28%; width: 5%; height: 35%; z-index: 6; } /* z-index выше, чтобы клик был над индикатором */
 #z1 { left: 9.4%; top: 24.6%; width: 10.0%; height: 42.8%; }
 #z2 { left: 27.4%; top: 36.2%; width: 11.8%; height: 28.8%; }
 #z3 { left: 43.0%; top: 31.6%; width: 16.0%; height: 37.6%; }
@@ -280,6 +332,13 @@ html, body {
 <div id="stage">
     <div id="room"></div>
     <div id="title">ГОСТИННАЯ ВОЛНЫ</div>
+
+    <!-- Индикатор для зоны z0 (голубой шарик со стрелкой) -->
+    <div id="indicator-z0" class="zone-indicator">
+        <div class="ball">
+            <span class="arrow-up">↑</span>
+        </div>
+    </div>
 
     <div class="zone" id="z0" onclick="location.href='dogbal/balconydog.html'"></div>
     <div class="zone" id="z1" onclick="openWork(1)"></div>
