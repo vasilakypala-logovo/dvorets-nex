@@ -1,0 +1,585 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>ГОСТИННАЯ ВОЛНЫ 2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #09111b;
+    font-family: Arial, sans-serif;
+}
+
+#stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #09111b;
+}
+
+#room {
+    position: absolute;
+    inset: 0;
+    background-image: url("room.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    /* Зеркальное отражение фона */
+    transform: scaleX(-1);
+}
+
+.zone {
+    position: absolute;
+    cursor: pointer;
+    background: rgba(255,255,255,0);
+    border: 2px solid rgba(255,255,255,0);
+    z-index: 5;
+}
+
+/* === Стили для голубого шарика-указателя === */
+.zone-indicator {
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: floatPulse 2s ease-in-out infinite;
+}
+
+.zone-indicator .ball {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #8ac4ff, #1a73e8);
+    box-shadow: 0 0 20px rgba(30, 144, 255, 0.6), 0 0 60px rgba(30, 144, 255, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zone-indicator .arrow-up {
+    font-size: 18px;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 0 8px rgba(0,0,0,0.5);
+    margin-top: -2px;
+}
+
+@keyframes floatPulse {
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-6px) scale(1.05); }
+    100% { transform: translateY(0px) scale(1); }
+}
+
+.zone-indicator:hover .ball {
+    transform: scale(1.2);
+    box-shadow: 0 0 30px rgba(30, 144, 255, 0.8), 0 0 80px rgba(30, 144, 255, 0.5);
+}
+
+/* ЗЕРКАЛЬНОЕ РАСПОЛОЖЕНИЕ ЗОН (справа налево) */
+/* Балкон теперь справа */
+#indicator-z0 {
+    left: 96%;    /* зеркально от left: 3% */
+    top: 44%;
+    transform: translate(-50%, -50%);
+}
+
+#z0 { 
+    left: 94.5%;  /* зеркально от 0.5% */
+    top: 28%; 
+    width: 5%; 
+    height: 35%; 
+    z-index: 6; 
+}
+
+/* Зоны картин — зеркально */
+#z1 { 
+    left: 80.6%;  /* зеркально от 9.4% (100 - 9.4 - 10.0 = 80.6) */
+    top: 24.6%; 
+    width: 10.0%; 
+    height: 42.8%; 
+}
+
+#z2 { 
+    left: 60.8%;  /* зеркально от 27.4% (100 - 27.4 - 11.8 = 60.8) */
+    top: 36.2%; 
+    width: 11.8%; 
+    height: 28.8%; 
+}
+
+#z3 { 
+    left: 41.0%;  /* зеркально от 43.0% (100 - 43.0 - 16.0 = 41.0) */
+    top: 31.6%; 
+    width: 16.0%; 
+    height: 37.6%; 
+}
+
+#z4 { 
+    left: 23.8%;  /* зеркально от 64.4% (100 - 64.4 - 11.8 = 23.8) */
+    top: 36.2%; 
+    width: 11.8%; 
+    height: 28.8%; 
+}
+
+#z5 { 
+    left: 4.8%;   /* зеркально от 85.0% (100 - 85.0 - 10.2 = 4.8) */
+    top: 24.8%; 
+    width: 10.2%; 
+    height: 42.6%; 
+}
+
+#title {
+    position: absolute;
+    left: 50%;
+    top: 18px;
+    transform: translateX(-50%);
+    color: rgba(240,225,190,0.88);
+    background: rgba(12,22,38,0.32);
+    padding: 8px 20px;
+    border-radius: 18px;
+    letter-spacing: 3px;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(255,220,150,0.35), 0 0 18px rgba(120,170,255,0.25);
+    user-select: none;
+}
+
+#hint {
+    position: absolute;
+    right: 18px;   /* зеркально */
+    bottom: 14px;
+    color: rgba(235,240,250,0.75);
+    background: rgba(10,18,30,0.34);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    user-select: none;
+}
+
+/* ===== Снежная планета (остаётся по центру) ===== */
+#planet {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.3s ease;
+    background: radial-gradient(ellipse at 30% 30%, #f0f0f0 0%, #c0c0c0 60%, #808080 100%);
+    box-shadow:
+        inset -12px -12px 30px rgba(0,0,0,0.5),
+        0 0 40px rgba(255,255,255,0.2),
+        0 0 80px rgba(200,200,200,0.15);
+    animation: spinPlanet 12s linear infinite;
+}
+#planet:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+#planet::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 25%;
+    transform: translate(-50%, -50%) rotateX(72deg);
+    border-radius: 50%;
+    border: 5px solid rgba(200,180,150,0.6);
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    box-shadow: 0 0 25px rgba(200,180,150,0.25);
+    pointer-events: none;
+    animation: spinRing 10s linear infinite;
+}
+@keyframes spinPlanet {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to { transform: translateX(-50%) rotate(360deg); }
+}
+@keyframes spinRing {
+    from { transform: translate(-50%, -50%) rotateX(72deg) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotateX(72deg) rotate(360deg); }
+}
+
+/* ===== Кнопка "Назад" — теперь СЛЕВА ===== */
+#backBtn {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;    /* зеркально от right: 30px */
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.9);
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    backdrop-filter: blur(4px);
+    transition: background 0.3s, transform 0.3s;
+    z-index: 10;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+#backBtn:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.08);
+}
+
+/* Стрелка в кнопке назад тоже зеркально */
+#backBtn .arrow {
+    display: inline-block;
+    transform: scaleX(-1); /* зеркалим стрелку, чтобы указывала вправо */
+}
+
+/* ===== Просмотрщик (без изменений) ===== */
+#viewer {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at center, rgba(40,70,120,0.24), rgba(0,0,0,0.95) 55%),
+        rgba(0,0,0,0.95);
+    z-index: 100;
+    flex-direction: row;
+    gap: 30px;
+    padding: 20px;
+}
+
+#tablet {
+    max-height: 70vh;
+    max-width: 30vw;
+    object-fit: contain;
+    display: none;
+    box-shadow: 0 0 30px rgba(255,220,150,0.12);
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+#bigWrapper {
+    flex: 1;
+    max-width: 60vw;
+    max-height: 92vh;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+#bigWrapper:active {
+    cursor: grabbing;
+}
+
+#big {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transform: translate(0px, 0px) scale(1);
+    pointer-events: none;
+    user-select: none;
+    transition: none;
+}
+
+#zoomControls {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 110;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    padding: 10px 8px;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+#zoomControls button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+#zoomControls button:hover {
+    background: rgba(255,255,255,0.25);
+}
+#zoomControls .zoomReset {
+    font-size: 16px;
+}
+#zoomLabel {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    text-align: center;
+    padding: 2px 0;
+    user-select: none;
+}
+
+#close {
+    position: fixed;
+    right: 24px;
+    top: 16px;
+    color: rgba(255,245,235,0.95);
+    font-size: 44px;
+    line-height: 44px;
+    cursor: pointer;
+    z-index: 110;
+    user-select: none;
+}
+
+#caption {
+    position: fixed;
+    left: 20px;
+    bottom: 16px;
+    color: rgba(245,240,225,0.82);
+    background: rgba(12,22,38,0.42);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 15px;
+    z-index: 110;
+}
+</style>
+</head>
+
+<body>
+
+<div id="stage">
+    <!-- Фон зеркально отражён -->
+    <div id="room"></div>
+    <div id="title">ГОСТИННАЯ ВОЛНЫ 2</div>
+
+    <!-- Индикатор балкона — теперь СПРАВА -->
+    <div id="indicator-z0" class="zone-indicator">
+        <div class="ball">
+            <span class="arrow-up">↑</span>
+        </div>
+    </div>
+
+    <!-- Зоны с зеркальным расположением -->
+    <div class="zone" id="z0" onclick="location.href='dogbal/balconydog.html'"></div>
+    <div class="zone" id="z1" onclick="openWork(1)"></div>
+    <div class="zone" id="z2" onclick="openWork(2)"></div>
+    <div class="zone" id="z3" onclick="openWork(3)"></div>
+    <div class="zone" id="z4" onclick="openWork(4)"></div>
+    <div class="zone" id="z5" onclick="openWork(5)"></div>
+
+    <div id="planet" onclick="location.href='volna1.html'"></div>
+    
+    <!-- Кнопка "Назад" — теперь СЛЕВА с зеркальной стрелкой -->
+    <div id="backBtn" onclick="location.href='../vestibul.html'">
+        <span class="arrow">←</span>
+    </div>
+    
+    <div id="hint">Клик по картине — открыть работу и табличку</div>
+</div>
+
+<!-- Просмотрщик (без изменений) -->
+<div id="viewer" onclick="closeWork()">
+    <div id="close">×</div>
+    <img id="tablet" src="" alt="табличка">
+    <div id="bigWrapper" onclick="event.stopPropagation()">
+        <img id="big" src="">
+        <div id="zoomControls">
+            <button id="zoomIn" title="Увеличить">+</button>
+            <button id="zoomReset" class="zoomReset" title="Сбросить">⟲</button>
+            <button id="zoomOut" title="Уменьшить">−</button>
+            <div id="zoomLabel">100%</div>
+        </div>
+    </div>
+    <div id="caption"></div>
+</div>
+
+<script>
+const extensions = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
+
+// ---- Зум и панорамирование ----
+let scale = 1;
+let translateX = 0;
+let translateY = 0;
+let isDragging = false;
+let startX, startY, startTranslateX, startTranslateY;
+
+const big = document.getElementById('big');
+const wrapper = document.getElementById('bigWrapper');
+const zoomLabel = document.getElementById('zoomLabel');
+
+function updateTransform() {
+    big.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    zoomLabel.textContent = Math.round(scale * 100) + '%';
+}
+
+function resetZoom() {
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+    updateTransform();
+}
+
+function zoomIn() {
+    scale = Math.min(scale + 0.2, 4.0);
+    updateTransform();
+}
+
+function zoomOut() {
+    scale = Math.max(scale - 0.2, 0.1);
+    updateTransform();
+}
+
+wrapper.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    scale = Math.min(Math.max(scale + delta, 0.1), 4.0);
+    updateTransform();
+}, { passive: false });
+
+wrapper.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startTranslateX = translateX;
+    startTranslateY = translateY;
+    wrapper.style.cursor = 'grabbing';
+    e.preventDefault();
+});
+
+window.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    translateX = startTranslateX + dx;
+    translateY = startTranslateY + dy;
+    updateTransform();
+});
+
+window.addEventListener('mouseup', function() {
+    if (isDragging) {
+        isDragging = false;
+        wrapper.style.cursor = 'grab';
+    }
+});
+
+document.getElementById('zoomIn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    zoomIn();
+});
+document.getElementById('zoomOut').addEventListener('click', function(e) {
+    e.stopPropagation();
+    zoomOut();
+});
+document.getElementById('zoomReset').addEventListener('click', function(e) {
+    e.stopPropagation();
+    resetZoom();
+});
+
+function resetZoomForNewImage() {
+    resetZoom();
+}
+
+// ---- Открытие работы ----
+function openWork(n) {
+    const viewer = document.getElementById('viewer');
+    const tablet = document.getElementById('tablet');
+    const caption = document.getElementById('caption');
+
+    resetZoomForNewImage();
+
+    tablet.style.display = 'none';
+    tablet.removeAttribute('src');
+
+    let index = 0;
+
+    function tryNextBig() {
+        if (index >= extensions.length) {
+            caption.textContent = 'Не найден файл works/' + n + '.jpg';
+            big.removeAttribute('src');
+            viewer.style.display = 'flex';
+            return;
+        }
+        const src = 'works/' + n + '.' + extensions[index];
+        index++;
+        big.onerror = tryNextBig;
+        big.onload = function() {
+            big.onerror = null;
+            caption.textContent = 'ГОСТИННАЯ ВОЛНЫ 2 · Картина №' + n;
+            loadTablet(n);
+            viewer.style.display = 'flex';
+            resetZoomForNewImage();
+        };
+        big.src = src;
+    }
+
+    function loadTablet(n) {
+        let idx = 0;
+        function tryNextTab() {
+            if (idx >= extensions.length) {
+                tablet.style.display = 'none';
+                return;
+            }
+            const src = 'works/tablica' + n + '.' + extensions[idx];
+            idx++;
+            tablet.onerror = tryNextTab;
+            tablet.onload = function() {
+                tablet.onerror = null;
+                tablet.style.display = 'block';
+            };
+            tablet.src = src;
+        }
+        tryNextTab();
+    }
+
+    tryNextBig();
+}
+
+// ---- Закрытие просмотрщика ----
+function closeWork() {
+    const viewer = document.getElementById('viewer');
+    const big = document.getElementById('big');
+    const tablet = document.getElementById('tablet');
+    viewer.style.display = 'none';
+    big.removeAttribute('src');
+    tablet.removeAttribute('src');
+    tablet.style.display = 'none';
+    resetZoomForNewImage();
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeWork();
+});
+
+document.getElementById('bigWrapper').addEventListener('click', function(e) {
+    e.stopPropagation();
+});
+</script>
+
+</body>
+</html>
