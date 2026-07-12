@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+* {
+    box-sizing: border-box;
+}
 html, body {
     margin: 0;
     width: 100%;
@@ -72,7 +75,7 @@ html, body {
     user-select: none;
 }
 
-/* ===== Планета: бело-серая, без полос ===== */
+/* ===== Снежная планета ===== */
 #planet {
     position: absolute;
     bottom: 30px;
@@ -84,7 +87,6 @@ html, body {
     cursor: pointer;
     z-index: 10;
     transition: transform 0.3s ease;
-    /* Чистый бело-серый объёмный градиент */
     background: radial-gradient(ellipse at 30% 30%, #f0f0f0 0%, #c0c0c0 60%, #808080 100%);
     box-shadow:
         inset -12px -12px 30px rgba(0,0,0,0.5),
@@ -95,8 +97,6 @@ html, body {
 #planet:hover {
     transform: translateX(-50%) scale(1.1);
 }
-
-/* Кольцо Сатурна */
 #planet::after {
     content: '';
     position: absolute;
@@ -113,7 +113,6 @@ html, body {
     pointer-events: none;
     animation: spinRing 10s linear infinite;
 }
-
 @keyframes spinPlanet {
     from { transform: translateX(-50%) rotate(0deg); }
     to { transform: translateX(-50%) rotate(360deg); }
@@ -152,7 +151,7 @@ html, body {
     transform: scale(1.08);
 }
 
-/* ===== Просмотрщик картин ===== */
+/* ===== Просмотрщик ===== */
 #viewer {
     position: fixed;
     inset: 0;
@@ -175,18 +174,79 @@ html, body {
     display: none;
     box-shadow: 0 0 30px rgba(255,220,150,0.12);
     border-radius: 6px;
+    flex-shrink: 0;
+}
+
+/* Контейнер для картины — flex-центрирование */
+#bigWrapper {
+    flex: 1;
+    max-width: 60vw;
+    max-height: 92vh;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+#bigWrapper:active {
+    cursor: grabbing;
 }
 
 #big {
-    max-height: 92vh;
-    max-width: 60vw;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
-    box-shadow: 0 0 55px rgba(255,220,150,0.18), 0 0 120px rgba(80,120,220,0.20);
-    transition: max-width 0.3s ease;
+    transform: translate(0px, 0px) scale(1);
+    pointer-events: none;
+    user-select: none;
+    transition: none;
 }
 
-#viewer.has-tablet #big {
-    max-width: 55vw;
+/* Панель управления зумом */
+#zoomControls {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 110;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    padding: 10px 8px;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+#zoomControls button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+#zoomControls button:hover {
+    background: rgba(255,255,255,0.25);
+}
+#zoomControls .zoomReset {
+    font-size: 16px;
+}
+#zoomLabel {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    text-align: center;
+    padding: 2px 0;
+    user-select: none;
 }
 
 #close {
@@ -221,7 +281,6 @@ html, body {
     <div id="room"></div>
     <div id="title">ГОСТИННАЯ ВОЛНЫ</div>
 
-    <!-- Зоны картин и балкона -->
     <div class="zone" id="z0" onclick="location.href='balcon/balconysia.html'"></div>
     <div class="zone" id="z1" onclick="openWork(1)"></div>
     <div class="zone" id="z2" onclick="openWork(2)"></div>
@@ -229,53 +288,154 @@ html, body {
     <div class="zone" id="z4" onclick="openWork(4)"></div>
     <div class="zone" id="z5" onclick="openWork(5)"></div>
 
-    <!-- Планета (без полос) -->
     <div id="planet" onclick="location.href='volna2.html'"></div>
-
-    <!-- Кнопка "Назад" -->
     <div id="backBtn" onclick="location.href='../vestibul.html'">←</div>
-
     <div id="hint">Клик по картине — открыть работу и табличку</div>
 </div>
 
 <!-- Просмотрщик -->
 <div id="viewer" onclick="closeWork()">
     <div id="close">×</div>
+
+    <!-- Табличка слева -->
     <img id="tablet" src="" alt="табличка">
-    <img id="big" src="">
+
+    <!-- Контейнер для картины -->
+    <div id="bigWrapper" onclick="event.stopPropagation()">
+        <img id="big" src="">
+        <!-- Панель управления зумом -->
+        <div id="zoomControls">
+            <button id="zoomIn" title="Увеличить">+</button>
+            <button id="zoomReset" class="zoomReset" title="Сбросить">⟲</button>
+            <button id="zoomOut" title="Уменьшить">−</button>
+            <div id="zoomLabel">100%</div>
+        </div>
+    </div>
+
     <div id="caption"></div>
 </div>
 
 <script>
 const extensions = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
 
-function openWork(n) {
-    const viewer = document.getElementById("viewer");
-    const big = document.getElementById("big");
-    const tablet = document.getElementById("tablet");
-    const caption = document.getElementById("caption");
+// ---- Зум и панорамирование ----
+let scale = 1;
+let translateX = 0;
+let translateY = 0;
+let isDragging = false;
+let startX, startY, startTranslateX, startTranslateY;
 
-    tablet.style.display = "none";
-    viewer.classList.remove("has-tablet");
-    tablet.removeAttribute("src");
+const big = document.getElementById('big');
+const wrapper = document.getElementById('bigWrapper');
+const zoomLabel = document.getElementById('zoomLabel');
+
+function updateTransform() {
+    big.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    zoomLabel.textContent = Math.round(scale * 100) + '%';
+}
+
+function resetZoom() {
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+    updateTransform();
+}
+
+function zoomIn() {
+    scale = Math.min(scale + 0.2, 4.0);
+    updateTransform();
+}
+
+function zoomOut() {
+    scale = Math.max(scale - 0.2, 0.1);
+    updateTransform();
+}
+
+// Колесо мыши для зума
+wrapper.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    scale = Math.min(Math.max(scale + delta, 0.1), 4.0);
+    updateTransform();
+}, { passive: false });
+
+// Перетаскивание для панорамирования
+wrapper.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startTranslateX = translateX;
+    startTranslateY = translateY;
+    wrapper.style.cursor = 'grabbing';
+    e.preventDefault();
+});
+
+window.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    translateX = startTranslateX + dx;
+    translateY = startTranslateY + dy;
+    updateTransform();
+});
+
+window.addEventListener('mouseup', function() {
+    if (isDragging) {
+        isDragging = false;
+        wrapper.style.cursor = 'grab';
+    }
+});
+
+// Кнопки управления
+document.getElementById('zoomIn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    zoomIn();
+});
+document.getElementById('zoomOut').addEventListener('click', function(e) {
+    e.stopPropagation();
+    zoomOut();
+});
+document.getElementById('zoomReset').addEventListener('click', function(e) {
+    e.stopPropagation();
+    resetZoom();
+});
+
+// Сброс при открытии новой картины
+function resetZoomForNewImage() {
+    resetZoom();
+}
+
+// ---- Открытие работы ----
+function openWork(n) {
+    const viewer = document.getElementById('viewer');
+    const tablet = document.getElementById('tablet');
+    const caption = document.getElementById('caption');
+
+    // Сбрасываем зум
+    resetZoomForNewImage();
+
+    tablet.style.display = 'none';
+    tablet.removeAttribute('src');
 
     let index = 0;
 
     function tryNextBig() {
         if (index >= extensions.length) {
-            caption.textContent = "Не найден файл works/" + n + ".jpg";
-            big.removeAttribute("src");
-            viewer.style.display = "flex";
+            caption.textContent = 'Не найден файл works/' + n + '.jpg';
+            big.removeAttribute('src');
+            viewer.style.display = 'flex';
             return;
         }
-        const src = "works/" + n + "." + extensions[index];
+        const src = 'works/' + n + '.' + extensions[index];
         index++;
         big.onerror = tryNextBig;
         big.onload = function() {
             big.onerror = null;
-            caption.textContent = "ГОСТИННАЯ ВОЛНЫ · Картина №" + n;
+            caption.textContent = 'ГОСТИННАЯ ВОЛНЫ · Картина №' + n;
             loadTablet(n);
-            viewer.style.display = "flex";
+            viewer.style.display = 'flex';
+            resetZoomForNewImage(); // ещё раз для верности
         };
         big.src = src;
     }
@@ -284,17 +444,15 @@ function openWork(n) {
         let idx = 0;
         function tryNextTab() {
             if (idx >= extensions.length) {
-                tablet.style.display = "none";
-                viewer.classList.remove("has-tablet");
+                tablet.style.display = 'none';
                 return;
             }
-            const src = "works/tablica" + n + "." + extensions[idx];
+            const src = 'works/tablica' + n + '.' + extensions[idx];
             idx++;
             tablet.onerror = tryNextTab;
             tablet.onload = function() {
                 tablet.onerror = null;
-                tablet.style.display = "block";
-                viewer.classList.add("has-tablet");
+                tablet.style.display = 'block';
             };
             tablet.src = src;
         }
@@ -304,19 +462,25 @@ function openWork(n) {
     tryNextBig();
 }
 
+// ---- Закрытие просмотрщика ----
 function closeWork() {
-    const viewer = document.getElementById("viewer");
-    const big = document.getElementById("big");
-    const tablet = document.getElementById("tablet");
-    viewer.style.display = "none";
-    big.removeAttribute("src");
-    tablet.removeAttribute("src");
-    tablet.style.display = "none";
-    viewer.classList.remove("has-tablet");
+    const viewer = document.getElementById('viewer');
+    const big = document.getElementById('big');
+    const tablet = document.getElementById('tablet');
+    viewer.style.display = 'none';
+    big.removeAttribute('src');
+    tablet.removeAttribute('src');
+    tablet.style.display = 'none';
+    resetZoomForNewImage();
 }
 
-document.addEventListener("keydown", function(e) {
-    if (e.key === "Escape") closeWork();
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeWork();
+});
+
+// Останавливаем закрытие при клике на wrapper
+document.getElementById('bigWrapper').addEventListener('click', function(e) {
+    e.stopPropagation();
 });
 </script>
 
