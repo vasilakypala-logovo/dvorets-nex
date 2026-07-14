@@ -542,6 +542,112 @@ svg.links {
 </div>
 
 <script>
+// ===== ЗВУКОВАЯ СИСТЕМА =====
+const SoundFX = {
+  _ctx: null,
+  _init() {
+    if (!this._ctx) {
+      this._ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return this._ctx;
+  },
+  
+  // Короткий щелчок / пик (для ходов)
+  click(volume = 0.3, freq = 800, duration = 0.06) {
+    try {
+      const ctx = this._init();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + duration);
+    } catch(e) { /* игнорируем */ }
+  },
+  
+  // Жужжание компаса (ветер)
+  buzz(volume = 0.15, duration = 0.8) {
+    try {
+      const ctx = this._init();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(120, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(180, ctx.currentTime + duration * 0.6);
+      osc.frequency.linearRampToValueAtTime(80, ctx.currentTime + duration);
+      gain.gain.setValueAtTime(volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + duration);
+    } catch(e) { /* игнорируем */ }
+  },
+  
+  // Бульканье (телепорт)
+  bloop(volume = 0.25, pitch = 500) {
+    try {
+      const ctx = this._init();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(pitch * 0.6, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(pitch * 1.4, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(volume * 0.8, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.15);
+      
+      // Второй бульк чуть позже
+      setTimeout(() => {
+        try {
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(pitch * 0.8, ctx.currentTime);
+          osc2.frequency.exponentialRampToValueAtTime(pitch * 1.6, ctx.currentTime + 0.1);
+          gain2.gain.setValueAtTime(volume * 0.6, ctx.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+          osc2.start(ctx.currentTime);
+          osc2.stop(ctx.currentTime + 0.12);
+        } catch(e) {}
+      }, 150);
+    } catch(e) { /* игнорируем */ }
+  },
+  
+  // Победа - торжественный звук
+  win(volume = 0.2) {
+    try {
+      const ctx = this._init();
+      const notes = [523, 659, 784, 1047];
+      notes.forEach((freq, i) => {
+        setTimeout(() => {
+          try {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(volume * (1 - i * 0.1), ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+          } catch(e) {}
+        }, i * 120);
+      });
+    } catch(e) { /* игнорируем */ }
+  }
+};
+
 const SIZE = 5;
 const SUN = { x: 2, y: 2 };
 
@@ -601,19 +707,22 @@ function applySpecialNodeEffect(which, pos) {
   if (isStorm(pos.x, pos.y)) {
     return {
       pos: { ...STARTS[which] },
-      message: `Буря унесла ${which === "me" ? "вас" : "Некса"} к исходной точке.`
+      message: `Буря унесла ${which === "me" ? "вас" : "Некса"} к исходной точке.`,
+      isStorm: true
     };
   }
 
   if (isTeleport(pos.x, pos.y)) {
     const target = getTeleportTarget(pos.x, pos.y);
+    SoundFX.bloop(0.3, 400); // бульканье при телепорте
     return {
       pos: target,
-      message: `Телепорт перебросил ${which === "me" ? "вас" : "Некса"} на противоположную сторону.`
+      message: `Телепорт перебросил ${which === "me" ? "вас" : "Некса"} на противоположную сторону.`,
+      isTeleport: true
     };
   }
 
-  return { pos, message: "" };
+  return { pos, message: "", isStorm: false, isTeleport: false };
 }
 
 let nodes = [];
@@ -793,7 +902,8 @@ function finishGame(which) {
   phase = "gameOver";
   drawBoard();
   updateInfo();
-  setStatus(`<div class="win">${actorName(which)} занял место под солнцем.</div>Игра завершена.`);
+  SoundFX.win(0.25);
+  setStatus(`<div class="win">${actorName(which)} занял место под солнцем!</div>Игра завершена.`);
 }
 
 function beginActorTurn(which) {
@@ -811,6 +921,9 @@ function beginActorTurn(which) {
 
 function nextWind() {
   if (phase !== "needWind" || winner) return;
+
+  // Звук вращения компаса
+  SoundFX.buzz(0.12, 0.6);
 
   activeWind = directions[Math.floor(Math.random() * directions.length)];
   const targetAngle = getVisualAngle(activeWind);
@@ -845,20 +958,25 @@ function moveCurrentPlayer(x, y) {
   if (!isReachable(x, y)) return;
   if (phase !== "meTurn" && phase !== "nexTurn") return;
 
+  // Звук шага (пик/щелчок)
+  SoundFX.click(0.2, 700 + Math.random() * 300, 0.05);
+
   let specialMessage = "";
+  let isSpecial = false;
 
   if (currentActor === "me") {
     me = { x, y };
     const effect = applySpecialNodeEffect("me", me);
     me = effect.pos;
     specialMessage = effect.message;
+    isSpecial = effect.isTeleport || effect.isStorm;
 
     drawBoard();
     if (isSun(me.x, me.y)) {
       finishGame("me");
       return;
     }
-    proceedAfterMove(specialMessage);
+    proceedAfterMove(specialMessage, isSpecial);
     return;
   }
 
@@ -866,16 +984,17 @@ function moveCurrentPlayer(x, y) {
   const effect = applySpecialNodeEffect("nex", nex);
   nex = effect.pos;
   specialMessage = effect.message;
+  isSpecial = effect.isTeleport || effect.isStorm;
 
   drawBoard();
   if (isSun(nex.x, nex.y)) {
     finishGame("nex");
     return;
   }
-  proceedAfterMove(specialMessage);
+  proceedAfterMove(specialMessage, isSpecial);
 }
 
-function proceedAfterMove(extraMessage = "") {
+function proceedAfterMove(extraMessage = "", isSpecial = false) {
   reachable = [];
 
   if (currentActor === "me") {
@@ -907,9 +1026,11 @@ function skipTurn() {
   reachable = [];
 
   if (skipped === "me") {
+    SoundFX.click(0.15, 500, 0.04);
     setStatus(`Вы пропустили ход.<br>Теперь ветер для <strong>Некса</strong>.`);
     beginActorTurn("nex");
   } else {
+    SoundFX.click(0.15, 400, 0.04);
     round++;
     setStatus(`Некс пропустил ход.<br>Раунд завершён. Теперь ветер для <strong>вас</strong>.`);
     beginActorTurn("me");
