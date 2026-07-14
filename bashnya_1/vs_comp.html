@@ -521,6 +521,77 @@ svg.links {
 </div>
 
 <script>
+// ===== ЗВУКОВАЯ СИСТЕМА =====
+const SoundFX = {
+  _ctx: null,
+  _init() {
+    if (!this._ctx) {
+      this._ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return this._ctx;
+  },
+  
+  // Короткий щелчок / пик (для ходов)
+  click(volume = 0.3, freq = 800, duration = 0.06) {
+    try {
+      const ctx = this._init();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + duration);
+    } catch(e) { /* игнорируем */ }
+  },
+  
+  // Жужжание компаса (ветер)
+  buzz(volume = 0.15, duration = 0.8) {
+    try {
+      const ctx = this._init();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(120, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(180, ctx.currentTime + duration * 0.6);
+      osc.frequency.linearRampToValueAtTime(80, ctx.currentTime + duration);
+      gain.gain.setValueAtTime(volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + duration);
+    } catch(e) { /* игнорируем */ }
+  },
+  
+  // Победа - торжественный звук
+  win(volume = 0.2) {
+    try {
+      const ctx = this._init();
+      const notes = [523, 659, 784, 1047];
+      notes.forEach((freq, i) => {
+        setTimeout(() => {
+          try {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(volume * (1 - i * 0.1), ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+          } catch(e) {}
+        }, i * 120);
+      });
+    } catch(e) { /* игнорируем */ }
+  }
+};
+
 const SIZE = 5;
 const SUN = { x: 2, y: 2 };
 
@@ -718,6 +789,7 @@ function finishGame(which) {
   phase = "gameOver";
   drawBoard();
   updateInfo();
+  SoundFX.win(0.25);
   setStatus(`<div class="win">${actorName(which)} занял место под солнцем.</div>Вектор судьбы указал верный путь.<br>Игра завершена.`);
 }
 
@@ -736,6 +808,9 @@ function beginActorTurn(which) {
 
 function nextWind() {
   if (phase !== "needWind" || winner) return;
+
+  // Звук вращения компаса
+  SoundFX.buzz(0.12, 0.6);
 
   activeWind = directions[Math.floor(Math.random() * directions.length)];
   const targetAngle = getVisualAngle(activeWind);
@@ -769,6 +844,9 @@ function nextWind() {
 function moveCurrentPlayer(x, y) {
   if (!isReachable(x, y)) return;
   if (phase !== "meTurn" && phase !== "nexTurn") return;
+
+  // Звук шага (пик/щелчок)
+  SoundFX.click(0.2, 700 + Math.random() * 300, 0.05);
 
   if (currentActor === "me") {
     me = { x, y };
@@ -820,9 +898,11 @@ function skipTurn() {
   reachable = [];
 
   if (skipped === "me") {
+    SoundFX.click(0.15, 500, 0.04);
     setStatus(`Вы пропустили ход.<br>Теперь ветер выбирает путь для <strong>Некса</strong>.`);
     beginActorTurn("nex");
   } else {
+    SoundFX.click(0.15, 400, 0.04);
     round++;
     setStatus(`Некс пропустил ход.<br>Раунд завершён. Теперь ветер для <strong>вас</strong>.`);
     beginActorTurn("me");
