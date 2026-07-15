@@ -1,0 +1,810 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Классики - Математическая планетка</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body{
+    margin:0;
+    background:#555;
+    display:flex;
+    justify-content:center;
+    font-family: Arial, sans-serif;
+    min-height:100vh;
+    padding:0;
+}
+
+#game{
+    position:relative;
+    width:700px;
+    height:1200px;
+    background:url("klass.png");
+    background-size:100% 100%;
+    background-repeat:no-repeat;
+    margin:0 auto;
+}
+
+#star{
+    position:absolute;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:white;
+    box-shadow:
+        0 0 8px white,
+        0 0 18px white,
+        0 0 35px white;
+    left:320px;
+    top:-60px;
+    transition: top 0.8s ease-in-out, left 0.8s ease-in-out;
+    z-index:10;
+    opacity:0;
+}
+
+#star.visible {
+    opacity:1;
+}
+
+/* ===== КНОПКА БРОСОК ===== */
+#throwBtn {
+    position:fixed;
+    bottom:30px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:24px;
+    padding:15px 40px;
+    cursor:pointer;
+    z-index:100;
+    border: none;
+    border-radius: 50px;
+    background: #ffd700;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.4);
+    font-weight: bold;
+    min-width:200px;
+    transition: all 0.3s ease;
+}
+#throwBtn:hover {
+    background: #ffed4a;
+    transform: translateX(-50%) scale(1.05);
+}
+#throwBtn:disabled {
+    opacity:0.5;
+    cursor:not-allowed;
+    transform: translateX(-50%) scale(1);
+}
+#throwBtn:active {
+    transform: translateX(-50%) scale(0.95);
+}
+
+/* ===== ИНДИКАТОР ПРОГРЕССА ===== */
+#progress-indicator {
+    position:fixed;
+    top:15px;
+    right:15px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding:10px 18px;
+    border-radius: 30px;
+    font-size: 16px;
+    border: 2px solid #ffd700;
+    z-index:100;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+#progress-indicator span {
+    color: #ffd700;
+}
+
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding:20px;
+    backdrop-filter: blur(3px);
+}
+.modal-overlay.active {
+    display: flex;
+}
+.modal {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    padding: 30px 35px;
+    border-radius: 25px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 60px rgba(255,215,0,0.2);
+    position: relative;
+    max-height:90vh;
+    overflow-y:auto;
+}
+.modal h2 {
+    color: #ffd700;
+    font-size: 28px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255,215,0,0.3);
+}
+.modal .level-badge {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 20px;
+}
+.modal .question {
+    font-size: 32px;
+    margin: 25px 0;
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    word-break:break-word;
+}
+.modal input {
+    padding: 15px 20px;
+    font-size: 24px;
+    width: 180px;
+    border-radius: 12px;
+    border: 2px solid #ffd700;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    text-align: center;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.modal input:focus {
+    background: rgba(255,255,255,0.2);
+    border-color: #fff;
+}
+.modal input[type="number"]::-webkit-inner-spin-button,
+.modal input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.modal input[type="number"] {
+    -moz-appearance: textfield;
+}
+.modal .btn-check {
+    margin-top: 20px;
+    padding: 15px 50px;
+    font-size: 20px;
+    border: none;
+    border-radius: 50px;
+    background: #ffd700;
+    color: #1a1a2e;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    width:100%;
+    max-width:300px;
+}
+.modal .btn-check:hover {
+    transform: scale(1.05);
+    background: #ffed4a;
+}
+.modal .btn-check:active {
+    transform: scale(0.95);
+}
+.modal .message {
+    margin-top: 15px;
+    font-size: 18px;
+    min-height: 30px;
+    font-weight:bold;
+}
+.modal .progress-text {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 10px;
+}
+.success {
+    color: #00ff88;
+}
+.error {
+    color: #ff6b6b;
+}
+
+/* Кнопки в окне победы */
+.win-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap:wrap;
+}
+.win-buttons button {
+    position: static;
+    padding: 15px 30px;
+    font-size: 18px;
+    background: #ffd700;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    flex:1;
+    min-width:140px;
+}
+.win-buttons button:hover {
+    transform: scale(1.05);
+    background: #ffed4a;
+}
+.win-buttons button:active {
+    transform: scale(0.95);
+}
+.win-buttons .reset-btn {
+    background: #ff6b6b;
+    color: white;
+}
+.win-buttons .reset-btn:hover {
+    background: #ff4757;
+}
+
+/* ===== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ===== */
+@media screen and (max-width: 768px) {
+    #game {
+        width: 100vw;
+        height: 100vw; /* Сохраняем пропорции */
+        max-height: 1200px;
+        max-width: 700px;
+    }
+    
+    #throwBtn {
+        bottom: 20px;
+        padding: 14px 30px;
+        font-size: 20px;
+        min-width:160px;
+        width:90%;
+        max-width:300px;
+    }
+    
+    #progress-indicator {
+        top:10px;
+        right:10px;
+        font-size: 14px;
+        padding:8px 15px;
+    }
+    
+    .modal {
+        padding: 25px 20px;
+        max-width: 95%;
+    }
+    
+    .modal h2 {
+        font-size: 24px;
+    }
+    
+    .modal .question {
+        font-size: 26px;
+        padding: 12px;
+    }
+    
+    .modal input {
+        font-size: 20px;
+        padding: 12px 15px;
+        width: 150px;
+    }
+    
+    .modal .btn-check {
+        font-size: 18px;
+        padding: 14px 30px;
+        max-width:250px;
+    }
+    
+    .win-buttons button {
+        padding: 12px 20px;
+        font-size: 16px;
+        min-width:120px;
+    }
+    
+    #star {
+        width: 32px;
+        height: 32px;
+        box-shadow: 0 0 6px white, 0 0 14px white, 0 0 28px white;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #throwBtn {
+        bottom: 15px;
+        padding: 12px 20px;
+        font-size: 18px;
+        min-width:140px;
+    }
+    
+    #progress-indicator {
+        font-size: 12px;
+        padding: 6px 12px;
+        top:8px;
+        right:8px;
+    }
+    
+    .modal {
+        padding: 20px 15px;
+    }
+    
+    .modal h2 {
+        font-size: 20px;
+    }
+    
+    .modal .question {
+        font-size: 22px;
+        padding: 10px;
+        margin: 15px 0;
+    }
+    
+    .modal input {
+        font-size: 18px;
+        padding: 10px 12px;
+        width: 130px;
+    }
+    
+    .modal .btn-check {
+        font-size: 16px;
+        padding: 12px 25px;
+        max-width:200px;
+    }
+    
+    .win-buttons button {
+        padding: 10px 15px;
+        font-size: 14px;
+        min-width:100px;
+    }
+    
+    #star {
+        width: 28px;
+        height: 28px;
+        box-shadow: 0 0 5px white, 0 0 10px white, 0 0 20px white;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media screen and (max-width: 360px) {
+    #throwBtn {
+        font-size: 16px;
+        padding: 10px 15px;
+        min-width:120px;
+    }
+    
+    .modal .question {
+        font-size: 18px;
+    }
+    
+    .modal input {
+        font-size: 16px;
+        width: 110px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<button id="throwBtn" onclick="dropStar()">⭐ БРОСОК</button>
+
+<div id="progress-indicator">
+    Уровень: <span id="levelDisplay">0</span> / 10
+</div>
+
+<div id="game">
+    <div id="star"></div>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2 id="modalTitle">⭐ УРОВЕНЬ 1</h2>
+        <div class="level-badge" id="taskCounter">Задача 1 из 1</div>
+        <div class="question" id="questionText">13 + 6 = ?</div>
+        <input type="number" id="answerInput" placeholder="?" autofocus>
+        <br>
+        <button class="btn-check" onclick="checkAnswer()">ПРОВЕРИТЬ</button>
+        <div class="message" id="messageText"></div>
+        <div class="progress-text" id="progressText">⭐ Решено: 0 из 0</div>
+    </div>
+</div>
+
+<script>
+
+// ===== КОНФИГУРАЦИЯ УРОВНЕЙ =====
+const levels = [
+    { id: 1, x: 330, y: 1025 },
+    { id: 2, x: 330, y: 900 },
+    { id: 3, x: 165, y: 775 },
+    { id: 4, x: 495, y: 775 },
+    { id: 5, x: 330, y: 650 },
+    { id: 6, x: 165, y: 525 },
+    { id: 7, x: 495, y: 525 },
+    { id: 8, x: 330, y: 400 },
+    { id: 9, x: 170, y: 50 },
+    { id: 10, x: 490, y: 50 }
+];
+
+// ===== СОСТОЯНИЕ ИГРЫ =====
+let currentLevel = -1;
+let currentTaskIndex = 0;
+let tasks = [];
+let gameCompleted = false;
+let isWaitingForAnimation = false;
+
+const star = document.getElementById('star');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalTitle = document.getElementById('modalTitle');
+const taskCounter = document.getElementById('taskCounter');
+const questionText = document.getElementById('questionText');
+const answerInput = document.getElementById('answerInput');
+const messageText = document.getElementById('messageText');
+const progressText = document.getElementById('progressText');
+const levelDisplay = document.getElementById('levelDisplay');
+const throwBtn = document.getElementById('throwBtn');
+
+// ===== ГЕНЕРАТОР ЗАДАЧ =====
+function generateTask(level) {
+    const levelNum = level + 1;
+    const numTasks = levelNum;
+    const tasks = [];
+    
+    for (let i = 0; i < numTasks; i++) {
+        let a, b, operator, answer;
+        
+        if (levelNum <= 1) {
+            a = randInt(1, 20);
+            b = randInt(1, 20);
+            operator = '+';
+            answer = a + b;
+        } else if (levelNum === 2) {
+            const op = Math.floor(Math.random() * 3);
+            if (op === 0) {
+                a = randInt(1, 20);
+                b = randInt(1, 20);
+                operator = '+';
+                answer = a + b;
+            } else if (op === 1) {
+                a = randInt(1, 20);
+                b = randInt(1, a);
+                operator = '−';
+                answer = a - b;
+            } else {
+                a = randInt(2, 12);
+                b = randInt(2, 10);
+                operator = '×';
+                answer = a * b;
+            }
+        } else if (levelNum <= 4) {
+            const op = Math.floor(Math.random() * 4);
+            if (op === 0) {
+                a = randInt(1, 30);
+                b = randInt(1, 30);
+                operator = '+';
+                answer = a + b;
+            } else if (op === 1) {
+                a = randInt(1, 30);
+                b = randInt(1, a);
+                operator = '−';
+                answer = a - b;
+            } else if (op === 2) {
+                a = randInt(2, 15);
+                b = randInt(2, 12);
+                operator = '×';
+                answer = a * b;
+            } else {
+                b = randInt(2, 12);
+                const quotient = randInt(2, 12);
+                a = b * quotient;
+                operator = '÷';
+                answer = quotient;
+            }
+        } else {
+            const op = Math.floor(Math.random() * 4);
+            if (op === 0) {
+                a = randInt(10, 100);
+                b = randInt(10, 100);
+                operator = '+';
+                answer = a + b;
+            } else if (op === 1) {
+                a = randInt(20, 150);
+                b = randInt(10, a);
+                operator = '−';
+                answer = a - b;
+            } else if (op === 2) {
+                a = randInt(5, 25);
+                b = randInt(3, 20);
+                operator = '×';
+                answer = a * b;
+            } else {
+                b = randInt(3, 20);
+                const quotient = randInt(2, 15);
+                a = b * quotient;
+                operator = '÷';
+                answer = quotient;
+            }
+        }
+        
+        tasks.push({
+            a: a,
+            b: b,
+            operator: operator,
+            answer: answer,
+            text: `${a} ${operator} ${b} = ?`
+        });
+    }
+    
+    return tasks;
+}
+
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// ===== ПОКАЗАТЬ ЗАДАЧУ =====
+function showTask() {
+    const levelNum = currentLevel + 1;
+    const totalTasks = tasks.length;
+    
+    modalTitle.textContent = `⭐ УРОВЕНЬ ${levelNum}`;
+    taskCounter.textContent = `Задача ${currentTaskIndex + 1} из ${totalTasks}`;
+    questionText.textContent = tasks[currentTaskIndex].text;
+    progressText.textContent = `⭐ Решено: ${currentTaskIndex} из ${totalTasks}`;
+    messageText.textContent = '';
+    messageText.className = 'message';
+    answerInput.value = '';
+    answerInput.focus();
+    
+    document.querySelector('.modal .btn-check').style.display = 'inline-block';
+    answerInput.style.display = 'inline-block';
+    document.querySelector('.modal .progress-text').style.display = 'block';
+    
+    const winButtons = document.querySelector('.win-buttons');
+    if (winButtons) winButtons.remove();
+    
+    modalOverlay.classList.add('active');
+    throwBtn.disabled = true;
+}
+
+// ===== ПРОВЕРКА ОТВЕТА =====
+function checkAnswer() {
+    const userAnswer = parseInt(answerInput.value);
+    const task = tasks[currentTaskIndex];
+    
+    if (isNaN(userAnswer)) {
+        messageText.textContent = '⚠️ Введите число!';
+        messageText.className = 'message error';
+        return;
+    }
+    
+    if (userAnswer === task.answer) {
+        messageText.textContent = '✅ Верно!';
+        messageText.className = 'message success';
+        
+        currentTaskIndex++;
+        
+        if (currentTaskIndex >= tasks.length) {
+            messageText.textContent = '⭐ УРОВЕНЬ ПРОЙДЕН!';
+            messageText.className = 'message success';
+            
+            setTimeout(() => {
+                modalOverlay.classList.remove('active');
+                throwBtn.disabled = false;
+                
+                star.classList.remove('visible');
+                
+                saveProgress();
+                
+                if (currentLevel >= levels.length - 1) {
+                    gameCompleted = true;
+                    setTimeout(() => {
+                        showWinScreen();
+                    }, 500);
+                }
+            }, 800);
+        } else {
+            setTimeout(() => {
+                showTask();
+            }, 500);
+        }
+    } else {
+        messageText.textContent = '❌ Неверно, попробуйте снова!';
+        messageText.className = 'message error';
+        answerInput.value = '';
+        answerInput.focus();
+    }
+}
+
+// ===== ОБРАБОТЧИК КНОПКИ БРОСОК =====
+function dropStar() {
+    if (gameCompleted) {
+        resetGame();
+        return;
+    }
+    if (isWaitingForAnimation) return;
+    if (modalOverlay.classList.contains('active')) return;
+    
+    const nextLevel = currentLevel + 1;
+    
+    if (nextLevel >= levels.length) {
+        showWinScreen();
+        return;
+    }
+    
+    star.classList.add('visible');
+    
+    const target = levels[nextLevel];
+    star.style.left = target.x + 'px';
+    star.style.top = target.y + 'px';
+    
+    currentLevel = nextLevel;
+    levelDisplay.textContent = currentLevel + 1;
+    
+    isWaitingForAnimation = true;
+    throwBtn.disabled = true;
+    
+    tasks = generateTask(currentLevel);
+    currentTaskIndex = 0;
+    
+    setTimeout(() => {
+        isWaitingForAnimation = false;
+        showTask();
+    }, 900);
+}
+
+// ===== ЭКРАН ПОБЕДЫ =====
+function showWinScreen() {
+    gameCompleted = true;
+    modalOverlay.classList.add('active');
+    modalTitle.innerHTML = '🌟 ИГРА ПРОЙДЕНА!';
+    taskCounter.textContent = '🎉 Поздравляем!';
+    questionText.innerHTML = '🌟<br>Все 10 уровней завершены!<br>Ты — настоящий математик! 🌟';
+    progressText.textContent = '🏆 ГЕНИЙ!';
+    messageText.textContent = '';
+    document.querySelector('.modal .btn-check').style.display = 'none';
+    answerInput.style.display = 'none';
+    document.querySelector('.modal .progress-text').style.display = 'none';
+    throwBtn.disabled = false;
+    
+    const winButtons = document.createElement('div');
+    winButtons.className = 'win-buttons';
+    winButtons.innerHTML = `
+        <button onclick="resetGame()">🔄 Играть заново</button>
+        <button onclick="closeWinScreen()" class="reset-btn">✖ Закрыть</button>
+    `;
+    
+    const oldButtons = document.querySelector('.win-buttons');
+    if (oldButtons) oldButtons.remove();
+    
+    document.querySelector('.modal').appendChild(winButtons);
+    
+    saveProgress();
+}
+
+// ===== ЗАКРЫТЬ ОКНО ПОБЕДЫ =====
+function closeWinScreen() {
+    modalOverlay.classList.remove('active');
+}
+
+// ===== СБРОС ИГРЫ =====
+function resetGame() {
+    localStorage.removeItem('mathClassicsProgress');
+    
+    gameCompleted = false;
+    currentLevel = -1;
+    currentTaskIndex = 0;
+    isWaitingForAnimation = false;
+    
+    star.classList.remove('visible');
+    star.style.left = '320px';
+    star.style.top = '-60px';
+    
+    levelDisplay.textContent = '0';
+    
+    const winButtons = document.querySelector('.win-buttons');
+    if (winButtons) winButtons.remove();
+    
+    document.querySelector('.modal .btn-check').style.display = 'inline-block';
+    answerInput.style.display = 'inline-block';
+    document.querySelector('.modal .progress-text').style.display = 'block';
+    
+    modalOverlay.classList.remove('active');
+    throwBtn.disabled = false;
+    
+    saveProgress();
+}
+
+// ===== СОХРАНЕНИЕ ПРОГРЕССА =====
+function saveProgress() {
+    const data = {
+        level: currentLevel,
+        taskIndex: currentTaskIndex,
+        completed: gameCompleted
+    };
+    localStorage.setItem('mathClassicsProgress', JSON.stringify(data));
+}
+
+function restoreProgress() {
+    const saved = localStorage.getItem('mathClassicsProgress');
+    if (!saved) return false;
+    
+    try {
+        const data = JSON.parse(saved);
+        if (data.completed) {
+            gameCompleted = true;
+            const lastLevel = levels[levels.length - 1];
+            star.style.left = lastLevel.x + 'px';
+            star.style.top = lastLevel.y + 'px';
+            star.classList.add('visible');
+            levelDisplay.textContent = levels.length;
+            setTimeout(() => {
+                showWinScreen();
+            }, 300);
+            return true;
+        }
+        if (data.level >= 0 && data.level < levels.length) {
+            currentLevel = data.level;
+            currentTaskIndex = data.taskIndex || 0;
+            
+            const pos = levels[currentLevel];
+            star.style.left = pos.x + 'px';
+            star.style.top = pos.y + 'px';
+            star.classList.add('visible');
+            levelDisplay.textContent = currentLevel + 1;
+            
+            if (currentTaskIndex > 0) {
+                tasks = generateTask(currentLevel);
+                if (currentTaskIndex < tasks.length) {
+                    tasks = tasks.slice(currentTaskIndex);
+                    setTimeout(() => {
+                        showTask();
+                    }, 300);
+                }
+            }
+            return true;
+        }
+    } catch(e) {}
+    return false;
+}
+
+// ===== ИНИЦИАЛИЗАЦИЯ =====
+window.onload = function() {
+    star.classList.remove('visible');
+    star.style.left = '320px';
+    star.style.top = '-60px';
+    levelDisplay.textContent = '0';
+    
+    if (!restoreProgress()) {
+        currentLevel = -1;
+        throwBtn.disabled = false;
+    }
+    
+    answerInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
+        }
+    });
+};
+
+// Экспортируем для onclick
+window.dropStar = dropStar;
+window.checkAnswer = checkAnswer;
+window.resetGame = resetGame;
+window.closeWinScreen = closeWinScreen;
+
+</script>
+
+</body>
+</html>
