@@ -102,6 +102,11 @@ body{
 #progress-indicator span {
     color: #ffd700;
 }
+#progress-indicator .errors {
+    color: #ff6b6b;
+    font-size: 14px;
+    margin-left:10px;
+}
 
 /* ===== МОДАЛЬНОЕ ОКНО ===== */
 .modal-overlay {
@@ -218,6 +223,9 @@ body{
 .error {
     color: #ff6b6b;
 }
+.warning {
+    color: #ffa500;
+}
 
 /* Кнопки в окне победы */
 .win-buttons {
@@ -260,7 +268,7 @@ body{
 @media screen and (max-width: 768px) {
     #game {
         width: 100vw;
-        height: 100vw; /* Сохраняем пропорции */
+        height: 100vw;
         max-height: 1200px;
         max-width: 700px;
     }
@@ -374,7 +382,6 @@ body{
     }
 }
 
-/* Для очень маленьких экранов */
 @media screen and (max-width: 360px) {
     #throwBtn {
         font-size: 16px;
@@ -401,6 +408,7 @@ body{
 
 <div id="progress-indicator">
     Уровень: <span id="levelDisplay">0</span> / 10
+    <span class="errors" id="errorsDisplay">❌ 0</span>
 </div>
 
 <div id="game">
@@ -423,6 +431,78 @@ body{
 
 <script>
 
+// ===== ЗВУКИ =====
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new AudioContext();
+    }
+}
+
+function playSound(frequency, duration, type = 'sine', volume = 0.3) {
+    try {
+        initAudio();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+        
+        gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + duration);
+    } catch(e) {
+        // Звук не поддерживается — просто молчим
+    }
+}
+
+function soundClick() {
+    playSound(800, 0.1, 'sine', 0.2);
+}
+
+function soundSuccess() {
+    playSound(523, 0.15, 'sine', 0.3);
+    setTimeout(() => playSound(659, 0.15, 'sine', 0.3), 150);
+    setTimeout(() => playSound(784, 0.2, 'sine', 0.3), 300);
+}
+
+function soundError() {
+    playSound(300, 0.3, 'sawtooth', 0.2);
+}
+
+function soundLevelUp() {
+    playSound(523, 0.12, 'sine', 0.3);
+    setTimeout(() => playSound(587, 0.12, 'sine', 0.3), 120);
+    setTimeout(() => playSound(659, 0.12, 'sine', 0.3), 240);
+    setTimeout(() => playSound(784, 0.15, 'sine', 0.3), 360);
+}
+
+function soundGameOver() {
+    playSound(400, 0.2, 'sawtooth', 0.2);
+    setTimeout(() => playSound(300, 0.2, 'sawtooth', 0.2), 250);
+    setTimeout(() => playSound(200, 0.3, 'sawtooth', 0.2), 500);
+}
+
+function soundWin() {
+    const notes = [523, 587, 659, 784, 880, 784, 880];
+    notes.forEach((freq, i) => {
+        setTimeout(() => playSound(freq, 0.15, 'sine', 0.25), i * 120);
+    });
+}
+
+function soundStarDrop() {
+    playSound(440, 0.1, 'sine', 0.15);
+    setTimeout(() => playSound(550, 0.1, 'sine', 0.15), 150);
+    setTimeout(() => playSound(660, 0.15, 'sine', 0.15), 300);
+}
+
 // ===== КОНФИГУРАЦИЯ УРОВНЕЙ =====
 const levels = [
     { id: 1, x: 330, y: 1025 },
@@ -443,6 +523,7 @@ let currentTaskIndex = 0;
 let tasks = [];
 let gameCompleted = false;
 let isWaitingForAnimation = false;
+let errorCount = 0; // Счётчик ошибок за текущий уровень
 
 const star = document.getElementById('star');
 const modalOverlay = document.getElementById('modalOverlay');
@@ -453,6 +534,7 @@ const answerInput = document.getElementById('answerInput');
 const messageText = document.getElementById('messageText');
 const progressText = document.getElementById('progressText');
 const levelDisplay = document.getElementById('levelDisplay');
+const errorsDisplay = document.getElementById('errorsDisplay');
 const throwBtn = document.getElementById('throwBtn');
 
 // ===== ГЕНЕРАТОР ЗАДАЧ =====
@@ -553,6 +635,65 @@ function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// ===== СБРОС ИГРЫ (возврат на 1 уровень) =====
+function resetToLevel1() {
+    soundGameOver();
+    
+    currentLevel = -1;
+    currentTaskIndex = 0;
+    errorCount = 0;
+    
+    star.classList.remove('visible');
+    star.style.left = '320px';
+    star.style.top = '-60px';
+    
+    levelDisplay.textContent = '0';
+    errorsDisplay.textContent = '❌ 0';
+    
+    modalOverlay.classList.remove('active');
+    throwBtn.disabled = false;
+    
+    // Показываем сообщение о возврате
+    const msg = document.createElement('div');
+    msg.style.cssText = `
+        position:fixed;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        background:rgba(0,0,0,0.9);
+        color:#ff6b6b;
+        padding:30px 50px;
+        border-radius:20px;
+        font-size:28px;
+        font-weight:bold;
+        z-index:2000;
+        border:3px solid #ff6b6b;
+        text-align:center;
+        animation: fadeInOut 2.5s forwards;
+    `;
+    msg.innerHTML = '❌ 3 ошибки!<br>Возврат на уровень 1!';
+    document.body.appendChild(msg);
+    
+    // Создаём анимацию
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInOut {
+            0% { opacity:0; transform:translate(-50%,-50%) scale(0.8); }
+            20% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+            80% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+            100% { opacity:0; transform:translate(-50%,-50%) scale(1.2); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    setTimeout(() => {
+        if (msg.parentNode) msg.remove();
+        if (style.parentNode) style.remove();
+    }, 2800);
+    
+    saveProgress();
+}
+
 // ===== ПОКАЗАТЬ ЗАДАЧУ =====
 function showTask() {
     const levelNum = currentLevel + 1;
@@ -576,6 +717,7 @@ function showTask() {
     
     modalOverlay.classList.add('active');
     throwBtn.disabled = true;
+    errorsDisplay.textContent = `❌ ${errorCount}`;
 }
 
 // ===== ПРОВЕРКА ОТВЕТА =====
@@ -584,20 +726,27 @@ function checkAnswer() {
     const task = tasks[currentTaskIndex];
     
     if (isNaN(userAnswer)) {
+        soundError();
         messageText.textContent = '⚠️ Введите число!';
         messageText.className = 'message error';
         return;
     }
     
     if (userAnswer === task.answer) {
+        soundSuccess();
         messageText.textContent = '✅ Верно!';
         messageText.className = 'message success';
         
         currentTaskIndex++;
         
         if (currentTaskIndex >= tasks.length) {
+            soundLevelUp();
             messageText.textContent = '⭐ УРОВЕНЬ ПРОЙДЕН!';
             messageText.className = 'message success';
+            
+            // Сбрасываем счётчик ошибок после успешного прохождения уровня
+            errorCount = 0;
+            errorsDisplay.textContent = '❌ 0';
             
             setTimeout(() => {
                 modalOverlay.classList.remove('active');
@@ -610,6 +759,7 @@ function checkAnswer() {
                 if (currentLevel >= levels.length - 1) {
                     gameCompleted = true;
                     setTimeout(() => {
+                        soundWin();
                         showWinScreen();
                     }, 500);
                 }
@@ -620,15 +770,30 @@ function checkAnswer() {
             }, 500);
         }
     } else {
-        messageText.textContent = '❌ Неверно, попробуйте снова!';
+        soundError();
+        errorCount++;
+        errorsDisplay.textContent = `❌ ${errorCount}`;
+        
+        messageText.textContent = `❌ Неверно! (${errorCount}/3)`;
         messageText.className = 'message error';
         answerInput.value = '';
         answerInput.focus();
+        
+        // Проверяем, не достигнуто ли 3 ошибки
+        if (errorCount >= 3) {
+            // Закрываем модалку и сбрасываем на 1 уровень
+            setTimeout(() => {
+                modalOverlay.classList.remove('active');
+                resetToLevel1();
+            }, 500);
+        }
     }
 }
 
 // ===== ОБРАБОТЧИК КНОПКИ БРОСОК =====
 function dropStar() {
+    soundClick();
+    
     if (gameCompleted) {
         resetGame();
         return;
@@ -639,9 +804,12 @@ function dropStar() {
     const nextLevel = currentLevel + 1;
     
     if (nextLevel >= levels.length) {
+        soundWin();
         showWinScreen();
         return;
     }
+    
+    soundStarDrop();
     
     star.classList.add('visible');
     
@@ -657,6 +825,8 @@ function dropStar() {
     
     tasks = generateTask(currentLevel);
     currentTaskIndex = 0;
+    errorCount = 0;
+    errorsDisplay.textContent = '❌ 0';
     
     setTimeout(() => {
         isWaitingForAnimation = false;
@@ -695,23 +865,27 @@ function showWinScreen() {
 
 // ===== ЗАКРЫТЬ ОКНО ПОБЕДЫ =====
 function closeWinScreen() {
+    soundClick();
     modalOverlay.classList.remove('active');
 }
 
 // ===== СБРОС ИГРЫ =====
 function resetGame() {
+    soundClick();
     localStorage.removeItem('mathClassicsProgress');
     
     gameCompleted = false;
     currentLevel = -1;
     currentTaskIndex = 0;
     isWaitingForAnimation = false;
+    errorCount = 0;
     
     star.classList.remove('visible');
     star.style.left = '320px';
     star.style.top = '-60px';
     
     levelDisplay.textContent = '0';
+    errorsDisplay.textContent = '❌ 0';
     
     const winButtons = document.querySelector('.win-buttons');
     if (winButtons) winButtons.remove();
@@ -731,7 +905,8 @@ function saveProgress() {
     const data = {
         level: currentLevel,
         taskIndex: currentTaskIndex,
-        completed: gameCompleted
+        completed: gameCompleted,
+        errorCount: errorCount
     };
     localStorage.setItem('mathClassicsProgress', JSON.stringify(data));
 }
@@ -750,6 +925,7 @@ function restoreProgress() {
             star.classList.add('visible');
             levelDisplay.textContent = levels.length;
             setTimeout(() => {
+                soundWin();
                 showWinScreen();
             }, 300);
             return true;
@@ -757,14 +933,17 @@ function restoreProgress() {
         if (data.level >= 0 && data.level < levels.length) {
             currentLevel = data.level;
             currentTaskIndex = data.taskIndex || 0;
+            errorCount = data.errorCount || 0;
             
             const pos = levels[currentLevel];
             star.style.left = pos.x + 'px';
             star.style.top = pos.y + 'px';
             star.classList.add('visible');
             levelDisplay.textContent = currentLevel + 1;
+            errorsDisplay.textContent = `❌ ${errorCount}`;
             
-            if (currentTaskIndex > 0) {
+            // Если есть ошибки на уровне, но он не пройден — восстанавливаем
+            if (currentTaskIndex > 0 && currentTaskIndex < (currentLevel + 1)) {
                 tasks = generateTask(currentLevel);
                 if (currentTaskIndex < tasks.length) {
                     tasks = tasks.slice(currentTaskIndex);
@@ -785,6 +964,10 @@ window.onload = function() {
     star.style.left = '320px';
     star.style.top = '-60px';
     levelDisplay.textContent = '0';
+    errorsDisplay.textContent = '❌ 0';
+    
+    // Инициализируем аудио при первом клике
+    document.addEventListener('click', initAudio, { once: true });
     
     if (!restoreProgress()) {
         currentLevel = -1;
