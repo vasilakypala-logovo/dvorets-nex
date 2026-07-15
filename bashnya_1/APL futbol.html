@@ -1,0 +1,854 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍎 ЯБЛОЧНЫЙ ФУТБОЛ</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #1a3a1a, #2d5a2d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Neue', cursive, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            background: #4a7a4a;
+            padding: 30px 30px 40px;
+            border-radius: 60px 60px 40px 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 0 4px #6a9a6a;
+            max-width: 700px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            font-size: 38px;
+            margin: 0 0 10px 0;
+            color: #f5e56b;
+            text-shadow: 0 4px 0 #7a4a1a, 0 0 20px #f5e56b55;
+            letter-spacing: 2px;
+            word-break: break-word;
+        }
+        .field-wrapper {
+            background: #2d5a2d;
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: inset 0 0 0 6px #6a8a4a, inset 0 0 30px #1a3a1a;
+        }
+        #field {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: #7aaa5a;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px #4a7a3a;
+            cursor: none;
+            touch-action: none;
+        }
+        #field::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        #field::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-50%);
+        }
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20%;
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        #goal {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18%;
+            height: 8%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 6px solid #ffd966;
+            border-bottom: none;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            pointer-events: none;
+            transition: 0.2s;
+        }
+        #goal.active {
+            background: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.5);
+        }
+
+        #apple {
+            position: absolute;
+            width: 10%;
+            aspect-ratio: 1/1;
+            font-size: clamp(28px, 6vw, 60px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            transition: none;
+            filter: drop-shadow(0 8px 20px rgba(255, 80, 0, 0.3));
+            z-index: 10;
+            will-change: transform;
+        }
+        #apple .shadow {
+            position: absolute;
+            width: 80%;
+            height: 20%;
+            bottom: -10%;
+            left: 10%;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.2), transparent);
+            border-radius: 50%;
+            filter: blur(4px);
+            z-index: -1;
+        }
+        #apple.hit {
+            animation: hitShake 0.2s ease;
+        }
+        @keyframes hitShake {
+            0% { transform: scale(1.2) rotate(-10deg); }
+            50% { transform: scale(0.8) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        #apple.goal {
+            animation: goalAnim 0.6s ease forwards;
+        }
+        @keyframes goalAnim {
+            0% { transform: scale(1.5) rotate(0deg); }
+            50% { transform: scale(2) rotate(180deg); }
+            100% { transform: scale(0) rotate(360deg); }
+        }
+
+        #worm {
+            position: absolute;
+            font-size: clamp(30px, 8vw, 70px);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 20;
+            transition: opacity 0.3s;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+        }
+        #worm.show {
+            opacity: 1;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0 10px;
+        }
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 60px;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Comic Neue', cursive, sans-serif;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.2);
+            flex: 1 1 auto;
+            min-width: 140px;
+        }
+        .btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
+        .btn-start {
+            background: #f5c542;
+            color: #3a2a0a;
+            text-shadow: 0 1px 0 #ffe88a;
+        }
+        .btn-start:hover { background: #ffd95a; }
+        .btn-reset {
+            background: #c0c0c0;
+            color: #333;
+        }
+        .btn-reset:hover { background: #d8d8d8; }
+
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            color: #ffe8b0;
+            font-size: 22px;
+            font-weight: bold;
+            background: #2a4a2a;
+            border-radius: 40px;
+            padding: 12px 20px;
+            margin: 10px 0 15px;
+            border: 3px solid #5a7a3a;
+            text-shadow: 0 2px 0 #1a2a1a;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .scoreboard span {
+            background: #1a3a1a;
+            padding: 4px 18px;
+            border-radius: 30px;
+            border: 2px solid #5a8a3a;
+        }
+        .scoreboard .apple-score { color: #ff6a3a; }
+        .scoreboard .worm-score { color: #8ac87a; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: linear-gradient(145deg, #fef7e0, #f5e8c8);
+            border-radius: 50px;
+            padding: 30px 40px 40px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            border: 6px solid #f5c542;
+            animation: popIn 0.3s ease;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-box .goal-emoji {
+            font-size: 72px;
+            margin: 0 0 5px;
+        }
+        .modal-box h2 {
+            font-size: 32px;
+            color: #3a2a0a;
+            margin: 5px 0 10px;
+        }
+        .modal-box p {
+            font-size: 20px;
+            color: #5a4a2a;
+            margin: 8px 0;
+        }
+        .modal-box .question {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2a1a0a;
+            background: #fff8e0;
+            padding: 15px;
+            border-radius: 30px;
+            margin: 15px 0;
+            border: 3px dashed #c8a86a;
+        }
+        .modal-box .inputs {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .modal-box .inputs label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #3a2a0a;
+        }
+        .modal-box .inputs input {
+            width: 70px;
+            padding: 8px 12px;
+            font-size: 24px;
+            text-align: center;
+            border: 3px solid #c8a86a;
+            border-radius: 20px;
+            background: #fffcf0;
+            font-family: 'Comic Neue', cursive;
+            outline: none;
+        }
+        .modal-box .inputs input:focus {
+            border-color: #f5c542;
+            box-shadow: 0 0 20px rgba(245, 197, 66, 0.3);
+        }
+        .modal-box .btn-answer {
+            padding: 14px 50px;
+            border: none;
+            border-radius: 60px;
+            font-size: 28px;
+            font-weight: bold;
+            font-family: 'Comic Neue', cursive;
+            background: #f5c542;
+            color: #2a1a0a;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #b0882a;
+            transition: 0.1s ease;
+            margin-top: 10px;
+        }
+        .modal-box .btn-answer:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #b0882a;
+        }
+        .modal-box .result-msg {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 15px 0 5px;
+            min-height: 50px;
+        }
+        .modal-box .result-msg.win { color: #d46a2a; }
+        .modal-box .result-msg.lose { color: #3a7a3a; }
+
+        .sound-hint {
+            text-align: center;
+            color: #ffe8b0;
+            font-size: 18px;
+            margin: 5px 0 0;
+            opacity: 0.6;
+            letter-spacing: 2px;
+        }
+        .sound-hint span.oy { color: #ff8844; }
+        .sound-hint span.ay { color: #66ddff; }
+
+        @media (max-width: 500px) {
+            .container { padding: 15px; }
+            h1 { font-size: 28px; }
+            .btn { font-size: 18px; padding: 12px 20px; min-width: 100px; }
+            .scoreboard { font-size: 18px; }
+            .modal-box { padding: 25px 20px; }
+            .modal-box h2 { font-size: 26px; }
+            .modal-box .question { font-size: 20px; }
+            .modal-box .inputs input { width: 60px; font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🍎 ЯБЛОЧНЫЙ ФУТБОЛ</h1>
+
+    <div class="field-wrapper">
+        <div id="field">
+            <div class="center-circle"></div>
+            <div id="goal"></div>
+            <div id="apple">
+                🍎
+                <div class="shadow"></div>
+            </div>
+            <div id="worm">🐛</div>
+        </div>
+    </div>
+
+    <div class="sound-hint">
+        🟠 <span class="oy">«ОЙ»</span> &nbsp;|&nbsp; 🔵 <span class="ay">«АЙ»</span> &nbsp;|&nbsp; 🐢 <span style="color:#88dd88;">МЕДЛЕННО</span>
+    </div>
+
+    <div class="scoreboard">
+        <span>🍎 <span class="apple-score" id="appleScore">0</span></span>
+        <span>🐛 <span class="worm-score" id="wormScore">0</span></span>
+        <span>🐢 <span id="speedDisplay">1</span></span>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-start" id="btnStart">⚽ 1 ТАЙМ</button>
+        <button class="btn btn-reset" id="btnReset">🔄 СБРОС</button>
+    </div>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-box">
+        <div class="goal-emoji">🥅</div>
+        <h2>🍎 ГООООЛ!</h2>
+        <p>Яблоко залетело в ворота!</p>
+        <div class="question">
+            📝 Сколько было <strong style="color:#ff8844;">«ОЙ»</strong> и сколько <strong style="color:#66ddff;">«АЙ»</strong>?
+        </div>
+        <div class="inputs">
+            <label style="color:#ff8844;">ОЙ <input type="number" id="inputOy" min="0" value="0"></label>
+            <label style="color:#66ddff;">АЙ <input type="number" id="inputAy" min="0" value="0"></label>
+        </div>
+        <div class="result-msg" id="resultMsg"></div>
+        <button class="btn-answer" id="btnAnswer">🍎 ОТВЕТИТЬ</button>
+    </div>
+</div>
+
+<script>
+    // ======================
+    // 🍎 ЯБЛОЧНЫЙ ФУТБОЛ — с поддержкой твоих звуков!
+    // ======================
+
+    // ============================================
+    // 🔊 ЗВУКИ — твои MP3 файлы!
+    // Положи в одну папку с index.html:
+    // oy.mp3, ay.mp3, goal.mp3, win.mp3, lose.mp3
+    // ============================================
+
+    const SOUNDS = {
+        oy: new Audio('oy.mp3'),
+        ay: new Audio('ay.mp3'),
+        goal: new Audio('goal.mp3'),
+        win: new Audio('win.mp3'),
+        lose: new Audio('lose.mp3')
+    };
+
+    // Проверяем, есть ли файлы — если нет, используем синтез
+    let useCustomSounds = false;
+
+    function checkSounds() {
+        let loaded = 0;
+        const total = Object.keys(SOUNDS).length;
+        for (const key in SOUNDS) {
+            const audio = SOUNDS[key];
+            audio.addEventListener('canplaythrough', () => {
+                loaded++;
+                if (loaded === total) {
+                    useCustomSounds = true;
+                    console.log('🎵 Все звуки загружены! (MP3)');
+                }
+            });
+            audio.addEventListener('error', () => {
+                loaded++;
+                console.log(`⚠️ Не найден звук: ${key}.mp3, использую синтез.`);
+                if (loaded === total && !useCustomSounds) {
+                    console.log('🎵 Использую синтезированные звуки.');
+                }
+            });
+            // Загружаем
+            audio.load();
+        }
+        // Таймаут: если через 1 секунду не загрузились — используем синтез
+        setTimeout(() => {
+            if (!useCustomSounds) {
+                console.log('🎵 Использую синтезированные звуки (MP3 не найдены).');
+            }
+        }, 1000);
+    }
+
+    // ===== ПРОИГРЫВАНИЕ ЗВУКОВ =====
+    function playSound(name) {
+        if (useCustomSounds) {
+            try {
+                const audio = SOUNDS[name];
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play().catch(() => {});
+                    return;
+                }
+            } catch(e) {}
+        }
+        // Фолбэк — синтезированный звук
+        playSynthSound(name);
+    }
+
+    // ===== СИНТЕЗ ЗВУКОВ (запасной вариант) =====
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    function playTone(freq, dur, type = 'sine', vol = 0.3) {
+        try {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + dur);
+        } catch(e) {}
+    }
+
+    function playSynthSound(name) {
+        switch(name) {
+            case 'oy':
+                playTone(180, 0.25, 'sawtooth', 0.25);
+                setTimeout(() => playTone(220, 0.15, 'sawtooth', 0.15), 80);
+                trySpeak('ОЙ', 0.5);
+                break;
+            case 'ay':
+                playTone(800, 0.2, 'sine', 0.3);
+                setTimeout(() => playTone(950, 0.15, 'sine', 0.2), 60);
+                setTimeout(() => playTone(1100, 0.1, 'sine', 0.15), 130);
+                trySpeak('АЙ', 1.8);
+                break;
+            case 'goal':
+                playTone(440, 0.15, 'sine', 0.3);
+                setTimeout(() => playTone(554, 0.15, 'sine', 0.3), 150);
+                setTimeout(() => playTone(659, 0.2, 'sine', 0.3), 300);
+                trySpeak('ГООООЛ!', 1.3);
+                break;
+            case 'win':
+                playTone(523, 0.12, 'sine', 0.2);
+                setTimeout(() => playTone(659, 0.12, 'sine', 0.2), 120);
+                setTimeout(() => playTone(784, 0.2, 'sine', 0.2), 240);
+                trySpeak('СЪЕШЬ МЕНЯ!', 1.2);
+                break;
+            case 'lose':
+                playTone(200, 0.3, 'sawtooth', 0.15);
+                setTimeout(() => playTone(150, 0.4, 'sawtooth', 0.15), 250);
+                trySpeak('Гуляй дальше...', 0.4);
+                break;
+        }
+    }
+
+    function trySpeak(text, pitch) {
+        try {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ru-RU';
+            utterance.rate = 0.9;
+            utterance.pitch = pitch || 1;
+            utterance.volume = 0.8;
+            speechSynthesis.speak(utterance);
+        } catch(e) {}
+    }
+
+    // ===== СОСТОЯНИЕ =====
+    const field = document.getElementById('field');
+    const apple = document.getElementById('apple');
+    const goal = document.getElementById('goal');
+    const worm = document.getElementById('worm');
+
+    const btnStart = document.getElementById('btnStart');
+    const btnReset = document.getElementById('btnReset');
+    const btnAnswer = document.getElementById('btnAnswer');
+
+    const appleScoreEl = document.getElementById('appleScore');
+    const wormScoreEl = document.getElementById('wormScore');
+    const speedDisplay = document.getElementById('speedDisplay');
+
+    const modal = document.getElementById('modal');
+    const inputOy = document.getElementById('inputOy');
+    const inputAy = document.getElementById('inputAy');
+    const resultMsg = document.getElementById('resultMsg');
+
+    let appleX = 0.5, appleY = 0.5;
+    let vx = 0.005, vy = 0.005;
+    let speed = 0.5;
+    let running = false;
+    let animId = null;
+    let oyCount = 0, ayCount = 0;
+    let appleScore = 0, wormScore = 0;
+    let goalScored = false;
+    const MAX_SPEED = 1.8;
+
+    // ===== ОБНОВЛЕНИЕ ЯБЛОКА =====
+    function updateApple() {
+        const rect = field.getBoundingClientRect();
+        const size = Math.min(rect.width, rect.height) * 0.1;
+        const w = rect.width - size;
+        const h = rect.height - size;
+
+        appleX += vx * speed;
+        appleY += vy * speed;
+
+        let hit = false;
+        if (appleX <= 0 || appleX >= 1) {
+            vx = -vx;
+            appleX = Math.max(0, Math.min(1, appleX));
+            oyCount++;
+            playSound('oy');
+            hit = true;
+            shakeApple();
+        }
+        if (appleY <= 0 || appleY >= 1) {
+            vy = -vy;
+            appleY = Math.max(0, Math.min(1, appleY));
+            ayCount++;
+            playSound('ay');
+            hit = true;
+            shakeApple();
+        }
+
+        const goalLeft = 0.41, goalRight = 0.59;
+        const goalBottom = 0.92;
+        if (appleY >= goalBottom && appleX >= goalLeft && appleX <= goalRight) {
+            if (!goalScored) {
+                goalScored = true;
+                playSound('goal');
+                goal.classList.add('active');
+                apple.classList.add('goal');
+                setTimeout(() => {
+                    apple.classList.remove('goal');
+                    goal.classList.remove('active');
+                    stopGame();
+                    showQuestion();
+                }, 600);
+                return;
+            }
+        }
+
+        const px = appleX * w;
+        const py = appleY * h;
+        apple.style.left = px + 'px';
+        apple.style.top = py + 'px';
+        apple.style.width = size + 'px';
+        apple.style.height = size + 'px';
+    }
+
+    function shakeApple() {
+        apple.classList.remove('hit');
+        void apple.offsetWidth;
+        apple.classList.add('hit');
+        setTimeout(() => apple.classList.remove('hit'), 300);
+    }
+
+    function startGame() {
+        if (running || goalScored) return;
+        initAudio();
+
+        appleX = 0.1 + Math.random() * 0.8;
+        appleY = 0.1 + Math.random() * 0.6;
+        vx = (Math.random() > 0.5 ? 1 : -1) * (0.005 + Math.random() * 0.007);
+        vy = (Math.random() > 0.5 ? 1 : -1) * (0.005 + Math.random() * 0.007);
+
+        oyCount = 0;
+        ayCount = 0;
+        goalScored = false;
+        running = true;
+        btnStart.disabled = true;
+        btnStart.textContent = '⏳ ИГРА...';
+
+        apple.classList.remove('goal');
+        goal.classList.remove('active');
+        worm.classList.remove('show');
+        apple.style.display = 'flex';
+
+        if (animId) cancelAnimationFrame(animId);
+        gameLoop();
+    }
+
+    function gameLoop() {
+        if (!running) return;
+        updateApple();
+        animId = requestAnimationFrame(gameLoop);
+    }
+
+    function stopGame() {
+        running = false;
+        if (animId) {
+            cancelAnimationFrame(animId);
+            animId = null;
+        }
+        btnStart.disabled = false;
+        btnStart.textContent = '⚽ 1 ТАЙМ';
+    }
+
+    function showQuestion() {
+        modal.classList.add('active');
+        resultMsg.textContent = '';
+        resultMsg.className = 'result-msg';
+        inputOy.value = 0;
+        inputAy.value = 0;
+        inputOy.focus();
+    }
+
+    function checkAnswer() {
+        const userOy = parseInt(inputOy.value) || 0;
+        const userAy = parseInt(inputAy.value) || 0;
+
+        if (userOy === oyCount && userAy === ayCount) {
+            resultMsg.textContent = '🍏 СЪЕШЬ МЕНЯ!';
+            resultMsg.className = 'result-msg win';
+            appleScore++;
+            appleScoreEl.textContent = appleScore;
+            playSound('win');
+
+            apple.textContent = '🍏';
+            apple.style.transform = 'scale(1.5) rotate(20deg)';
+            setTimeout(() => {
+                apple.style.transform = 'scale(0) rotate(180deg)';
+                apple.style.opacity = '0';
+            }, 400);
+
+            setTimeout(() => {
+                modal.classList.remove('active');
+                resetApple();
+            }, 1000);
+        } else {
+            resultMsg.textContent = '🐛 ГУЛЯЙ ДАЛЬШЕ!';
+            resultMsg.className = 'result-msg lose';
+            wormScore++;
+            wormScoreEl.textContent = wormScore;
+            playSound('lose');
+
+            worm.classList.add('show');
+            const rect = field.getBoundingClientRect();
+            const wx = (appleX || 0.5) * (rect.width - 60);
+            const wy = (appleY || 0.5) * (rect.height - 60);
+            worm.style.left = wx + 'px';
+            worm.style.top = wy + 'px';
+
+            setTimeout(() => {
+                modal.classList.remove('active');
+            }, 1200);
+
+            setTimeout(() => {
+                worm.classList.remove('show');
+                resetApple();
+            }, 2000);
+        }
+    }
+
+    function resetApple() {
+        apple.textContent = '🍎';
+        apple.style.transform = 'scale(1) rotate(0deg)';
+        apple.style.opacity = '1';
+        apple.style.display = 'flex';
+        appleX = 0.5;
+        appleY = 0.3;
+        const rect = field.getBoundingClientRect();
+        const size = Math.min(rect.width, rect.height) * 0.1;
+        apple.style.left = (appleX * (rect.width - size)) + 'px';
+        apple.style.top = (appleY * (rect.height - size)) + 'px';
+        apple.style.width = size + 'px';
+        apple.style.height = size + 'px';
+        goalScored = false;
+        goal.classList.remove('active');
+        worm.classList.remove('show');
+
+        speed = Math.min(speed + 0.08, MAX_SPEED);
+        speedDisplay.textContent = Math.round(speed * 10) / 10;
+        apple.classList.remove('goal');
+    }
+
+    function fullReset() {
+        if (running) {
+            running = false;
+            if (animId) {
+                cancelAnimationFrame(animId);
+                animId = null;
+            }
+        }
+        modal.classList.remove('active');
+        btnStart.disabled = false;
+        btnStart.textContent = '⚽ 1 ТАЙМ';
+
+        appleScore = 0;
+        wormScore = 0;
+        speed = 0.5;
+        oyCount = 0;
+        ayCount = 0;
+        goalScored = false;
+
+        appleScoreEl.textContent = '0';
+        wormScoreEl.textContent = '0';
+        speedDisplay.textContent = '0.5';
+
+        apple.textContent = '🍎';
+        apple.style.transform = 'scale(1) rotate(0deg)';
+        apple.style.opacity = '1';
+        apple.style.display = 'flex';
+        appleX = 0.5;
+        appleY = 0.3;
+        const rect = field.getBoundingClientRect();
+        const size = Math.min(rect.width, rect.height) * 0.1;
+        apple.style.left = (appleX * (rect.width - size)) + 'px';
+        apple.style.top = (appleY * (rect.height - size)) + 'px';
+        apple.style.width = size + 'px';
+        apple.style.height = size + 'px';
+
+        goal.classList.remove('active');
+        worm.classList.remove('show');
+        apple.classList.remove('goal');
+        resultMsg.textContent = '';
+        resultMsg.className = 'result-msg';
+        localStorage.removeItem('appleFootball');
+    }
+
+    function saveProgress() {
+        localStorage.setItem('appleFootball', JSON.stringify({
+            appleScore, wormScore, speed
+        }));
+    }
+
+    function loadProgress() {
+        try {
+            const data = JSON.parse(localStorage.getItem('appleFootball'));
+            if (data) {
+                appleScore = data.appleScore || 0;
+                wormScore = data.wormScore || 0;
+                speed = data.speed || 0.5;
+                appleScoreEl.textContent = appleScore;
+                wormScoreEl.textContent = wormScore;
+                speedDisplay.textContent = Math.round(speed * 10) / 10;
+            }
+        } catch(e) {}
+    }
+
+    function init() {
+        loadProgress();
+        resetApple();
+        checkSounds();
+
+        document.addEventListener('click', initAudio, { once: true });
+
+        btnStart.addEventListener('click', startGame);
+        btnReset.addEventListener('click', fullReset);
+        btnAnswer.addEventListener('click', checkAnswer);
+
+        inputOy.addEventListener('keydown', (e) => { if (e.key === 'Enter') inputAy.focus(); });
+        inputAy.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkAnswer(); });
+
+        window.addEventListener('beforeunload', saveProgress);
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (!running) resetApple();
+            }, 300);
+        });
+
+        console.log('🍎 ЯБЛОЧНЫЙ ФУТБОЛ');
+        console.log('🔊 Если есть MP3 файлы в папке — игра использует их!');
+        console.log('📁 oy.mp3, ay.mp3, goal.mp3, win.mp3, lose.mp3');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
