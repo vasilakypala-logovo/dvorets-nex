@@ -9,65 +9,81 @@
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-body{
-    margin:0;
-    background:#555;
-    display:flex;
-    justify-content:center;
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    background: #555;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-family: Arial, sans-serif;
-    min-height:100vh;
-    padding:0;
+    overflow-x: hidden;
+}
+
+/* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
+#game-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    aspect-ratio: 700 / 1200;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #game{
-    position:relative;
-    width:700px;
-    height:1200px;
-    background:url("klass.png");
-    background-size:100% 100%;
-    background-repeat:no-repeat;
-    margin:0 auto;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: url("klass.png");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
+/* ===== ПЛАНЕТКА ===== */
 #star{
-    position:absolute;
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    background:white;
+    position: absolute;
+    width: 6%;
+    height: 3.5%;
+    border-radius: 50%;
+    background: white;
     box-shadow:
         0 0 8px white,
         0 0 18px white,
         0 0 35px white;
-    left:320px;
-    top:-60px;
+    left: 45.7%;
+    top: -5%;
     transition: top 0.8s ease-in-out, left 0.8s ease-in-out;
-    z-index:10;
-    opacity:0;
+    z-index: 10;
+    opacity: 0;
+    transform: translate(-50%, -50%);
 }
 
 #star.visible {
-    opacity:1;
+    opacity: 1;
 }
 
 /* ===== КНОПКА БРОСОК ===== */
 #throwBtn {
-    position:fixed;
-    bottom:30px;
-    left:50%;
-    transform:translateX(-50%);
-    font-size:24px;
-    padding:15px 40px;
-    cursor:pointer;
-    z-index:100;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    padding: 15px 40px;
+    cursor: pointer;
+    z-index: 100;
     border: none;
     border-radius: 50px;
     background: #ffd700;
     box-shadow: 0 4px 20px rgba(255,215,0,0.4);
     font-weight: bold;
-    min-width:200px;
+    min-width: 200px;
     transition: all 0.3s ease;
 }
 #throwBtn:hover {
@@ -75,8 +91,8 @@ body{
     transform: translateX(-50%) scale(1.05);
 }
 #throwBtn:disabled {
-    opacity:0.5;
-    cursor:not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
     transform: translateX(-50%) scale(1);
 }
 #throwBtn:active {
@@ -85,16 +101,16 @@ body{
 
 /* ===== ИНДИКАТОР ПРОГРЕССА ===== */
 #progress-indicator {
-    position:fixed;
-    top:15px;
-    right:15px;
+    position: fixed;
+    top: 15px;
+    right: 15px;
     background: rgba(0,0,0,0.8);
     color: white;
-    padding:10px 18px;
+    padding: 10px 18px;
     border-radius: 30px;
     font-size: 16px;
     border: 2px solid #ffd700;
-    z-index:100;
+    z-index: 100;
     font-weight: bold;
     backdrop-filter: blur(5px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -105,7 +121,7 @@ body{
 #progress-indicator .errors {
     color: #ff6b6b;
     font-size: 14px;
-    margin-left:10px;
+    margin-left: 10px;
 }
 
 /* ===== МОДАЛЬНОЕ ОКНО ===== */
@@ -120,7 +136,7 @@ body{
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    padding:20px;
+    padding: 20px;
     backdrop-filter: blur(3px);
 }
 .modal-overlay.active {
@@ -137,8 +153,8 @@ body{
     border: 2px solid #ffd700;
     box-shadow: 0 0 60px rgba(255,215,0,0.2);
     position: relative;
-    max-height:90vh;
-    overflow-y:auto;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 .modal h2 {
     color: #ffd700;
@@ -158,7 +174,7 @@ body{
     padding: 15px;
     background: rgba(255,255,255,0.05);
     border-radius: 15px;
-    word-break:break-word;
+    word-break: break-word;
 }
 .modal input {
     padding: 15px 20px;
@@ -196,8 +212,8 @@ body{
     font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
-    width:100%;
-    max-width:300px;
+    width: 100%;
+    max-width: 300px;
 }
 .modal .btn-check:hover {
     transform: scale(1.05);
@@ -210,7 +226,7 @@ body{
     margin-top: 15px;
     font-size: 18px;
     min-height: 30px;
-    font-weight:bold;
+    font-weight: bold;
 }
 .modal .progress-text {
     font-size: 14px;
@@ -233,7 +249,7 @@ body{
     gap: 15px;
     justify-content: center;
     margin-top: 20px;
-    flex-wrap:wrap;
+    flex-wrap: wrap;
 }
 .win-buttons button {
     position: static;
@@ -246,8 +262,8 @@ body{
     font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
-    flex:1;
-    min-width:140px;
+    flex: 1;
+    min-width: 140px;
 }
 .win-buttons button:hover {
     transform: scale(1.05);
@@ -264,29 +280,48 @@ body{
     background: #ff4757;
 }
 
+/* Сообщение о возврате */
+#reset-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.9);
+    color: #ff6b6b;
+    padding: 30px 50px;
+    border-radius: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    z-index: 2000;
+    border: 3px solid #ff6b6b;
+    text-align: center;
+    display: none;
+    animation: fadeInOut 2.5s forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+}
+
 /* ===== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ===== */
 @media screen and (max-width: 768px) {
-    #game {
-        width: 100vw;
-        height: 100vw;
-        max-height: 1200px;
-        max-width: 700px;
-    }
-    
     #throwBtn {
         bottom: 20px;
         padding: 14px 30px;
         font-size: 20px;
-        min-width:160px;
-        width:90%;
-        max-width:300px;
+        min-width: 160px;
+        width: 90%;
+        max-width: 300px;
     }
     
     #progress-indicator {
-        top:10px;
-        right:10px;
+        top: 10px;
+        right: 10px;
         font-size: 14px;
-        padding:8px 15px;
+        padding: 8px 15px;
     }
     
     .modal {
@@ -312,19 +347,18 @@ body{
     .modal .btn-check {
         font-size: 18px;
         padding: 14px 30px;
-        max-width:250px;
+        max-width: 250px;
     }
     
     .win-buttons button {
         padding: 12px 20px;
         font-size: 16px;
-        min-width:120px;
+        min-width: 120px;
     }
     
-    #star {
-        width: 32px;
-        height: 32px;
-        box-shadow: 0 0 6px white, 0 0 14px white, 0 0 28px white;
+    #reset-message {
+        font-size: 22px;
+        padding: 25px 30px;
     }
 }
 
@@ -333,14 +367,14 @@ body{
         bottom: 15px;
         padding: 12px 20px;
         font-size: 18px;
-        min-width:140px;
+        min-width: 140px;
     }
     
     #progress-indicator {
         font-size: 12px;
         padding: 6px 12px;
-        top:8px;
-        right:8px;
+        top: 8px;
+        right: 8px;
     }
     
     .modal {
@@ -366,19 +400,18 @@ body{
     .modal .btn-check {
         font-size: 16px;
         padding: 12px 25px;
-        max-width:200px;
+        max-width: 200px;
     }
     
     .win-buttons button {
         padding: 10px 15px;
         font-size: 14px;
-        min-width:100px;
+        min-width: 100px;
     }
     
-    #star {
-        width: 28px;
-        height: 28px;
-        box-shadow: 0 0 5px white, 0 0 10px white, 0 0 20px white;
+    #reset-message {
+        font-size: 18px;
+        padding: 20px 25px;
     }
 }
 
@@ -386,7 +419,7 @@ body{
     #throwBtn {
         font-size: 16px;
         padding: 10px 15px;
-        min-width:120px;
+        min-width: 120px;
     }
     
     .modal .question {
@@ -397,12 +430,23 @@ body{
         font-size: 16px;
         width: 110px;
     }
+    
+    #reset-message {
+        font-size: 16px;
+        padding: 15px 20px;
+    }
 }
 
 </style>
 </head>
 
 <body>
+
+<div id="game-wrapper">
+    <div id="game">
+        <div id="star"></div>
+    </div>
+</div>
 
 <button id="throwBtn" onclick="dropStar()">⭐ БРОСОК</button>
 
@@ -411,9 +455,7 @@ body{
     <span class="errors" id="errorsDisplay">❌ 0</span>
 </div>
 
-<div id="game">
-    <div id="star"></div>
-</div>
+<div id="reset-message">❌ 3 ошибки!<br>Возврат на уровень 1!</div>
 
 <!-- Модальное окно -->
 <div class="modal-overlay" id="modalOverlay">
@@ -458,9 +500,7 @@ function playSound(frequency, duration, type = 'sine', volume = 0.3) {
         
         oscillator.start(audioCtx.currentTime);
         oscillator.stop(audioCtx.currentTime + duration);
-    } catch(e) {
-        // Звук не поддерживается — просто молчим
-    }
+    } catch(e) {}
 }
 
 function soundClick() {
@@ -503,18 +543,18 @@ function soundStarDrop() {
     setTimeout(() => playSound(660, 0.15, 'sine', 0.15), 300);
 }
 
-// ===== КОНФИГУРАЦИЯ УРОВНЕЙ =====
-const levels = [
-    { id: 1, x: 330, y: 1025 },
-    { id: 2, x: 330, y: 900 },
-    { id: 3, x: 165, y: 775 },
-    { id: 4, x: 495, y: 775 },
-    { id: 5, x: 330, y: 650 },
-    { id: 6, x: 165, y: 525 },
-    { id: 7, x: 495, y: 525 },
-    { id: 8, x: 330, y: 400 },
-    { id: 9, x: 170, y: 50 },
-    { id: 10, x: 490, y: 50 }
+// ===== КОНФИГУРАЦИЯ УРОВНЕЙ (в процентах от размера поля) =====
+const levelPositions = [
+    { id: 1, x: 47.14, y: 85.42 },   // 330/700, 1025/1200
+    { id: 2, x: 47.14, y: 75.00 },   // 330/700, 900/1200
+    { id: 3, x: 23.57, y: 64.58 },   // 165/700, 775/1200
+    { id: 4, x: 70.71, y: 64.58 },   // 495/700, 775/1200
+    { id: 5, x: 47.14, y: 54.17 },   // 330/700, 650/1200
+    { id: 6, x: 23.57, y: 43.75 },   // 165/700, 525/1200
+    { id: 7, x: 70.71, y: 43.75 },   // 495/700, 525/1200
+    { id: 8, x: 47.14, y: 33.33 },   // 330/700, 400/1200
+    { id: 9, x: 24.29, y: 4.17 },    // 170/700, 50/1200
+    { id: 10, x: 70.00, y: 4.17 }    // 490/700, 50/1200
 ];
 
 // ===== СОСТОЯНИЕ ИГРЫ =====
@@ -523,7 +563,7 @@ let currentTaskIndex = 0;
 let tasks = [];
 let gameCompleted = false;
 let isWaitingForAnimation = false;
-let errorCount = 0; // Счётчик ошибок за текущий уровень
+let errorCount = 0;
 
 const star = document.getElementById('star');
 const modalOverlay = document.getElementById('modalOverlay');
@@ -536,6 +576,7 @@ const progressText = document.getElementById('progressText');
 const levelDisplay = document.getElementById('levelDisplay');
 const errorsDisplay = document.getElementById('errorsDisplay');
 const throwBtn = document.getElementById('throwBtn');
+const resetMessage = document.getElementById('reset-message');
 
 // ===== ГЕНЕРАТОР ЗАДАЧ =====
 function generateTask(level) {
@@ -635,6 +676,14 @@ function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// ===== УСТАНОВКА ПОЗИЦИИ ПЛАНЕТКИ (в процентах) =====
+function setStarPosition(levelIndex) {
+    if (levelIndex < 0 || levelIndex >= levelPositions.length) return;
+    const pos = levelPositions[levelIndex];
+    star.style.left = pos.x + '%';
+    star.style.top = pos.y + '%';
+}
+
 // ===== СБРОС ИГРЫ (возврат на 1 уровень) =====
 function resetToLevel1() {
     soundGameOver();
@@ -644,8 +693,8 @@ function resetToLevel1() {
     errorCount = 0;
     
     star.classList.remove('visible');
-    star.style.left = '320px';
-    star.style.top = '-60px';
+    star.style.left = '47.14%';
+    star.style.top = '-5%';
     
     levelDisplay.textContent = '0';
     errorsDisplay.textContent = '❌ 0';
@@ -654,41 +703,14 @@ function resetToLevel1() {
     throwBtn.disabled = false;
     
     // Показываем сообщение о возврате
-    const msg = document.createElement('div');
-    msg.style.cssText = `
-        position:fixed;
-        top:50%;
-        left:50%;
-        transform:translate(-50%,-50%);
-        background:rgba(0,0,0,0.9);
-        color:#ff6b6b;
-        padding:30px 50px;
-        border-radius:20px;
-        font-size:28px;
-        font-weight:bold;
-        z-index:2000;
-        border:3px solid #ff6b6b;
-        text-align:center;
-        animation: fadeInOut 2.5s forwards;
-    `;
-    msg.innerHTML = '❌ 3 ошибки!<br>Возврат на уровень 1!';
-    document.body.appendChild(msg);
-    
-    // Создаём анимацию
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeInOut {
-            0% { opacity:0; transform:translate(-50%,-50%) scale(0.8); }
-            20% { opacity:1; transform:translate(-50%,-50%) scale(1); }
-            80% { opacity:1; transform:translate(-50%,-50%) scale(1); }
-            100% { opacity:0; transform:translate(-50%,-50%) scale(1.2); }
-        }
-    `;
-    document.head.appendChild(style);
+    resetMessage.style.display = 'block';
+    resetMessage.style.animation = 'none';
+    setTimeout(() => {
+        resetMessage.style.animation = 'fadeInOut 2.5s forwards';
+    }, 10);
     
     setTimeout(() => {
-        if (msg.parentNode) msg.remove();
-        if (style.parentNode) style.remove();
+        resetMessage.style.display = 'none';
     }, 2800);
     
     saveProgress();
@@ -744,7 +766,6 @@ function checkAnswer() {
             messageText.textContent = '⭐ УРОВЕНЬ ПРОЙДЕН!';
             messageText.className = 'message success';
             
-            // Сбрасываем счётчик ошибок после успешного прохождения уровня
             errorCount = 0;
             errorsDisplay.textContent = '❌ 0';
             
@@ -756,7 +777,7 @@ function checkAnswer() {
                 
                 saveProgress();
                 
-                if (currentLevel >= levels.length - 1) {
+                if (currentLevel >= levelPositions.length - 1) {
                     gameCompleted = true;
                     setTimeout(() => {
                         soundWin();
@@ -779,9 +800,7 @@ function checkAnswer() {
         answerInput.value = '';
         answerInput.focus();
         
-        // Проверяем, не достигнуто ли 3 ошибки
         if (errorCount >= 3) {
-            // Закрываем модалку и сбрасываем на 1 уровень
             setTimeout(() => {
                 modalOverlay.classList.remove('active');
                 resetToLevel1();
@@ -803,7 +822,7 @@ function dropStar() {
     
     const nextLevel = currentLevel + 1;
     
-    if (nextLevel >= levels.length) {
+    if (nextLevel >= levelPositions.length) {
         soundWin();
         showWinScreen();
         return;
@@ -812,10 +831,7 @@ function dropStar() {
     soundStarDrop();
     
     star.classList.add('visible');
-    
-    const target = levels[nextLevel];
-    star.style.left = target.x + 'px';
-    star.style.top = target.y + 'px';
+    setStarPosition(nextLevel);
     
     currentLevel = nextLevel;
     levelDisplay.textContent = currentLevel + 1;
@@ -881,8 +897,8 @@ function resetGame() {
     errorCount = 0;
     
     star.classList.remove('visible');
-    star.style.left = '320px';
-    star.style.top = '-60px';
+    star.style.left = '47.14%';
+    star.style.top = '-5%';
     
     levelDisplay.textContent = '0';
     errorsDisplay.textContent = '❌ 0';
@@ -919,30 +935,25 @@ function restoreProgress() {
         const data = JSON.parse(saved);
         if (data.completed) {
             gameCompleted = true;
-            const lastLevel = levels[levels.length - 1];
-            star.style.left = lastLevel.x + 'px';
-            star.style.top = lastLevel.y + 'px';
+            setStarPosition(levelPositions.length - 1);
             star.classList.add('visible');
-            levelDisplay.textContent = levels.length;
+            levelDisplay.textContent = levelPositions.length;
             setTimeout(() => {
                 soundWin();
                 showWinScreen();
             }, 300);
             return true;
         }
-        if (data.level >= 0 && data.level < levels.length) {
+        if (data.level >= 0 && data.level < levelPositions.length) {
             currentLevel = data.level;
             currentTaskIndex = data.taskIndex || 0;
             errorCount = data.errorCount || 0;
             
-            const pos = levels[currentLevel];
-            star.style.left = pos.x + 'px';
-            star.style.top = pos.y + 'px';
+            setStarPosition(currentLevel);
             star.classList.add('visible');
             levelDisplay.textContent = currentLevel + 1;
             errorsDisplay.textContent = `❌ ${errorCount}`;
             
-            // Если есть ошибки на уровне, но он не пройден — восстанавливаем
             if (currentTaskIndex > 0 && currentTaskIndex < (currentLevel + 1)) {
                 tasks = generateTask(currentLevel);
                 if (currentTaskIndex < tasks.length) {
@@ -961,12 +972,12 @@ function restoreProgress() {
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 window.onload = function() {
     star.classList.remove('visible');
-    star.style.left = '320px';
-    star.style.top = '-60px';
+    star.style.left = '47.14%';
+    star.style.top = '-5%';
     levelDisplay.textContent = '0';
     errorsDisplay.textContent = '❌ 0';
+    resetMessage.style.display = 'none';
     
-    // Инициализируем аудио при первом клике
     document.addEventListener('click', initAudio, { once: true });
     
     if (!restoreProgress()) {
