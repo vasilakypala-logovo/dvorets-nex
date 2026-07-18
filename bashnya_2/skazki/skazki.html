@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Безумные сказки НЕКСА</title>
+
+<style>
+html,body{
+    margin:0;
+    overflow:hidden;
+    background:#000;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+#map{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    background:url("skazki.png") center center;
+    background-size:cover;
+}
+
+/* Белые планетки */
+
+.portal{
+    position:absolute;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:white;
+    box-shadow:
+        0 0 8px white,
+        0 0 18px white,
+        0 0 35px white;
+    cursor:pointer;
+    transition:.3s;
+    animation:pulse 2s infinite;
+}
+
+.portal:hover{
+    transform:scale(1.5);
+}
+
+@keyframes pulse{
+    0%,100%{opacity:.8;}
+    50%{opacity:1;}
+}
+
+/* Надпись */
+
+#title{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:18px;
+
+    text-align:center;
+
+    font-family:Georgia, "Times New Roman", serif;
+    font-size:28px;
+    font-weight:300;
+
+    letter-spacing:6px;
+
+    color:#ecffff;
+
+    text-shadow:
+        0 0 3px #ffffff,
+        0 0 8px #bfffff,
+        0 0 18px #7ffcff,
+        0 0 35px cyan;
+
+    animation:titleGlow 4s ease-in-out infinite;
+}
+
+@keyframes titleGlow{
+
+    0%{
+        opacity:.45;
+        filter:brightness(.8);
+        text-shadow:
+            0 0 2px white,
+            0 0 6px #8fffff,
+            0 0 14px cyan;
+    }
+
+    25%{
+        opacity:.75;
+    }
+
+    50%{
+        opacity:1;
+        filter:brightness(1.25);
+        text-shadow:
+            0 0 6px white,
+            0 0 15px #bfffff,
+            0 0 30px cyan,
+            0 0 55px #66ffff;
+    }
+
+    75%{
+        opacity:.80;
+    }
+
+    100%{
+        opacity:.45;
+        filter:brightness(.8);
+        text-shadow:
+            0 0 2px white,
+            0 0 6px #8fffff,
+            0 0 14px cyan;
+    }
+
+}
+</style>
+
+</head>
+<body>
+
+<div id="map">
+
+<!-- Лес -->
+<div class="portal"
+style="left:18%; top:33%;"
+onclick="location='les.html'">
+</div>
+
+<!-- Море -->
+<div class="portal"
+style="left:50%; top:14%;"
+onclick="location='more.html'">
+</div>
+
+<!-- Горы -->
+<div class="portal"
+style="left:82%; top:34%;"
+onclick="location='gori.html'">
+</div>
+
+<!-- Волшебные сказки -->
+<div class="portal"
+style="left:55%; top:56%;"
+onclick="location='volshebstvo.html'">
+</div>
+
+<!-- Путник -->
+<div class="portal"
+style="left:47%; top:82%;"
+onclick="location='putnik.html'">
+</div>
+
+<div id="title">
+БЕЗУМНЫЕ СКАЗКИ НЕКСА
+</div>
+
+</div>
+
+</body>
+</html>
