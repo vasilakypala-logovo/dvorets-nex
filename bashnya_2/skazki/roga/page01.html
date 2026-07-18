@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ROGAedit — редактор страниц</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.7;
+            color: #1e1e1e;
+        }
+        h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .dropcap::first-letter {
+            font-size: 3.8rem;
+            float: left;
+            line-height: 1;
+            margin-right: 8px;
+            margin-top: 4px;
+            font-weight: 700;
+        }
+        .center { text-align: center; }
+        .italic { font-style: italic; }
+        p { margin: 0 0 1.2em 0; }
+        a.image-link {
+            display: inline-block;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: rgba(46, 125, 50, 0.08);
+            border: 2px solid transparent;
+            font-size: 28px;
+            line-height: 1;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        a.image-link:hover {
+            background: rgba(46, 125, 50, 0.15);
+            transform: scale(1.05);
+            border-color: rgba(46, 125, 50, 0.3);
+        }
+        a.image-link .icon {
+            display: block;
+            font-size: 32px;
+            line-height: 1;
+        }
+        a.image-link .label {
+            display: none;
+        }
+        a.image-link .alt-text {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+        .auto-close-notice {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+            margin: 20px 0 10px 0;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    
+            <h1>Как ветер искал песню</h1>
+
+            <p class="dropcap">Давным-давно лес был очень тихим. Настолько тихим, что птицы боялись петь громко, ручьи журчали шёпотом, а ветер, пролетая между деревьями, вздыхал:</p>
+
+            <p class="center italic">— Никто меня не слышит...</p>
+
+            <p>Тогда старый Дуб сказал ветру:
+                    <a href="pikcher1.jpg" class="image-link" style="width:48px;" onclick="
+                        event.preventDefault();
+                        var imgWin = window.open('pikcher1.jpg', '_blank');
+                        if (imgWin) {
+                            var notice = document.createElement('div');
+                            notice.style.cssText = 'background:#2c3e50;color:#ecf0f1;padding:8px 16px;border-radius:6px;font-size:0.9rem;text-align:center;margin:20px 0 10px 0;opacity:0.8;';
+                            notice.textContent = '🖼 Картинка откроется и закроется через 3 секунды';
+                            document.body.prepend(notice);
+                            setTimeout(function() { notice.remove(); }, 4000);
+                            setTimeout(function() { try { imgWin.close(); } catch(e) {} }, 3000);
+                        } else {
+                            alert('⚠ Не удалось открыть окно. Возможно, блокировщик всплывающих окон.');
+                        }
+                        return false;
+                    ">
+                        <span class="icon">🍁</span>
+                        <span class="label">📷 pikcher1.jpg</span>
+                        <span class="alt-text">Открыть картинку pikcher1.jpg</span>
+                    </a>
+                </p>
+
+            <p class="center italic">— Найди того, кто сможет носить твою песню.</p>
+
+            <p>Ветер облетел весь мир. Он свистел в камышах — получался только шелест. Он заглядывал в пещеры — получалось глухое эхо. Он пролетал между скалами — выходил сердитый вой.</p>
+
+            <p>Но песня никак не рождалась.
+                    <a href="pikcher1.jpg" class="image-link" style="width:48px;" onclick="
+                        event.preventDefault();
+                        var imgWin = window.open('pikcher2.jpg', '_blank');
+                        if (imgWin) {
+                            var notice = document.createElement('div');
+                            notice.style.cssText = 'background:#2c3e50;color:#ecf0f1;padding:8px 16px;border-radius:6px;font-size:0.9rem;text-align:center;margin:20px 0 10px 0;opacity:0.8;';
+                            notice.textContent = '🖼 Картинка откроется и закроется через 3 секунды';
+                            document.body.prepend(notice);
+                            setTimeout(function() { notice.remove(); }, 4000);
+                            setTimeout(function() { try { imgWin.close(); } catch(e) {} }, 3000);
+                        } else {
+                            alert('⚠ Не удалось открыть окно. Возможно, блокировщик всплывающих окон.');
+                        }
+                        return false;
+                    ">
+                        <span class="icon">🍁</span>
+                        <span class="label">📷 pikcher2.jpg</span>
+                        <span class="alt-text">Открыть картинку pikcher2.jpg</span>
+                    </a>
+                </p>
+
+            <p>И вот однажды ветер увидел молодого оленя. Рога у него были маленькие, совсем простые.</p>
+
+            <p class="center italic">— Позволь мне пожить в них немного, — попросил ветер.</p>
+
+            <p class="center italic">— Живи, — улыбнулся олень.</p>
+        
+    <script>
+        // Дополнительная защита: если ссылки кликабельны, но onclick не сработал
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a.image-link').forEach(function(link) {
+                // Если у ссылки нет onclick, но есть href - добавляем
+                if (!link.hasAttribute('onclick') && link.getAttribute('href')) {
+                    const href = link.getAttribute('href');
+                    link.setAttribute('onclick', `
+                        event.preventDefault();
+                        var imgWin = window.open('${href}', '_blank');
+                        if (imgWin) {
+                            var notice = document.createElement('div');
+                            notice.style.cssText = 'background:#2c3e50;color:#ecf0f1;padding:8px 16px;border-radius:6px;font-size:0.9rem;text-align:center;margin:20px 0 10px 0;opacity:0.8;';
+                            notice.textContent = '🖼 Картинка откроется и закроется через 3 секунды';
+                            document.body.prepend(notice);
+                            setTimeout(function() { notice.remove(); }, 4000);
+                            setTimeout(function() { try { imgWin.close(); } catch(e) {} }, 3000);
+                        } else {
+                            alert('⚠ Не удалось открыть окно. Возможно, блокировщик всплывающих окон.');
+                        }
+                        return false;
+                    `);
+                    link.removeAttribute('target');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
