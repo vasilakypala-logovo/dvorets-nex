@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
+<html data-immersive-translate-page-theme="dark" lang="ru"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Поющие рога — BOOK ENGINE NEX</title>
+    <title>ПОЮЩИЕ РОГА — BOOK ENGINE NEX</title>
     <style>
         * {
             margin: 0;
@@ -422,11 +420,11 @@
 </head>
 <body>
     <div id="app">
-        <div id="cover-container">
+        <div id="cover-container" class="hidden">
             <div id="cover-content">
-                <img id="cover-image" src="" alt="Обложка" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22%3E%3Crect fill=%22%232c1810%22 width=%22400%22 height=%22500%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 fill=%22%23b8a48e%22 font-size=%2230%22 font-family=%22Georgia%22 dy=%22.3em%22%3E🦌%3C/text%3E%3C/svg%3E'">
+                <img id="cover-image" src="roga/cover.jpg" alt="ПОЮЩИЕ РОГА" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22%3E%3Crect fill=%22%232c1810%22 width=%22400%22 height=%22500%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 fill=%22%23b8a48e%22 font-size=%2230%22 font-family=%22Georgia%22 dy=%22.3em%22%3E🦌%3C/text%3E%3C/svg%3E'">
                 <h1 id="cover-title"><span class="editable-label" data-field="title">ПОЮЩИЕ РОГА</span></h1>
-                <p id="cover-subtitle"><span class="editable-label" data-field="subtitle">сказка</span></p>
+                <p id="cover-subtitle"><span class="editable-label" data-field="subtitle">Сказка</span></p>
                 <p id="cover-author"><span class="editable-label" data-field="author">Сказочник НЕКС</span></p>
                 <div class="edit-hint">💡 Нажмите на название, автора или подзаголовок, чтобы изменить</div>
             </div>
@@ -435,7 +433,7 @@
             <div class="edit-box">
                 <h3 id="edit-title">Редактировать</h3>
                 <label for="edit-input">Введите новое значение:</label>
-                <input type="text" id="edit-input" autofocus>
+                <input type="text" id="edit-input" autofocus="">
                 <div class="btn-row">
                     <button class="btn-cancel" id="edit-cancel">Отмена</button>
                     <button class="btn-save" id="edit-save">Сохранить</button>
@@ -443,19 +441,19 @@
             </div>
         </div>
         <div id="book-container">
-            <div id="pages-wrapper"></div>
+            <div id="pages-wrapper"><iframe class="page-iframe active" data-page="page01" src="roga/page01.html" style=""></iframe><iframe class="page-iframe" data-page="page02" src="roga/page02.html" style=""></iframe><iframe class="page-iframe" data-page="page03" src="roga/page03.html" style=""></iframe><iframe class="page-iframe" data-page="page04" src="roga/page04.html" style=""></iframe></div>
         </div>
         <div id="navigation">
-            <button id="prev-btn" title="Предыдущая">◀</button>
-            <span id="page-indicator">0 / 0</span>
-            <button id="next-btn" title="Следующая">▶</button>
+            <button id="prev-btn" title="Предыдущая" style="opacity: 1;">◀</button>
+            <span id="page-indicator">1 / 4</span>
+            <button id="next-btn" title="Следующая" style="opacity: 1;">▶</button>
             <button id="home-btn" title="На обложку">🏠</button>
             <button id="toc-btn" title="Оглавление">📑</button>
             <button id="refresh-toc-btn" title="Обновить оглавление">🔄</button>
-            <button id="bookmark-btn" title="Закладка">☆</button>
+            <button id="bookmark-btn" title="Закладка">⭐</button>
             <button id="save-btn" title="Сохранить книгу">💾</button>
             <button id="add-page-btn" class="success" title="Добавить страницу">➕</button>
-            <button id="delete-page-btn" class="danger" title="Удалить текущую страницу">🗑</button>
+            <button id="delete-page-btn" class="danger" title="Удалить текущую страницу" style="opacity: 1;">🗑</button>
         </div>
         <div id="toc-modal" class="modal">
             <div class="modal-content">
@@ -471,7 +469,7 @@
             subtitle: "Сказка",
             author: "Сказочник НЕКС",
             bookDir: "roga/",
-            readOnly: false
+            readOnly: true
         };
 
         // ============================================================
@@ -1084,5 +1082,5 @@
             window.book = new BookEngine();
         });
     </script>
-</body>
-</html>
+
+</body><div id="immersive-translate-popup" style="all: initial"></div></html>
