@@ -420,7 +420,7 @@
 </head>
 <body>
     <div id="app">
-        <div id="cover-container" class="">
+        <div id="cover-container" class="hidden">
             <div id="cover-content">
                 <img id="cover-image" src="roga/cover.jpg" alt="ПОЮЩИЕ РОГА" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22%3E%3Crect fill=%22%232c1810%22 width=%22400%22 height=%22500%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 fill=%22%23b8a48e%22 font-size=%2230%22 font-family=%22Georgia%22 dy=%22.3em%22%3E🦌%3C/text%3E%3C/svg%3E'">
                 <h1 id="cover-title"><span class="editable-label" data-field="title">ПОЮЩИЕ РОГА</span></h1>
@@ -444,13 +444,13 @@
             <div id="pages-wrapper"><iframe class="page-iframe" data-page="page01" src="roga/page01.html" style=""></iframe><iframe class="page-iframe" data-page="page02" src="roga/page02.html" style=""></iframe><iframe class="page-iframe" data-page="page03" src="roga/page03.html" style=""></iframe><iframe class="page-iframe" data-page="page04" src="roga/page04.html" style=""></iframe><iframe class="page-iframe active" data-page="page05" src="roga/page05.html" style=""></iframe></div>
         </div>
         <div id="navigation">
-            <button id="prev-btn" title="Предыдущая" style="opacity: 0.3;">◀</button>
-            <span id="page-indicator">0 / 5</span>
-            <button id="next-btn" title="Следующая" style="opacity: 1;">▶</button>
+            <button id="prev-btn" title="Предыдущая" style="opacity: 1;">◀</button>
+            <span id="page-indicator">5 / 5</span>
+            <button id="next-btn" title="Следующая" style="opacity: 0.3;">▶</button>
             <button id="home-btn" title="На обложку">🏠</button>
             <button id="toc-btn" title="Оглавление">📑</button>
             <button id="refresh-toc-btn" title="Обновить оглавление">🔄</button>
-            <button id="bookmark-btn" title="Закладка">☆</button>
+            <button id="bookmark-btn" title="Закладка">⭐</button>
             <button id="save-btn" title="Сохранить книгу">💾</button>
             <button id="add-page-btn" class="success" title="Добавить страницу">➕</button>
             <button id="delete-page-btn" class="danger" title="Удалить текущую страницу" style="opacity: 1;">🗑</button>
@@ -458,7 +458,7 @@
         <div id="toc-modal" class="modal">
             <div class="modal-content">
                 <h2>📑 Оглавление</h2>
-                <ul id="toc-list"><li><span class="page-num">0</span><span class="page-title">📖 Обложка</span></li><li><span class="page-num">1</span><span class="page-title">КАК ВЕТЕР ИСКАЛ ПЕСНЮ</span></li><li><span class="page-num">2</span><span class="page-title">ПТИЧЬИ ТРОПИНКИ</span></li><li><span class="page-num">3</span><span class="page-title">СТАРЫЙ ПЕНЬ И МОЛЧАЛИВЫЕ РОГА</span></li><li><span class="page-num">4</span><span class="page-title">ТИХАЯ ПОЛЯНА</span></li><li><span class="page-num">5</span><span class="page-title">Страница 5</span></li></ul>
+                <ul id="toc-list"><li><span class="page-num">0</span><span class="page-title">📖 Обложка</span></li><li><span class="page-num">1</span><span class="page-title">КАК ВЕТЕР ИСКАЛ ПЕСНЮ</span></li><li><span class="page-num">2</span><span class="page-title">ПТИЧЬИ ТРОПИНКИ</span></li><li><span class="page-num">3</span><span class="page-title">СТАРЫЙ ПЕНЬ И МОЛЧАЛИВЫЕ РОГА</span></li><li><span class="page-num">4</span><span class="page-title">ТИХАЯ ПОЛЯНА</span></li><li><span class="page-num">5</span><span class="page-title">ТАЙНА СТАРОГО ДОЖДЯ</span></li></ul>
                 <button class="close-btn" id="close-toc-btn">Закрыть</button>
             </div>
         </div>
@@ -466,7 +466,7 @@
     <script>
         const CONFIG = {
             title: "ПОЮЩИЕ РОГА",
-            subtitle: "Сказка",
+            subtitle: "СБОРНИК СКАЗОК",
             author: "Сказочник НЕКС",
             bookDir: "roga/",
             readOnly: true
@@ -481,6 +481,7 @@
             'ПТИЧЬИ ТРОПИНКИ',
             'СТАРЫЙ ПЕНЬ И МОЛЧАЛИВЫЕ РОГА',
             'ТИХАЯ ПОЛЯНА'
+,
             'ТАЙНА СТАРОГО ДОЖДЯ'
         ];
         // ============================================================
