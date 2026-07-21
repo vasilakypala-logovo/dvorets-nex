@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ROGAedit — редактор страниц</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.7;
+            color: #1e1e1e;
+        }
+        h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .dropcap::first-letter {
+            font-size: 3.8rem;
+            float: left;
+            line-height: 1;
+            margin-right: 8px;
+            margin-top: 4px;
+            font-weight: 700;
+        }
+        .center { text-align: center; }
+        .italic { font-style: italic; }
+        p { margin: 0 0 1.2em 0; }
+        a.image-link {
+            display: inline-block;
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: rgba(46, 125, 50, 0.08);
+            border: 2px solid transparent;
+            font-size: 28px;
+            line-height: 1;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        a.image-link:hover {
+            background: rgba(46, 125, 50, 0.15);
+            transform: scale(1.05);
+            border-color: rgba(46, 125, 50, 0.3);
+        }
+        a.image-link .icon {
+            display: block;
+            font-size: 32px;
+            line-height: 1;
+        }
+        a.image-link .label {
+            display: none;
+        }
+        a.image-link .alt-text {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+        .auto-close-notice {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+            margin: 20px 0 10px 0;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:View>Normal</w:View>
+  <w:Zoom>0</w:Zoom>
+  <w:PunctuationKerning/>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:DontGrowAutofit/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]--><!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Обычная таблица";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+
+<h1><font style="font-size: 35px;" face="'Comic Sans MS', cursive">ТУЧКА, КОТОРАЯ СТАЛА НЕБОМ</font></h1>
+
+<p class="isselectedend dropcap"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Жила-была маленькая тучка.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Такая маленькая, что большие облака иногда принимали её
+за забытый клочок утреннего тумана.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она не умела греметь.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Не умела сверкать.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Даже дождь у неё получался редко — всего несколько
+капель.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Поэтому тучка больше любила смотреть вниз.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Там было интересно.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">По дорогам шли люди, по рекам плыли лодки, в лесах
+шевелились деревья, а по вечерам зажигались маленькие огоньки.</font></p>
+
+<p class="isselectedend dropcap"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Однажды по дороге проехал витязь.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Белый конь ступал неторопливо, словно знал дорогу лучше
+хозяина.</font>
+                    <a href="pikcher2.jpg" class="image-link" style="width:48px;" onclick="
+                        event.preventDefault();
+                        var imgWin = window.open('pikcher2.jpg', '_blank');
+                        if (imgWin) {
+                            var notice = document.createElement('div');
+                            notice.style.cssText = 'background:#2c3e50;color:#ecf0f1;padding:8px 16px;border-radius:6px;font-size:0.9rem;text-align:center;margin:20px 0 10px 0;opacity:0.8;';
+                            notice.textContent = '🖼 Картинка откроется и закроется через 3 секунды';
+                            document.body.prepend(notice);
+                            setTimeout(function() { notice.remove(); }, 4000);
+                            setTimeout(function() { try { imgWin.close(); } catch(e) {} }, 3000);
+                        } else {
+                            alert('⚠ Не удалось открыть окно. Возможно, блокировщик всплывающих окон.');
+                        }
+                        return false;
+                    ">
+                        <span class="icon">🍁</span>
+                        <span class="label">📷 pikcher2.jpg</span>
+                        <span class="alt-text">Открыть картинку pikcher2.jpg</span>
+                    </a>
+                </p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">На плечах витязя развевался тёмно-синий плащ.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">А у самого воротника сияла серебряная пуговица.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она была совсем небольшой.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Но солнце почему-то любило играть именно на ней.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Тучка долго смотрела вслед.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">— Какая счастливая... — прошептала она. — Всегда рядом с
+героем. Почти возле самого сердца.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">С того дня она часто искала витязя.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Он переходил реки.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Поднимался в горы.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Ночевал под звёздами.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">И всегда рядом с ним была серебряная пуговица.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">А тучка всё чаще думала:</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">— Наверное, хорошо быть маленькой, если ты нужна.</font></p>
+
+<p class="isselectedend dropcap"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Прошло много дней.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">И однажды дорога привела витязя к Чёрному Утёсу.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Там его уже ждал дракон.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Он был огромен.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Крылья заслоняли солнце.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">А дыхание было таким горячим, что камни начинали
+дымиться.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Витязь вынул меч.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Дракон взревел.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">И воздух стал красным от огня.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Первым вспыхнул плащ.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Серебряная пуговица раскалилась, словно маленькое
+солнце.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Миг — и её не стало.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она исчезла вместе с плащом.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Теперь витязь стоял перед драконом один.</font>
+                    <a href="pikcher3.jpg" class="image-link" style="width:48px;" onclick="
+                        event.preventDefault();
+                        var imgWin = window.open('pikcher3.jpg', '_blank');
+                        if (imgWin) {
+                            var notice = document.createElement('div');
+                            notice.style.cssText = 'background:#2c3e50;color:#ecf0f1;padding:8px 16px;border-radius:6px;font-size:0.9rem;text-align:center;margin:20px 0 10px 0;opacity:0.8;';
+                            notice.textContent = '🖼 Картинка откроется и закроется через 3 секунды';
+                            document.body.prepend(notice);
+                            setTimeout(function() { notice.remove(); }, 4000);
+                            setTimeout(function() { try { imgWin.close(); } catch(e) {} }, 3000);
+                        } else {
+                            alert('⚠ Не удалось открыть окно. Возможно, блокировщик всплывающих окон.');
+                        }
+                        return false;
+                    ">
+                        <span class="icon">🍁</span>
+                        <span class="label">📷 pikcher3.jpg</span>
+                        <span class="alt-text">Открыть картинку pikcher3.jpg</span>
+                    </a>
+                </p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Тучка увидела это.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">И забыла обо всём.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она уже не мечтала стать пуговицей.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она просто бросилась вниз.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Росла на лету.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Ширилась.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Расстилалась.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Пока не закрыла собой и витязя, и коня, и чёрную скалу.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Дракон бил огнём.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Но огонь шипел и гас.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Он кружил вокруг.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Но видел только белый туман.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Он рычал долго.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Потом взмахнул крыльями и исчез за горами.</font></p>
+
+<p class="isselectedend dropcap"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Тучка ещё долго не двигалась.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она боялась раскрыться раньше времени.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Лишь когда всё стихло, она медленно поднялась вверх.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Витязь снял шлем.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Поднял голову.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Над ним снова плыло обычное облако.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Такое маленькое, что никто другой его бы и не заметил.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">— Спасибо... — тихо сказал он.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Тучка улыбнулась.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Впервые в жизни она почувствовала себя не маленькой.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она летела дальше.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">И замечала то, чего раньше не видела.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Вот путник прятался от палящего солнца.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Вот пастух гнал овец через степь.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Вот дети убегали от летнего ливня.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Вот птицы отдыхали в прохладном воздухе.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">И каждому из них было нужно не серебро.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Не слава.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Не красивый плащ.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Им было нужно небо.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Тогда тучка перестала искать только одного витязя.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она стала плыть там, где её ждали.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Над дорогами.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Над лесами.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Над реками.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Каждый день она становилась чуть больше.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Не потому, что старалась.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">А потому, что сердце её всё время находило кого-нибудь,
+кого хотелось укрыть.</font></p>
+
+<p class="isselectedend dropcap"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">И однажды утром другие облака уже не смогли понять, где
+заканчивается маленькая тучка и начинается небо.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Она сама этого не заметила.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Просто летела.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Укрывала.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Дарила тень.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Собирала дождь.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Отражала закаты.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">И стала такой большой, что её уже нельзя было назвать
+облаком.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">С тех пор никто не знает, где она.</font></p>
+
+<p class="isselectedend"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Но если однажды вы поднимете голову и почувствуете, что
+над вами не просто небо, а чья-то добрая забота, — значит, маленькая тучка всё
+ещё рядом.</font></p>
+
+<p class="dropcap"><font style="font-size: 22px;" face="'Comic Sans MS', cursive">Просто теперь её хватает на всех.</font></p>
+
+
+    <script>
+        // Дополнительная защита: если ссылки кликабельны, но onclick не сработал
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a.image-link').forEach(function(link) {
+                // Если у ссылки нет onclick, но есть href - добавляем
+                if (!link.hasAttribute('onclick') && link.getAttribute('href')) {
+                    const href = link.getAttribute('href');
+                    link.setAttribute('onclick', `
+                        event.preventDefault();
+                        var imgWin = window.open('${href}', '_blank');
+                        if (imgWin) {
+                            var notice = document.createElement('div');
+                            notice.style.cssText = 'background:#2c3e50;color:#ecf0f1;padding:8px 16px;border-radius:6px;font-size:0.9rem;text-align:center;margin:20px 0 10px 0;opacity:0.8;';
+                            notice.textContent = '🖼 Картинка откроется и закроется через 3 секунды';
+                            document.body.prepend(notice);
+                            setTimeout(function() { notice.remove(); }, 4000);
+                            setTimeout(function() { try { imgWin.close(); } catch(e) {} }, 3000);
+                        } else {
+                            alert('⚠ Не удалось открыть окно. Возможно, блокировщик всплывающих окон.');
+                        }
+                        return false;
+                    `);
+                    link.removeAttribute('target');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
