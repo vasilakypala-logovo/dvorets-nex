@@ -1,8 +1,16 @@
-<html data-immersive-translate-page-theme="dark" lang="ru"><head>
+<html data-immersive-translate-page-theme="dark" lang="ru">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>ПОЮЩИЕ РОГА — BOOK ENGINE NEX</title>
+    
+    <!-- ===== ЗАЩИТА ОТ ПЕРЕЗАПИСИ ===== -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <style>
+        /* ===== ЗАЩИТА ОТ ВНЕШНИХ СТИЛЕЙ ===== */
         * {
             margin: 0;
             padding: 0;
@@ -12,7 +20,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #1a1a1a;
+            background: #1a1a1a !important;
             font-family: 'Georgia', 'Times New Roman', serif;
             user-select: none;
             -webkit-user-select: none;
@@ -32,7 +40,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #1a0e08;
+            background: #1a0e08 !important;
             position: absolute;
             z-index: 10;
             transition: opacity 0.8s ease;
@@ -419,6 +427,69 @@
     </style>
 </head>
 <body>
+    <!-- ===== ЗАЩИТА ОТ ВНЕШНИХ СКРИПТОВ ===== -->
+    <script>
+        // Блокируем любые внешние вмешательства
+        (function protect() {
+            // Защищаем document от изменений
+            if (window.top !== window.self) {
+                // Если страница во фрейме - ломаем его
+                window.top.location.href = window.location.href;
+            }
+            
+            // Блокируем перезапись метода open
+            const origOpen = window.open;
+            window.open = function(...args) {
+                if (args[0] && args[0].includes('chrome-extension')) return null;
+                return origOpen.apply(this, args);
+            };
+            
+            // Защищаем свойство document.domain
+            Object.defineProperty(document, 'domain', {
+                configurable: false,
+                writable: false,
+                value: document.domain
+            });
+            
+            // Блокируем перезапись localStorage
+            const origSetItem = Storage.prototype.setItem;
+            Storage.prototype.setItem = function(key, value) {
+                if (key.includes('book_') || key.includes('bookmark_')) {
+                    return origSetItem.call(this, key, value);
+                }
+                // Блокируем запись чужих ключей
+                return null;
+            };
+            
+            // Защищаем от iframe перезаписи
+            document.addEventListener('DOMContentLoaded', function() {
+                // Проверяем, не подменили ли наши элементы
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList') {
+                            // Проверяем, не появились ли посторонние элементы
+                            const badElements = document.querySelectorAll('[data-immersive-translate]');
+                            badElements.forEach(el => el.remove());
+                            
+                            // Удаляем посторонние popup/iframe
+                            const popups = document.querySelectorAll('#immersive-translate-popup, [id*="translate"], [class*="translate"]');
+                            popups.forEach(el => {
+                                if (el.id !== 'immersive-translate-popup' || el.parentNode) {
+                                    el.remove();
+                                }
+                            });
+                        }
+                    });
+                });
+                
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            });
+        })();
+    </script>
+    
     <div id="app">
         <div id="cover-container" class="hidden">
             <div id="cover-content">
@@ -480,11 +551,14 @@
             'КАК ВЕТЕР ИСКАЛ ПЕСНЮ',
             'ПТИЧЬИ ТРОПИНКИ',
             'СТАРЫЙ ПЕНЬ И МОЛЧАЛИВЫЕ РОГА',
-            'ТИХАЯ ПОЛЯНА'
-,
+            'ТИХАЯ ПОЛЯНА',
             'ТАЙНА СТАРОГО ДОЖДЯ'
         ];
         // ============================================================
+
+        // ===== ЗАЩИТА ОТ ПЕРЕЗАПИСИ КОНФИГА =====
+        Object.freeze(CONFIG);
+        Object.freeze(TOC_TITLES);
 
         class BookEngine {
             constructor() {
@@ -525,6 +599,8 @@
                 };
                 this.init();
             }
+            
+            // ===== ЗАЩИТА МЕТОДОВ ОТ ПЕРЕЗАПИСИ =====
             init() {
                 this.loadBookmark();
                 this.setupCover();
@@ -540,7 +616,11 @@
                 if (this.readOnly) {
                     this.applyReadOnly();
                 }
+                
+                // Защищаем экземпляр от перезаписи
+                Object.freeze(this);
             }
+            
             detectPages() {
                 this.pageList = ['cover'];
                 this.iframes = {};
@@ -1079,10 +1159,77 @@
                 this.els.indicator.textContent = this.currentIndex + ' / ' + (this.totalPages - 1);
             }
         }
+
+        // ===== ЗАЩИТА ОТ ПЕРЕЗАПИСИ КЛАССА =====
+        Object.freeze(BookEngine.prototype);
         
         document.addEventListener('DOMContentLoaded', function() {
-            window.book = new BookEngine();
+            // Проверяем, не был ли уже создан экземпляр
+            if (!window.book) {
+                window.book = new BookEngine();
+                // Защищаем глобальный объект
+                Object.freeze(window.book);
+            }
+            
+            // ===== ОТКЛЮЧАЕМ ВНЕШНИЕ СКРИПТЫ =====
+            const disableExternalScripts = function() {
+                const scripts = document.querySelectorAll('script[src]');
+                scripts.forEach(script => {
+                    if (!script.src.includes('book-engine') && !script.src.includes('localhost')) {
+                        script.remove();
+                    }
+                });
+            };
+            
+            // Запускаем защиту каждые 2 секунды
+            setInterval(disableExternalScripts, 2000);
+            
+            // ===== БЛОКИРУЕМ ВСТАВКУ НОВЫХ ЭЛЕМЕНТОВ =====
+            const mutationObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            // Удаляем все посторонние переводческие элементы
+                            if (node.id && (node.id.includes('translate') || node.id.includes('immersive'))) {
+                                node.remove();
+                            }
+                            if (node.className && typeof node.className === 'string' && 
+                                (node.className.includes('translate') || node.className.includes('immersive'))) {
+                                node.remove();
+                            }
+                            // Удаляем посторонние скрипты
+                            if (node.tagName === 'SCRIPT' && node.src && 
+                                !node.src.includes('book-engine') && !node.src.includes('localhost')) {
+                                node.remove();
+                            }
+                        }
+                    });
+                });
+            });
+            
+            mutationObserver.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
         });
+        
+        // ===== ЗАЩИТА НА УРОВНЕ WINDOW =====
+        // Блокируем добавление новых свойств в window
+        Object.defineProperty(window, 'book', {
+            configurable: false,
+            writable: false,
+            value: window.book || null
+        });
+        
+        // Блокируем перезапись document
+        Object.defineProperty(window, 'document', {
+            configurable: false,
+            writable: false,
+            value: document
+        });
+        
+        console.log('📖 Книга "ПОЮЩИЕ РОГА" защищена от перезаписи!');
     </script>
 
-</body><div id="immersive-translate-popup" style="all: initial"></div></html>
+</body>
+</html>
