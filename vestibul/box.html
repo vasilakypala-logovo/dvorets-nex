@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
@@ -52,6 +52,7 @@
             border: 1px solid rgba(255,255,255,0.2);
             text-align: center;
             animation: slideUp 0.35s ease;
+            cursor: pointer; /* показуємо, що можна клікнути */
         }
 
         @keyframes slideUp {
@@ -194,7 +195,7 @@
 
     <!-- ===== МОДАЛЬНЕ ВІКНО З РЕКВІЗИТАМИ ===== -->
     <div id="donateModal">
-        <div class="donate-panel">
+        <div class="donate-panel" id="donatePanel">
             <span class="icon">🙏</span>
             <h2>Дякуємо за підтримку!</h2>
             <p class="sub">
@@ -219,12 +220,20 @@
         </div>
     </div>
 
+    <!-- ===== ПРИХОВАНИЙ АУДІО-ЕЛЕМЕНТ ===== -->
+    <audio id="donateAudio" preload="auto">
+        <source src="9999.mp3" type="audio/mpeg">
+        Ваш браузер не підтримує аудіо.
+    </audio>
+
     <script>
         (function() {
             // ===== ЕЛЕМЕНТИ =====
             const modal = document.getElementById('donateModal');
+            const panel = document.getElementById('donatePanel');
             const closeBtn = document.getElementById('closeDonate');
             const demoBtn = document.getElementById('showModalBtn');
+            const audio = document.getElementById('donateAudio');
 
             // ===== ФУНКЦІЯ ВІДКРИТТЯ (викличте її, коли потрібно) =====
             window.showDonateModal = function() {
@@ -234,10 +243,16 @@
             // ===== ФУНКЦІЯ ЗАКРИТТЯ =====
             function closeDonateModal() {
                 modal.style.display = 'none';
+                // Зупиняємо аудіо при закритті (опціонально)
+                audio.pause();
+                audio.currentTime = 0;
             }
 
             // ===== ЗАКРИТТЯ ПО КНОПЦІ =====
-            closeBtn.addEventListener('click', closeDonateModal);
+            closeBtn.addEventListener('click', function(e) {
+                e.stopPropagation(); // щоб не тригерити відтворення
+                closeDonateModal();
+            });
 
             // ===== ЗАКРИТТЯ ПО КЛІКУ НА ФОН =====
             modal.addEventListener('click', function(e) {
@@ -253,7 +268,8 @@
 
             // ===== КОПІЮВАННЯ ПРИ КЛІКУ НА .value =====
             document.querySelectorAll('.donate-info .value').forEach(el => {
-                el.addEventListener('click', function() {
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation(); // не запускаємо аудіо при копіюванні
                     const text = this.textContent.trim();
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(text).then(() => {
@@ -288,6 +304,39 @@
                 document.body.removeChild(textarea);
             }
 
+            // ===== ВІДТВОРЕННЯ MP3 ПРИ КЛІКУ НА ВІКНО =====
+            let isAudioPlayed = false;
+
+            function playDonateSound() {
+                if (isAudioPlayed) return; // щоб не запускати повторно
+
+                audio.play().then(() => {
+                    console.log('🎵 Аудіо запущено!');
+                    isAudioPlayed = true;
+                }).catch(err => {
+                    console.warn('⚠️ Не вдалося запустити аудіо:', err);
+                    // Якщо браузер блокує автозапуск — спробуємо ще раз при наступному кліку
+                    isAudioPlayed = false;
+                });
+            }
+
+            // Відтворюємо при кліку на будь-яку частину панелі (крім кнопки закриття)
+            panel.addEventListener('click', function(e) {
+                // Якщо клікнули на кнопку "закрити" — ігноруємо
+                if (e.target.closest('.close-donate')) return;
+                // Якщо клікнули на номер для копіювання — ігноруємо (оброблено вище)
+                if (e.target.closest('.value')) return;
+                
+                playDonateSound();
+            });
+
+            // Додатково: якщо користувач клікнув на саму модалку (але не на панель)
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    playDonateSound();
+                }
+            });
+
             // ===== ВІКНО ВІДКРИТЕ ЗА ЗАМОВЧУВАННЯМ (для прикладу) =====
             // Якщо потрібно, щоб вікно з'являлося одразу — розкоментуйте:
             // showDonateModal();
@@ -297,8 +346,10 @@
             // Але для демонстрації ми покажемо її одразу після завантаження:
             showDonateModal();
 
+            // ===== ПІДКАЗКА ДЛЯ КОРИСТУВАЧА =====
+            console.log('💡 Клікніть на вікно, щоб увімкнути звук!');
         })();
     </script>
 
 </body>
-</html>
+</html>﻿G-24 90687182498794
