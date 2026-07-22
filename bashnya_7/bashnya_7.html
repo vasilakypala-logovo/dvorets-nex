@@ -29,12 +29,27 @@ body{
 }
 h1{ margin:0 0 18px; font-size:38px; letter-spacing:0.12em; font-weight:normal; }
 p{ font-size:19px; line-height:1.55; color:rgba(255,255,255,0.82); }
-.back{
-  display:inline-block; margin-top:28px; padding:11px 22px; border-radius:999px;
+.buttonGroup{
+  display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:28px;
+}
+.back, .balconies{
+  display:inline-block; padding:11px 22px; border-radius:999px;
   border:1px solid rgba(255,255,255,0.28); color:white; text-decoration:none;
   background:rgba(255,255,255,0.08); letter-spacing:0.08em; font-size:13px;
+  transition:0.2s;
 }
-.back:hover{ background:rgba(255,255,255,0.18); }
+.back:hover, .balconies:hover{ 
+  background:rgba(255,255,255,0.18);
+  border-color:rgba(255,255,255,0.5);
+}
+.balconies{
+  border-color:rgba(255,215,0,0.4);
+  background:rgba(255,215,0,0.08);
+}
+.balconies:hover{
+  background:rgba(255,215,0,0.2);
+  border-color:rgba(255,215,0,0.7);
+}
 </style>
 </head>
 <body>
@@ -42,7 +57,10 @@ p{ font-size:19px; line-height:1.55; color:rgba(255,255,255,0.82); }
     <div class="mark"></div>
     <h1>TOWER 7</h1>
     <p>The seventh tower is open. Here the palace can keep the clean star.</p>
-    <a class="back" href="../index.html">RETURN TO PALACE</a>
+    <div class="buttonGroup">
+      <a class="back" href="../index.html">← RETURN TO PALACE</a>
+      <a class="balconies" href="balconies.html">БАЛКОНЫ ДВОРЦА →</a>
+    </div>
   </main>
 </body>
 </html>
