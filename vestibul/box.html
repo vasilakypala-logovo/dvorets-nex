@@ -1,1 +1,304 @@
-﻿🍀 🍃 🌿 🌱 🌾 🌸 🌼 🌻 🌺 🌷 🌹 🪻 🌳 🌲 🌵 🍄 ⭐ ✨ ✦ ✧ ❈ ❉ ❋ ✴️ 💫 🌟 🔆 🔅 💚 💎 🔹 🔷 🫧 💧 🌙 ☀️
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Донат — реквізити</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* ===== МОДАЛЬНЕ ВІКНО (завжди видиме в цьому прикладі) ===== */
+        #donateModal {
+            display: flex;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(20px, 5vw, 40px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .donate-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: clamp(28px, 5vw, 40px);
+            padding: clamp(28px, 5vw, 40px) clamp(20px, 4vw, 36px);
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+            animation: slideUp 0.35s ease;
+        }
+
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .donate-panel .icon {
+            font-size: clamp(48px, 10vw, 64px);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .donate-panel h2 {
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            font-weight: 800;
+            color: #2d3436;
+            margin-bottom: 6px;
+        }
+
+        .donate-panel .sub {
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            color: #636e72;
+            margin-bottom: clamp(18px, 3vh, 24px);
+            line-height: 1.5;
+        }
+
+        .donate-panel .sub .highlight {
+            color: #6c5ce7;
+            font-weight: 600;
+        }
+
+        .donate-info {
+            background: rgba(108, 92, 231, 0.08);
+            border-radius: clamp(16px, 3vw, 20px);
+            padding: clamp(14px, 2.5vh, 20px);
+            margin-bottom: clamp(14px, 2vh, 18px);
+            border: 1px dashed rgba(108, 92, 231, 0.25);
+        }
+
+        .donate-info .label {
+            font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+            font-weight: 600;
+            color: #6c5ce7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .donate-info .value {
+            font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+            font-weight: 700;
+            color: #2d3436;
+            background: rgba(255,255,255,0.7);
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            word-break: break-all;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: all;
+        }
+
+        .donate-info .value:active {
+            background: rgba(108, 92, 231, 0.15);
+        }
+
+        .donate-info .copy-hint {
+            font-size: clamp(0.6rem, 1.2vw, 0.7rem);
+            color: #b2bec3;
+            margin-top: 4px;
+        }
+
+        .donate-info .divider {
+            width: 40px;
+            height: 2px;
+            background: rgba(108, 92, 231, 0.2);
+            margin: 12px auto;
+            border-radius: 2px;
+        }
+
+        .close-donate {
+            width: 100%;
+            padding: clamp(14px, 3vh, 18px);
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            font-weight: 700;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: #fff;
+            box-shadow: 0 6px 24px rgba(0, 206, 201, 0.35);
+            cursor: pointer;
+            transition: 0.15s;
+            touch-action: manipulation;
+            margin-top: 4px;
+        }
+
+        .close-donate:active {
+            transform: scale(0.96);
+        }
+
+        .thanks-text {
+            font-size: clamp(0.75rem, 1.6vw, 0.85rem);
+            color: #b2bec3;
+            margin-top: 12px;
+        }
+
+        /* ===== КНОПКА ДЛЯ ДЕМОНСТРАЦІЇ (ТІЛЬКИ ДЛЯ ТЕСТУ) ===== */
+        .demo-btn {
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #f7b731, #f5a623);
+            color: #1a1a1a;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(245, 166, 35, 0.4);
+            transition: 0.15s;
+            touch-action: manipulation;
+        }
+        .demo-btn:active {
+            transform: scale(0.95);
+        }
+        .demo-btn.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 
+        ТЕСТОВА КНОПКА – показує вікно.
+        У вашому проєкті ви можете викликати showDonateModal() 
+        з будь-якого місця (наприклад, по кліку на елемент).
+    -->
+    <button class="demo-btn" id="showModalBtn">❤️ Показати реквізити</button>
+
+    <!-- ===== МОДАЛЬНЕ ВІКНО З РЕКВІЗИТАМИ ===== -->
+    <div id="donateModal">
+        <div class="donate-panel">
+            <span class="icon">🙏</span>
+            <h2>Дякуємо за підтримку!</h2>
+            <p class="sub">
+                Донат — <span class="highlight">не обов'язковий</span>, але дуже приємний.<br>
+                Якщо хочеш подякувати за роботу — ось реквізити:
+            </p>
+
+            <div class="donate-info">
+                <div class="label">💳 Номер картки (Райфайзен)</div>
+                <div class="value" id="cardNumber">4149 5001 1083 9332</div>
+                <div class="copy-hint">👆 натисни, щоб скопіювати</div>
+
+                <div class="divider"></div>
+
+                <div class="label">🪙 Номер гаманця</div>
+                <div class="value" id="walletNumber">G-24 90687182498794</div>
+                <div class="copy-hint">👆 натисни, щоб скопіювати</div>
+            </div>
+
+            <button class="close-donate" id="closeDonate">💚 Дякую, закрити</button>
+            <p class="thanks-text">Ваша підтримка надихає робити краще ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ===== ЕЛЕМЕНТИ =====
+            const modal = document.getElementById('donateModal');
+            const closeBtn = document.getElementById('closeDonate');
+            const demoBtn = document.getElementById('showModalBtn');
+
+            // ===== ФУНКЦІЯ ВІДКРИТТЯ (викличте її, коли потрібно) =====
+            window.showDonateModal = function() {
+                modal.style.display = 'flex';
+            };
+
+            // ===== ФУНКЦІЯ ЗАКРИТТЯ =====
+            function closeDonateModal() {
+                modal.style.display = 'none';
+            }
+
+            // ===== ЗАКРИТТЯ ПО КНОПЦІ =====
+            closeBtn.addEventListener('click', closeDonateModal);
+
+            // ===== ЗАКРИТТЯ ПО КЛІКУ НА ФОН =====
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeDonateModal();
+                }
+            });
+
+            // ===== ТЕСТОВА КНОПКА (для демонстрації) =====
+            demoBtn.addEventListener('click', function() {
+                showDonateModal();
+            });
+
+            // ===== КОПІЮВАННЯ ПРИ КЛІКУ НА .value =====
+            document.querySelectorAll('.donate-info .value').forEach(el => {
+                el.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            const original = this.textContent;
+                            this.textContent = '✅ Скопійовано!';
+                            setTimeout(() => { this.textContent = original; }, 1500);
+                        }).catch(() => {
+                            fallbackCopy(text, this);
+                        });
+                    } else {
+                        fallbackCopy(text, this);
+                    }
+                });
+            });
+
+            function fallbackCopy(text, el) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    const original = el.textContent;
+                    el.textContent = '✅ Скопійовано!';
+                    setTimeout(() => { el.textContent = original; }, 1500);
+                } catch (e) {
+                    alert('Не вдалося скопіювати. Будь ласка, скопіюйте вручну: ' + text);
+                }
+                document.body.removeChild(textarea);
+            }
+
+            // ===== ВІКНО ВІДКРИТЕ ЗА ЗАМОВЧУВАННЯМ (для прикладу) =====
+            // Якщо потрібно, щоб вікно з'являлося одразу — розкоментуйте:
+            // showDonateModal();
+
+            // Або залиште закритим — тоді вікно відкривається по кнопці.
+            // За замовчуванням модалка закрита (display:none).
+            // Але для демонстрації ми покажемо її одразу після завантаження:
+            showDonateModal();
+
+        })();
+    </script>
+
+</body>
+</html>
