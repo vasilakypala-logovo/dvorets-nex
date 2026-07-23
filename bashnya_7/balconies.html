@@ -310,7 +310,6 @@ button:active{
   z-index:2;
 }
 
-/* АВАТАР - теперь подгоняем размер */
 .avatar{
   width:80px;
   height:80px;
@@ -325,22 +324,6 @@ button:active{
   box-shadow:0 0 20px rgba(255,215,0,.15);
   background:#1a1107;
   display:block;
-}
-
-.avatar-placeholder{
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#1a1107,#2a1a0a);
-  border:2px solid rgba(255,215,0,.15);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:8px 0 6px;
-  color:#6a5a3a;
-  font-size:11px;
-  text-align:center;
-  padding:5px;
 }
 
 .name{
@@ -582,11 +565,8 @@ async function loadFromGitHub() {
     });
     
     if (response.status === 404) {
-      // ДЕМО-ДАННЫЕ если файла нет
+      // ДЕМО-ДАННЫЕ если файла нет - добавляем xr44
       artists = [
-        { name: "xr1", url: "https://example.com/xr1" },
-        { name: "xr2", url: "https://example.com/xr2" },
-        { name: "xr3", url: "https://example.com/xr3" },
         { name: "xr44", url: "https://example.com/xr44" }
       ];
       await saveToGitHub(true);
@@ -727,7 +707,7 @@ function updateClock() {
 }
 
 // ============================================================
-// 🖼 ОТРИСОВКА КАРТОЧЕК - АВТОМАТИЧЕСКИЙ ПОИСК ФОТО
+// 🖼 ОТРИСОВКА КАРТОЧЕК - ИЩЕМ ФОТО РЯДОМ
 // ============================================================
 function render() {
   const grid = $("grid");
@@ -739,70 +719,56 @@ function render() {
     card.className = "card";
 
     const avatarName = x.name.trim();
-    // Пробуем разные расширения
+    
+    // ПРОСТО ИЩЕМ ФАЙЛ РЯДОМ - без папок!
     const extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
     
-    // Создаем элемент для аватара
-    const avatarDiv = document.createElement('div');
-    avatarDiv.className = 'avatar-placeholder';
-    avatarDiv.textContent = '🖼';
-    avatarDiv.style.display = 'flex';
+    // Создаем IMG и пробуем загрузить
+    const img = document.createElement('img');
+    img.className = 'avatar';
+    img.alt = escapeHtml(x.name);
+    img.loading = 'lazy';
     
-    // Пытаемся загрузить фото
-    let avatarImg = null;
-    let loadAttempts = 0;
+    // Пробуем загрузить фото
+    let found = false;
     
-    function tryLoadImage(index) {
+    function tryLoad(index) {
       if (index >= extensions.length) {
-        // Все варианты не загрузились
-        avatarDiv.style.display = 'flex';
-        avatarDiv.textContent = '❌\nНет фото';
+        // Фото не найдено - показываем заглушку
+        img.style.display = 'none';
+        const placeholder = document.createElement('div');
+        placeholder.className = 'avatar';
+        placeholder.style.cssText = 'display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1107,#2a1a0a);border:2px solid rgba(255,215,0,.15);color:#6a5a3a;font-size:28px;';
+        placeholder.textContent = '🖼';
+        card.appendChild(placeholder);
+        console.log(`❌ Фото не найдено: ${avatarName}.(jpg|png|gif|webp)`);
         return;
       }
       
       const ext = extensions[index];
       const imgPath = avatarName + ext;
-      const img = new Image();
       
-      img.onload = function() {
+      // Проверяем через Image
+      const testImg = new Image();
+      testImg.onload = function() {
         // Фото загрузилось!
-        avatarImg = document.createElement('img');
-        avatarImg.className = 'avatar';
-        avatarImg.src = imgPath;
-        avatarImg.alt = escapeHtml(x.name);
-        avatarImg.loading = 'lazy';
-        avatarDiv.replaceWith(avatarImg);
+        img.src = imgPath;
+        img.style.display = 'block';
+        card.appendChild(img);
+        found = true;
         console.log(`✅ Фото загружено: ${imgPath}`);
       };
-      
-      img.onerror = function() {
-        console.log(`❌ Не найдено: ${imgPath}`);
-        // Пробуем в папке portraits/
-        const imgPath2 = 'portraits/' + avatarName + ext;
-        const img2 = new Image();
-        img2.onload = function() {
-          avatarImg = document.createElement('img');
-          avatarImg.className = 'avatar';
-          avatarImg.src = imgPath2;
-          avatarImg.alt = escapeHtml(x.name);
-          avatarImg.loading = 'lazy';
-          avatarDiv.replaceWith(avatarImg);
-          console.log(`✅ Фото загружено: ${imgPath2}`);
-        };
-        img2.onerror = function() {
-          console.log(`❌ Не найдено: ${imgPath2}`);
-          tryLoadImage(index + 1);
-        };
-        img2.src = imgPath2;
+      testImg.onerror = function() {
+        // Пробуем следующее расширение
+        tryLoad(index + 1);
       };
-      
-      img.src = imgPath;
+      testImg.src = imgPath;
     }
     
-    // Начинаем поиск фото
-    tryLoadImage(0);
+    // Начинаем поиск
+    tryLoad(0);
 
-    card.innerHTML = `
+    card.innerHTML += `
       <div class="index">${String(i+1).padStart(2, "0")}</div>
       <div class="name">${escapeHtml(x.name)}</div>
       <div class="actions">
@@ -810,10 +776,6 @@ function render() {
         <button class="deleteBtn">×</button>
       </div>
     `;
-
-    // Вставляем аватар в начало карточки
-    const nameElement = card.querySelector('.name');
-    card.insertBefore(avatarDiv, nameElement);
 
     card.querySelector(".openBtn").onclick = function() {
       let url = x.url.trim();
