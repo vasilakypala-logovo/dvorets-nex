@@ -6,8 +6,6 @@
 <title>ГАЛЕРЕЯ ХУДОЖНИКОВ</title>
 
 <style>
-/* ВСЕ ВАШИ СТИЛИ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ, 
-   КРОМЕ НЕБОЛЬШИХ ДОПОЛНЕНИЙ ДЛЯ АВАТАРОК */
 *{
   box-sizing:border-box;
 }
@@ -166,7 +164,7 @@ body::before{
 
 .controlPanel{
   display:grid;
-  grid-template-columns:1fr 1fr 145px 104px;
+  grid-template-columns:1fr 1fr 104px;
   gap:10px;
   margin-top:13px;
 }
@@ -260,7 +258,6 @@ button:active{
   gap:12px;
 }
 
-/* ===== НОВЫЙ СТИЛЬ КАРТОЧКИ С АВАТАРОМ ===== */
 .card{
   position:relative;
   min-height:180px;
@@ -313,7 +310,6 @@ button:active{
   z-index:2;
 }
 
-/* Аватар */
 .avatar{
   width:80px;
   height:80px;
@@ -325,7 +321,6 @@ button:active{
   background:#1a1107;
 }
 
-/* Имя художника */
 .name{
   font-size:15px;
   line-height:1.25;
@@ -483,17 +478,12 @@ button:active{
 
       <div class="inputWrap">
         <span>✎</span>
-        <input id="nameInput" placeholder="Имя художника">
+        <input id="nameInput" placeholder="Имя художника (например: xr1)">
       </div>
 
       <div class="inputWrap">
-        <span>⌁</span>
-        <input id="urlInput" placeholder="Ссылка на работы">
-      </div>
-
-      <div class="inputWrap">
-        <span>🖼</span>
-        <input id="avatarInput" placeholder="avatar.jpg (имя файла)">
+        <span>🌐</span>
+        <input id="urlInput" placeholder="Ссылка на сайт">
       </div>
 
       <button id="addBtn">ДОБАВИТЬ</button>
@@ -532,158 +522,54 @@ button:active{
 
 <script>
 // ============================================================
-// 🔐 ТОКЕН ДЛЯ GITHUB (ВАШ)
+// 📦 ДАННЫЕ ХРАНЯТСЯ В localStorage
 // ============================================================
-const T1 = 'ghp_cfUIxC';
-const T2 = 'hnUbKSnT04';
-const T3 = '6CEDkmreO6';
-const T4 = 'erm81Uf8qd';
-const GITHUB_TOKEN = T1 + T2 + T3 + T4;
-
-// ============================================================
-// 🔐 КОНФИГУРАЦИЯ GITHUB
-// ============================================================
-const REPO_OWNER = 'vasilakypala-logovo';
-const REPO_NAME = 'logovo';
-const FILE_PATH = 'room_nex/balconies_data.json';
-
-const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-
-// ============================================================
-// 📦 ПЕРЕМЕННЫЕ
-// ============================================================
-const KEY = "balconies_modern_v23_gold";
+const KEY = "gallery_artists";
 const LIMIT = 15;
-// ✨ Здесь можно хранить портреты в папке рядом с JSON:
-//    например, room_nex/portraits/
-const AVATAR_PATH = 'portraits/'; // ← папка с портретами
 
-let links = [];
-let isSaving = false;
+let artists = [];
 
 function $(id){ return document.getElementById(id); }
 
 // ============================================================
-// 💾 ЧТЕНИЕ ИЗ GITHUB
+// 💾 ЗАГРУЗКА И СОХРАНЕНИЕ
 // ============================================================
-async function loadFromGitHub() {
+function loadArtists() {
   try {
-    const response = await fetch(API_URL, {
-      headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-    });
-    
-    if (response.status === 404) {
-      links = [];
-      await saveToGitHub(true);
-      render();
-      updateCounter();
-      return;
+    const data = localStorage.getItem(KEY);
+    if (data) {
+      artists = JSON.parse(data);
+    } else {
+      // ДЕМО-ДАННЫЕ: художники с их фото (файлы должны лежать рядом)
+      artists = [
+        { name: "xr1", url: "https://example.com/xr1" },
+        { name: "xr2", url: "https://example.com/xr2" },
+        { name: "xr3", url: "https://example.com/xr3" },
+        { name: "xr44", url: "https://example.com/xr44" }
+      ];
+      saveArtists();
     }
-    
-    if (!response.ok) {
-      throw new Error(`Ошибка ${response.status}`);
-    }
-    
-    const data = await response.json();
-    const binary = atob(data.content);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    const content = new TextDecoder('utf-8').decode(bytes);
-    links = JSON.parse(content);
-    render();
-    updateCounter();
   } catch(e) {
-    console.error('Ошибка загрузки:', e);
-    try {
-      links = JSON.parse(localStorage.getItem(KEY) || "[]");
-      render();
-      updateCounter();
-    } catch(e2) {
-      links = [];
-      render();
-      updateCounter();
-    }
+    artists = [];
   }
+  render();
+  updateCounter();
 }
 
-// ============================================================
-// 💾 СОХРАНЕНИЕ В GITHUB
-// ============================================================
-async function saveToGitHub(silent = false) {
-  if (isSaving) return;
-  isSaving = true;
-  
-  try {
-    let sha = '';
-    try {
-      const check = await fetch(API_URL, {
-        headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-      });
-      if (check.ok) {
-        const data = await check.json();
-        sha = data.sha;
-      }
-    } catch(e) {}
-    
-    const jsonString = JSON.stringify(links, null, 2);
-    
-    const encoder = new TextEncoder();
-    const data = encoder.encode(jsonString);
-    let binary = '';
-    data.forEach(byte => binary += String.fromCharCode(byte));
-    const content = btoa(binary);
-    
-    const body = {
-      message: `Обновление галереи ${new Date().toLocaleString()}`,
-      content: content
-    };
-    if (sha) body.sha = sha;
-    
-    const response = await fetch(API_URL, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Ошибка ${response.status}: ${await response.text()}`);
-    }
-    
-    localStorage.setItem(KEY, JSON.stringify(links));
-    if (!silent) showMessage('✅ Сохранено в GitHub!');
-  } catch(e) {
-    console.error('Ошибка сохранения:', e);
-    if (!silent) showMessage('❌ Ошибка сохранения в GitHub');
-    localStorage.setItem(KEY, JSON.stringify(links));
-  }
-  isSaving = false;
+function saveArtists() {
+  localStorage.setItem(KEY, JSON.stringify(artists));
 }
 
 // ============================================================
 // 📖 ФУНКЦИИ УПРАВЛЕНИЯ
 // ============================================================
-function showMessage(text) {
-  const empty = $("empty");
-  const original = empty.textContent;
-  empty.textContent = text;
-  empty.style.borderColor = 'rgba(255,215,0,.6)';
-  setTimeout(() => {
-    empty.textContent = original;
-    empty.style.borderColor = '';
-  }, 2000);
-}
-
 function updateCounter() {
-  $("counter").textContent = links.length + " / " + LIMIT;
+  $("counter").textContent = artists.length + " / " + LIMIT;
 }
 
 function normalize(url) {
   url = url.trim();
+  if (!url) return '';
   if (!/^https?:\/\//i.test(url)) {
     url = "https://" + url;
   }
@@ -707,29 +593,33 @@ function updateClock() {
 }
 
 // ============================================================
-// 🖼 ОТРИСОВКА КАРТОЧЕК С АВАТАРАМИ
+// 🖼 ОТРИСОВКА КАРТОЧЕК - АВТОМАТИЧЕСКИЙ ПОИСК ФОТО
 // ============================================================
 function render() {
   const grid = $("grid");
   grid.innerHTML = "";
-  $("empty").style.display = links.length ? "none" : "block";
+  $("empty").style.display = artists.length ? "none" : "block";
 
-  links.forEach(function(x, i) {
+  artists.forEach(function(x, i) {
     const card = document.createElement("article");
     card.className = "card";
 
-    // Путь к аватару
-    let avatarUrl = x.avatar || '';
-    // Если аватар начинается с http, используем как есть, иначе добавляем путь
-    if (avatarUrl && !avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
-      // Убираем возможные слеши в начале
-      avatarUrl = avatarUrl.replace(/^\/+/, '');
-      avatarUrl = AVATAR_PATH + avatarUrl;
-    }
+    // 🔥 ГЛАВНОЕ: АВТОМАТИЧЕСКИ подставляем фото по имени художника
+    // Если художник xr1 - ищем файл xr1.jpg
+    // Если xr2 - ищем xr2.jpg и т.д.
+    const avatarName = x.name.trim();
+    const avatarPath = avatarName + '.jpg'; // можно .png или .jpeg
+    
+    // Также пробуем найти в папке portraits/ если есть
+    const avatarPath2 = 'portraits/' + avatarName + '.jpg';
 
     card.innerHTML = `
       <div class="index">${String(i+1).padStart(2, "0")}</div>
-      <img class="avatar" src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(x.name)}" loading="lazy" onerror="this.style.display='none'">
+      <img class="avatar" 
+           src="${avatarPath}" 
+           alt="${escapeHtml(x.name)}" 
+           loading="lazy"
+           onerror="this.onerror=null; this.src='${avatarPath2}'; this.onerror=function(){this.style.display='none';}">
       <div class="name">${escapeHtml(x.name)}</div>
       <div class="actions">
         <button class="openBtn">ОТКРЫТЬ</button>
@@ -739,16 +629,20 @@ function render() {
 
     card.querySelector(".openBtn").onclick = function() {
       let url = x.url.trim();
+      if (!url) {
+        alert('Ссылка не указана');
+        return;
+      }
       if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
       }
       window.open(url, "_blank");
     };
 
-    card.querySelector(".deleteBtn").onclick = async function() {
-      if (confirm("Удалить художника?")) {
-        links.splice(i, 1);
-        await saveToGitHub();
+    card.querySelector(".deleteBtn").onclick = function() {
+      if (confirm(`Удалить художника "${x.name}"?`)) {
+        artists.splice(i, 1);
+        saveArtists();
         render();
         updateCounter();
       }
@@ -759,40 +653,61 @@ function render() {
 }
 
 // ============================================================
-// 🎯 СОБЫТИЯ
+// 🎯 ДОБАВЛЕНИЕ НОВОГО ХУДОЖНИКА
 // ============================================================
-$("addBtn").onclick = async function() {
-  if (links.length >= LIMIT) {
+$("addBtn").onclick = function() {
+  if (artists.length >= LIMIT) {
     alert("Достигнут лимит 15 художников.");
     return;
   }
 
   const name = $("nameInput").value.trim();
   const url = $("urlInput").value.trim();
-  let avatar = $("avatarInput").value.trim();
 
   if (!name || !url) {
-    alert("Заполните имя и ссылку.");
+    alert("Заполните имя и ссылку на сайт.");
     return;
   }
 
-  // Если аватар не указан — оставляем пустым (будет скрыт)
-  if (!avatar) avatar = '';
+  // Проверяем, нет ли уже такого художника
+  if (artists.some(a => a.name.toLowerCase() === name.toLowerCase())) {
+    alert(`Художник "${name}" уже есть в галерее!`);
+    return;
+  }
 
-  links.push({
+  artists.push({
     name: name,
-    url: normalize(url),
-    avatar: avatar
+    url: normalize(url)
   });
 
-  await saveToGitHub();
+  saveArtists();
   render();
   updateCounter();
 
+  // Очищаем поля
   $("nameInput").value = "";
   $("urlInput").value = "";
-  $("avatarInput").value = "";
+  
+  showMessage(`✅ Художник "${name}" добавлен! Фото: ${name}.jpg`);
 };
+
+// ============================================================
+// 💬 СООБЩЕНИЕ
+// ============================================================
+function showMessage(text) {
+  const empty = $("empty");
+  const original = empty.textContent;
+  empty.textContent = text;
+  empty.style.borderColor = 'rgba(255,215,0,.6)';
+  empty.style.display = 'block';
+  setTimeout(() => {
+    empty.textContent = original;
+    empty.style.borderColor = '';
+    if (artists.length > 0) {
+      empty.style.display = 'none';
+    }
+  }, 2000);
+}
 
 // ============================================================
 // 🔙 КНОПКА НАЗАД
@@ -804,22 +719,9 @@ $("backBtn").onclick = function() {
 // ============================================================
 // 🚀 ЗАПУСК
 // ============================================================
-// Добавляем тестового художника с аватаром xr44.jpg
-links = [
-  {
-    name: "xr44",
-    url: "https://example.com",
-    avatar: "xr44.jpg"
-  }
-];
-
-loadFromGitHub();
+loadArtists();
 updateClock();
 setInterval(updateClock, 1000);
-
-window.addEventListener('beforeunload', () => {
-  saveToGitHub(true);
-});
 </script>
 
 </body>
