@@ -161,6 +161,14 @@ text-shadow:
   opacity:0;
   transform:translateX(110vw) scale(0.92);
   animation:balconyFloat 28s linear forwards;
+  cursor:pointer;
+  pointer-events:auto;
+  transition:transform 0.1s;
+}
+
+.floatArt:hover{
+  transform:translateX(110vw) scale(0.95);
+  box-shadow:0 0 30px rgba(255,255,255,0.40), 0 12px 28px rgba(0,0,0,0.60);
 }
 
 .floatArt img{
@@ -168,6 +176,7 @@ text-shadow:
   display:block;
   border-radius:0;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25);
+  pointer-events:none;
 }
 
 @keyframes balconyFloat{
@@ -180,6 +189,92 @@ text-shadow:
   100%{
     opacity:0;
     transform:translateX(-35vw) scale(1);
+  }
+}
+
+/* ===== РАЗВЕРНУТАЯ КАРТИНА (оверлей) ===== */
+#expandedOverlay{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background:rgba(5,12,6,0.88);
+  backdrop-filter:blur(8px);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  animation:fadeIn 0.4s ease;
+}
+
+#expandedOverlay.active{
+  display:flex;
+}
+
+@keyframes fadeIn{
+  0%{opacity:0;}
+  100%{opacity:1;}
+}
+
+#expandedImage{
+  max-height:92vh;
+  max-width:92vw;
+  object-fit:contain;
+  box-shadow:0 0 60px rgba(255,240,180,0.25), 0 20px 60px rgba(0,0,0,0.80);
+  border-radius:4px;
+  background:rgba(0,0,0,0.30);
+  padding:8px;
+  animation:zoomIn 0.5s ease;
+}
+
+@keyframes zoomIn{
+  0%{transform:scale(0.85);opacity:0;}
+  100%{transform:scale(1);opacity:1;}
+}
+
+#closeExpanded{
+  position:fixed;
+  top:30px;
+  right:40px;
+  z-index:9999;
+  font-size:48px;
+  color:rgba(255,248,218,0.85);
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-family:Georgia,serif;
+  transition:all 0.3s ease;
+  text-shadow:0 0 30px rgba(0,0,0,0.80);
+  pointer-events:auto;
+  line-height:1;
+}
+
+#closeExpanded:hover{
+  transform:rotate(90deg) scale(1.2);
+  color:rgba(255,255,255,1);
+}
+
+@media (max-width:700px){
+  #komorny-title{
+    font-size:28px;
+    letter-spacing:0.10em;
+    top:16px;
+  }
+  .floatArt{
+    width:160px;
+  }
+  #caption{
+    font-size:11px;
+    padding:6px 14px;
+    bottom:3.5%;
+  }
+  #closeExpanded{
+    font-size:38px;
+    top:20px;
+    right:25px;
+  }
+  #expandedImage{
+    max-height:80vh;
+    max-width:95vw;
   }
 }
 
@@ -204,11 +299,23 @@ audio{display:none;}
 
 <div id="floatingGallery"></div>
 
+<!-- ===== ОВЕРЛЕЙ ===== -->
+<div id="expandedOverlay">
+  <button id="closeExpanded" title="Закрыть">✕</button>
+  <img id="expandedImage" src="" alt="Увеличенная работа Наталии Калайды">
+</div>
+
 <script>
 const echo = document.getElementById('echo');
 const hint = document.getElementById('musicHint');
 const floatingGallery = document.getElementById('floatingGallery');
 
+// ===== ОВЕРЛЕЙ =====
+const overlay = document.getElementById('expandedOverlay');
+const expandedImg = document.getElementById('expandedImage');
+const closeBtn = document.getElementById('closeExpanded');
+
+// ===== МАССИВ КАРТИН =====
 const balconyPictures = [
   'fin2_new.jpg','fin2.jpg','fin3.jpg','fin4.jpg','fin5.jpg',
   'fin6.jpg','fin7.jpg','fin8.jpg','fin9.jpg','fin10.jpg',
@@ -224,6 +331,44 @@ const balconyPictures = [
 
 let balconyIndex = 0;
 
+// ===== ФУНКЦИЯ: РАЗВЕРНУТЬ КАРТИНУ =====
+function expandImage(src){
+  expandedImg.src = src;
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+// ===== ФУНКЦИЯ: ЗАКРЫТЬ =====
+function closeExpandedImage(){
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  setTimeout(() => {
+    if(!overlay.classList.contains('active')){
+      expandedImg.src = '';
+    }
+  }, 300);
+}
+
+// ===== СОБЫТИЯ ОВЕРЛЕЯ =====
+closeBtn.addEventListener('click', closeExpandedImage);
+
+overlay.addEventListener('click', function(e){
+  if(e.target === overlay){
+    closeExpandedImage();
+  }
+});
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    if(overlay.classList.contains('active')){
+      closeExpandedImage();
+    } else {
+      window.location.href = 'index.html';
+    }
+  }
+});
+
+// ===== ЗАПУСК ПЛАВАЮЩИХ КАРТИН =====
 function launchBalconyPicture(){
   if(!floatingGallery) return;
 
@@ -233,6 +378,7 @@ function launchBalconyPicture(){
   const img = document.createElement('img');
   img.src = balconyPictures[balconyIndex];
   img.alt = 'Nataliia Kalaida doll creation';
+  img.draggable = false;
 
   frame.appendChild(img);
 
@@ -241,6 +387,15 @@ function launchBalconyPicture(){
 
   const size = 180 + Math.random() * 70;
   frame.style.width = size + 'px';
+
+  // ===== КЛИК ПО КАРТИНЕ =====
+  frame.addEventListener('click', function(e){
+    e.stopPropagation();
+    const imgEl = this.querySelector('img');
+    if(imgEl){
+      expandImage(imgEl.src);
+    }
+  });
 
   floatingGallery.appendChild(frame);
 
@@ -254,6 +409,7 @@ function launchBalconyPicture(){
   }, 29000);
 }
 
+// ===== МУЗЫКА =====
 function startEcho(){
   try{
     echo.src = 'OZERO.mp3';
@@ -270,6 +426,7 @@ function startEcho(){
   }
 }
 
+// ===== СТАРТ =====
 startEcho();
 launchBalconyPicture();
 setInterval(launchBalconyPicture, 5200);
@@ -281,7 +438,6 @@ document.addEventListener('click', function(){
 
 document.addEventListener('keydown', function(e){
   if(e.key.toLowerCase() === 'h') document.body.classList.toggle('show-hotspots');
-  if(e.key === 'Escape') window.location.href = 'index.html';
 });
 </script>
 </body>
