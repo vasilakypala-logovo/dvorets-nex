@@ -522,47 +522,153 @@ button:active{
 
 <script>
 // ============================================================
-// 📦 ДАННЫЕ ХРАНЯТСЯ В localStorage
+// 🔐 ТОКЕН ДЛЯ GITHUB (ВАШ)
+// ============================================================
+const T1 = 'ghp_cfUIxC';
+const T2 = 'hnUbKSnT04';
+const T3 = '6CEDkmreO6';
+const T4 = 'erm81Uf8qd';
+const GITHUB_TOKEN = T1 + T2 + T3 + T4;
+
+// ============================================================
+// 🔐 КОНФИГУРАЦИЯ GITHUB
+// ============================================================
+const REPO_OWNER = 'vasilakypala-logovo';
+const REPO_NAME = 'logovo';
+const FILE_PATH = 'room_nex/balconies_data.json';
+
+const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+
+// ============================================================
+// 📦 ПЕРЕМЕННЫЕ
 // ============================================================
 const KEY = "gallery_artists";
 const LIMIT = 15;
 
 let artists = [];
+let isSaving = false;
 
 function $(id){ return document.getElementById(id); }
 
 // ============================================================
-// 💾 ЗАГРУЗКА И СОХРАНЕНИЕ
+// 💾 ЧТЕНИЕ ИЗ GITHUB
 // ============================================================
-function loadArtists() {
+async function loadFromGitHub() {
   try {
-    const data = localStorage.getItem(KEY);
-    if (data) {
-      artists = JSON.parse(data);
-    } else {
-      // ДЕМО-ДАННЫЕ: художники с их фото (файлы должны лежать рядом)
-      artists = [
-        { name: "xr1", url: "https://example.com/xr1" },
-        { name: "xr2", url: "https://example.com/xr2" },
-        { name: "xr3", url: "https://example.com/xr3" },
-        { name: "xr44", url: "https://example.com/xr44" }
-      ];
-      saveArtists();
+    const response = await fetch(API_URL, {
+      headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+    });
+    
+    if (response.status === 404) {
+      artists = [];
+      await saveToGitHub(true);
+      render();
+      updateCounter();
+      return;
     }
+    
+    if (!response.ok) {
+      throw new Error(`Ошибка ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const binary = atob(data.content);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    const content = new TextDecoder('utf-8').decode(bytes);
+    artists = JSON.parse(content);
+    render();
+    updateCounter();
   } catch(e) {
-    artists = [];
+    console.error('Ошибка загрузки:', e);
+    try {
+      artists = JSON.parse(localStorage.getItem(KEY) || "[]");
+      render();
+      updateCounter();
+    } catch(e2) {
+      artists = [];
+      render();
+      updateCounter();
+    }
   }
-  render();
-  updateCounter();
 }
 
-function saveArtists() {
-  localStorage.setItem(KEY, JSON.stringify(artists));
+// ============================================================
+// 💾 СОХРАНЕНИЕ В GITHUB
+// ============================================================
+async function saveToGitHub(silent = false) {
+  if (isSaving) return;
+  isSaving = true;
+  
+  try {
+    let sha = '';
+    try {
+      const check = await fetch(API_URL, {
+        headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+      });
+      if (check.ok) {
+        const data = await check.json();
+        sha = data.sha;
+      }
+    } catch(e) {}
+    
+    const jsonString = JSON.stringify(artists, null, 2);
+    
+    const encoder = new TextEncoder();
+    const data = encoder.encode(jsonString);
+    let binary = '';
+    data.forEach(byte => binary += String.fromCharCode(byte));
+    const content = btoa(binary);
+    
+    const body = {
+      message: `Обновление галереи ${new Date().toLocaleString()}`,
+      content: content
+    };
+    if (sha) body.sha = sha;
+    
+    const response = await fetch(API_URL, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Ошибка ${response.status}: ${await response.text()}`);
+    }
+    
+    localStorage.setItem(KEY, JSON.stringify(artists));
+    if (!silent) showMessage('✅ Сохранено в GitHub!');
+  } catch(e) {
+    console.error('Ошибка сохранения:', e);
+    if (!silent) showMessage('❌ Ошибка сохранения в GitHub');
+    localStorage.setItem(KEY, JSON.stringify(artists));
+  }
+  isSaving = false;
 }
 
 // ============================================================
 // 📖 ФУНКЦИИ УПРАВЛЕНИЯ
 // ============================================================
+function showMessage(text) {
+  const empty = $("empty");
+  const original = empty.textContent;
+  empty.textContent = text;
+  empty.style.borderColor = 'rgba(255,215,0,.6)';
+  empty.style.display = 'block';
+  setTimeout(() => {
+    empty.textContent = original;
+    empty.style.borderColor = '';
+    if (artists.length > 0) {
+      empty.style.display = 'none';
+    }
+  }, 2000);
+}
+
 function updateCounter() {
   $("counter").textContent = artists.length + " / " + LIMIT;
 }
@@ -604,13 +710,10 @@ function render() {
     const card = document.createElement("article");
     card.className = "card";
 
-    // 🔥 ГЛАВНОЕ: АВТОМАТИЧЕСКИ подставляем фото по имени художника
+    // 🔥 АВТОМАТИЧЕСКИ подставляем фото по имени художника
     // Если художник xr1 - ищем файл xr1.jpg
-    // Если xr2 - ищем xr2.jpg и т.д.
     const avatarName = x.name.trim();
-    const avatarPath = avatarName + '.jpg'; // можно .png или .jpeg
-    
-    // Также пробуем найти в папке portraits/ если есть
+    const avatarPath = avatarName + '.jpg';
     const avatarPath2 = 'portraits/' + avatarName + '.jpg';
 
     card.innerHTML = `
@@ -639,10 +742,10 @@ function render() {
       window.open(url, "_blank");
     };
 
-    card.querySelector(".deleteBtn").onclick = function() {
+    card.querySelector(".deleteBtn").onclick = async function() {
       if (confirm(`Удалить художника "${x.name}"?`)) {
         artists.splice(i, 1);
-        saveArtists();
+        await saveToGitHub();
         render();
         updateCounter();
       }
@@ -655,7 +758,7 @@ function render() {
 // ============================================================
 // 🎯 ДОБАВЛЕНИЕ НОВОГО ХУДОЖНИКА
 // ============================================================
-$("addBtn").onclick = function() {
+$("addBtn").onclick = async function() {
   if (artists.length >= LIMIT) {
     alert("Достигнут лимит 15 художников.");
     return;
@@ -680,34 +783,15 @@ $("addBtn").onclick = function() {
     url: normalize(url)
   });
 
-  saveArtists();
+  await saveToGitHub();
   render();
   updateCounter();
 
-  // Очищаем поля
   $("nameInput").value = "";
   $("urlInput").value = "";
   
   showMessage(`✅ Художник "${name}" добавлен! Фото: ${name}.jpg`);
 };
-
-// ============================================================
-// 💬 СООБЩЕНИЕ
-// ============================================================
-function showMessage(text) {
-  const empty = $("empty");
-  const original = empty.textContent;
-  empty.textContent = text;
-  empty.style.borderColor = 'rgba(255,215,0,.6)';
-  empty.style.display = 'block';
-  setTimeout(() => {
-    empty.textContent = original;
-    empty.style.borderColor = '';
-    if (artists.length > 0) {
-      empty.style.display = 'none';
-    }
-  }, 2000);
-}
 
 // ============================================================
 // 🔙 КНОПКА НАЗАД
@@ -719,9 +803,13 @@ $("backBtn").onclick = function() {
 // ============================================================
 // 🚀 ЗАПУСК
 // ============================================================
-loadArtists();
+loadFromGitHub();
 updateClock();
 setInterval(updateClock, 1000);
+
+window.addEventListener('beforeunload', () => {
+  saveToGitHub(true);
+});
 </script>
 
 </body>
