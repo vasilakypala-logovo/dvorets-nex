@@ -565,6 +565,7 @@ async function loadFromGitHub() {
     });
     
     if (response.status === 404) {
+      // ДЕМО-ДАННЫЕ - имя БЕЗ расширения!
       artists = [
         { name: "xr44", url: "https://example.com" }
       ];
@@ -706,7 +707,7 @@ function updateClock() {
 }
 
 // ============================================================
-// 🖼 ОТРИСОВКА КАРТОЧЕК - ИЩЕМ ФОТО РЯДОМ
+// 🖼 ОТРИСОВКА КАРТОЧЕК - ИСПОЛЬЗУЕМ ИМЯ КАК ЕСТЬ
 // ============================================================
 function render() {
   const grid = $("grid");
@@ -717,12 +718,18 @@ function render() {
     const card = document.createElement("article");
     card.className = "card";
 
-    const avatarName = x.name.trim();
+    // 🔥 ВАЖНО: ИСПОЛЬЗУЕМ ИМЯ КАК ЕСТЬ - БЕЗ ДОБАВЛЕНИЯ .jpg
+    // Если в имени уже есть расширение - используем как есть
+    let imgPath = x.name.trim();
     
-    // ПРЯМО СТАВИМ ФОТО - БЕЗ ВСЯКИХ ПРОВЕРОК!
-    // Просто пытаемся загрузить xr44.jpg
-    const imgPath = avatarName + '.jpg';
+    // Проверяем, есть ли расширение
+    if (!imgPath.includes('.')) {
+      // Если нет расширения - добавляем .jpg
+      imgPath = imgPath + '.jpg';
+    }
     
+    console.log(`🔍 Ищем фото: ${imgPath}`);
+
     // Создаем IMG
     const img = document.createElement('img');
     img.className = 'avatar';
@@ -793,13 +800,16 @@ $("addBtn").onclick = async function() {
     return;
   }
 
-  const name = $("nameInput").value.trim();
+  let name = $("nameInput").value.trim();
   const url = $("urlInput").value.trim();
 
   if (!name || !url) {
     alert("Заполните имя и ссылку на сайт.");
     return;
   }
+
+  // Убираем расширение из имени, если оно есть
+  name = name.replace(/\.[^.]+$/, '');
 
   if (artists.some(a => a.name.toLowerCase() === name.toLowerCase())) {
     alert(`Художник "${name}" уже есть в галерее!`);
@@ -818,7 +828,7 @@ $("addBtn").onclick = async function() {
   $("nameInput").value = "";
   $("urlInput").value = "";
   
-  showMessage(`✅ Художник "${name}" добавлен! Фото: ${name}.jpg`);
+  showMessage(`✅ Художник "${name}" добавлен! Ищем фото: ${name}.jpg`);
 };
 
 // ============================================================
