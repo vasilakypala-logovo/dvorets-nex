@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>БАЛКОНЫ ДВОРЦА</title>
+<title>ГАЛЕРЕЯ ХУДОЖНИКОВ</title>
 
 <style>
+/* ВСЕ ВАШИ СТИЛИ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ, 
+   КРОМЕ НЕБОЛЬШИХ ДОПОЛНЕНИЙ ДЛЯ АВАТАРОК */
 *{
   box-sizing:border-box;
 }
@@ -258,9 +260,10 @@ button:active{
   gap:12px;
 }
 
+/* ===== НОВЫЙ СТИЛЬ КАРТОЧКИ С АВАТАРОМ ===== */
 .card{
   position:relative;
-  min-height:136px;
+  min-height:180px;
   border-radius:13px;
   border:1px solid var(--gold-line);
   background:
@@ -274,6 +277,8 @@ button:active{
   padding:12px;
   display:flex;
   flex-direction:column;
+  align-items:center;
+  text-align:center;
 }
 
 .card::before{
@@ -299,34 +304,43 @@ button:active{
 }
 
 .index{
+  position:absolute;
+  top:8px;
+  left:12px;
   color:#baa88a;
   font-size:12px;
   letter-spacing:.08em;
+  z-index:2;
 }
 
-.icon{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:27px;
-  color:#f8df9e;
-  filter:drop-shadow(0 0 8px rgba(255,215,0,.10));
+/* Аватар */
+.avatar{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid rgba(255,215,0,.3);
+  margin:8px 0 6px;
+  box-shadow:0 0 20px rgba(255,215,0,.15);
+  background:#1a1107;
 }
 
+/* Имя художника */
 .name{
-  text-align:center;
   font-size:15px;
   line-height:1.25;
   color:#fff8ed;
-  margin-bottom:10px;
+  margin-bottom:6px;
   word-break:break-word;
+  font-weight:400;
 }
 
 .actions{
+  width:100%;
   display:grid;
   grid-template-columns:1fr 38px;
   gap:7px;
+  margin-top:auto;
 }
 
 .actions button{
@@ -453,8 +467,8 @@ button:active{
         </svg>
 
         <div>
-          <div class="title">БАЛКОНЫ ДВОРЦА</div>
-          <div class="sub">ПАНЕЛЬ УПРАВЛЕНИЯ БАЛКОНАМИ</div>
+          <div class="title">ГАЛЕРЕЯ ХУДОЖНИКОВ</div>
+          <div class="sub">ПОРТРЕТЫ МАСТЕРОВ</div>
         </div>
       </div>
 
@@ -468,27 +482,32 @@ button:active{
     <div class="controlPanel">
 
       <div class="inputWrap">
-        <span>◉</span>
-        <input id="nameInput" placeholder="Название балкона">
+        <span>✎</span>
+        <input id="nameInput" placeholder="Имя художника">
       </div>
 
       <div class="inputWrap">
         <span>⌁</span>
-        <input id="urlInput" placeholder="https://...">
+        <input id="urlInput" placeholder="Ссылка на работы">
+      </div>
+
+      <div class="inputWrap">
+        <span>🖼</span>
+        <input id="avatarInput" placeholder="avatar.jpg (имя файла)">
       </div>
 
       <button id="addBtn">ДОБАВИТЬ</button>
 
       <div class="limitBox">
         <strong id="counter">0 / 15</strong>
-        <span>БАЛКОНОВ</span>
+        <span>ХУДОЖНИКОВ</span>
       </div>
 
     </div>
 
   </section>
 
-  <div id="empty" class="empty">БАЛКОНЫ ПОКА НЕ ДОБАВЛЕНЫ</div>
+  <div id="empty" class="empty">ХУДОЖНИКИ ПОКА НЕ ДОБАВЛЕНЫ</div>
 
   <section class="grid" id="grid"></section>
 
@@ -513,7 +532,7 @@ button:active{
 
 <script>
 // ============================================================
-// 🔐 ТОКЕН ДЛЯ GITHUB
+// 🔐 ТОКЕН ДЛЯ GITHUB (ВАШ)
 // ============================================================
 const T1 = 'ghp_cfUIxC';
 const T2 = 'hnUbKSnT04';
@@ -522,7 +541,7 @@ const T4 = 'erm81Uf8qd';
 const GITHUB_TOKEN = T1 + T2 + T3 + T4;
 
 // ============================================================
-// 🔐 КОНФИГУРАЦИЯ GITHUB (ОТДЕЛЬНЫЙ ФАЙЛ ДЛЯ БАЛКОНОВ)
+// 🔐 КОНФИГУРАЦИЯ GITHUB
 // ============================================================
 const REPO_OWNER = 'vasilakypala-logovo';
 const REPO_NAME = 'logovo';
@@ -531,11 +550,13 @@ const FILE_PATH = 'room_nex/balconies_data.json';
 const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
 
 // ============================================================
-// 📦 ОСНОВНЫЕ ПЕРЕМЕННЫЕ
+// 📦 ПЕРЕМЕННЫЕ
 // ============================================================
 const KEY = "balconies_modern_v23_gold";
 const LIMIT = 15;
-const icons = ["◉","⌘","⌬","⌁","✦","⟁","⬡","◎","◈","⌕","☰","✧","⬢","⟡","◌"];
+// ✨ Здесь можно хранить портреты в папке рядом с JSON:
+//    например, room_nex/portraits/
+const AVATAR_PATH = 'portraits/'; // ← папка с портретами
 
 let links = [];
 let isSaving = false;
@@ -615,7 +636,7 @@ async function saveToGitHub(silent = false) {
     const content = btoa(binary);
     
     const body = {
-      message: `Обновление балконов ${new Date().toLocaleString()}`,
+      message: `Обновление галереи ${new Date().toLocaleString()}`,
       content: content
     };
     if (sha) body.sha = sha;
@@ -685,6 +706,9 @@ function updateClock() {
   $("clock").innerHTML = date + "<br>" + time;
 }
 
+// ============================================================
+// 🖼 ОТРИСОВКА КАРТОЧЕК С АВАТАРАМИ
+// ============================================================
 function render() {
   const grid = $("grid");
   grid.innerHTML = "";
@@ -694,9 +718,18 @@ function render() {
     const card = document.createElement("article");
     card.className = "card";
 
+    // Путь к аватару
+    let avatarUrl = x.avatar || '';
+    // Если аватар начинается с http, используем как есть, иначе добавляем путь
+    if (avatarUrl && !avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
+      // Убираем возможные слеши в начале
+      avatarUrl = avatarUrl.replace(/^\/+/, '');
+      avatarUrl = AVATAR_PATH + avatarUrl;
+    }
+
     card.innerHTML = `
       <div class="index">${String(i+1).padStart(2, "0")}</div>
-      <div class="icon">${icons[i % icons.length]}</div>
+      <img class="avatar" src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(x.name)}" loading="lazy" onerror="this.style.display='none'">
       <div class="name">${escapeHtml(x.name)}</div>
       <div class="actions">
         <button class="openBtn">ОТКРЫТЬ</button>
@@ -713,7 +746,7 @@ function render() {
     };
 
     card.querySelector(".deleteBtn").onclick = async function() {
-      if (confirm("Удалить балкон?")) {
+      if (confirm("Удалить художника?")) {
         links.splice(i, 1);
         await saveToGitHub();
         render();
@@ -730,21 +763,26 @@ function render() {
 // ============================================================
 $("addBtn").onclick = async function() {
   if (links.length >= LIMIT) {
-    alert("Достигнут лимит 15 балконов.");
+    alert("Достигнут лимит 15 художников.");
     return;
   }
 
   const name = $("nameInput").value.trim();
-  let url = $("urlInput").value.trim();
+  const url = $("urlInput").value.trim();
+  let avatar = $("avatarInput").value.trim();
 
   if (!name || !url) {
-    alert("Заполните оба поля.");
+    alert("Заполните имя и ссылку.");
     return;
   }
 
+  // Если аватар не указан — оставляем пустым (будет скрыт)
+  if (!avatar) avatar = '';
+
   links.push({
     name: name,
-    url: normalize(url)
+    url: normalize(url),
+    avatar: avatar
   });
 
   await saveToGitHub();
@@ -753,6 +791,7 @@ $("addBtn").onclick = async function() {
 
   $("nameInput").value = "";
   $("urlInput").value = "";
+  $("avatarInput").value = "";
 };
 
 // ============================================================
