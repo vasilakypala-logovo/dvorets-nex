@@ -29,7 +29,6 @@
       background-repeat: no-repeat;
     }
 
-    /* Утреннее свечение — мягкий зелёный лесной свет */
     #morningGlow {
       position: absolute;
       inset: 0;
@@ -41,7 +40,6 @@
       mix-blend-mode: screen;
     }
 
-    /* Роса / туманная дымка */
     #dewVeil {
       position: absolute;
       inset: 0;
@@ -60,7 +58,6 @@
       100% { opacity: 0.32; filter: blur(0.8px); }
     }
 
-    /* Зоны-кликеры (скрытые, но активные) */
     .zone {
       position: absolute;
       z-index: 20;
@@ -84,14 +81,12 @@
       border-radius: 40%;
     }
 
-    /* Подсветка зон при нажатии H */
     .show-hotspots .zone {
       background: rgba(200, 240, 160, 0.20);
       outline: 2px solid rgba(220, 255, 180, 0.70);
       box-shadow: 0 0 35px rgba(180, 230, 130, 0.45);
     }
 
-    /* Главный титул — имя художницы, ТЁМНО-ФИОЛЕТОВЫЙ */
     #artist-title {
       position: fixed;
       top: 24px;
@@ -101,7 +96,7 @@
       font-family: 'Georgia', serif;
       font-size: 38px;
       letter-spacing: 0.15em;
-      color: #2b1a3a;  /* тёмно-фиолетовый */
+      color: #2b1a3a;
       text-shadow:
         0 0 12px rgba(180, 140, 220, 0.50),
         0 0 30px rgba(160, 120, 200, 0.35),
@@ -126,7 +121,6 @@
       50% { transform: translateY(4px); }
     }
 
-    /* Нижняя подпись */
     #caption {
       position: absolute;
       left: 50%;
@@ -167,7 +161,7 @@
       opacity: 0.9;
     }
 
-    /* Плавающая галерея — работы xr1.jpg … xr37.jpg */
+    /* ===== ПЛАВАЮЩАЯ ГАЛЕРЕЯ ===== */
     #floatingGallery {
       position: absolute;
       inset: 0;
@@ -188,6 +182,14 @@
       transform: translateX(110vw) scale(0.92);
       animation: forestFloat 30s linear forwards;
       border-radius: 1px;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.1s;
+    }
+
+    .floatArt:hover {
+      transform: translateX(110vw) scale(0.95);
+      box-shadow: 0 0 30px rgba(200, 255, 180, 0.40), 0 14px 32px rgba(0, 0, 0, 0.60);
     }
 
     .floatArt img {
@@ -195,6 +197,7 @@
       display: block;
       border-radius: 0;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.20);
+      pointer-events: none;
     }
 
     @keyframes forestFloat {
@@ -210,11 +213,67 @@
       }
     }
 
-    audio {
+    /* ===== РАЗВЕРНУТАЯ КАРТИНА (оверлей) ===== */
+    #expandedOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(10, 15, 8, 0.85);
+      backdrop-filter: blur(8px);
       display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.4s ease;
     }
 
-    /* небольшая адаптивность */
+    #expandedOverlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    #expandedImage {
+      max-height: 92vh;
+      max-width: 92vw;
+      object-fit: contain;
+      box-shadow: 0 0 60px rgba(180, 230, 140, 0.30), 0 20px 60px rgba(0, 0, 0, 0.80);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.30);
+      padding: 8px;
+      animation: zoomIn 0.5s ease;
+    }
+
+    @keyframes zoomIn {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    #closeExpanded {
+      position: fixed;
+      top: 30px;
+      right: 40px;
+      z-index: 9999;
+      font-size: 48px;
+      color: rgba(230, 245, 210, 0.85);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Georgia', serif;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 30px rgba(0, 0, 0, 0.80);
+      pointer-events: auto;
+      line-height: 1;
+    }
+
+    #closeExpanded:hover {
+      transform: rotate(90deg) scale(1.2);
+      color: rgba(255, 255, 255, 1);
+    }
+
     @media (max-width: 700px) {
       #artist-title {
         font-size: 26px;
@@ -229,31 +288,45 @@
         padding: 6px 14px;
         bottom: 3.5%;
       }
+      #closeExpanded {
+        font-size: 38px;
+        top: 20px;
+        right: 25px;
+      }
+      #expandedImage {
+        max-height: 80vh;
+        max-width: 95vw;
+      }
+    }
+
+    audio {
+      display: none;
     }
   </style>
 </head>
 <body>
 
 <div id="garden">
-  <!-- Имя художницы — тёмно-фиолетовый -->
   <div id="artist-title">Maria Haralampieva · painter · Sofia</div>
 
-  <!-- Слои атмосферы -->
   <div id="morningGlow"></div>
   <div id="dewVeil"></div>
 
-  <!-- Кликабельные зоны -->
   <div class="zone" id="backZone" title="Вернуться в зал" onclick="window.location.href='index.html'"></div>
   <div class="zone" id="logovoZone" title="Перейти в Логово" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/logovo.html'"></div>
 
-  <!-- Текст и аудио -->
   <div id="caption">lesnoy balkon · tishina i svet</div>
   <div id="musicHint">нажмите в любом месте — музыка оживёт</div>
   <audio id="echo" loop preload="auto"></audio>
 </div>
 
-<!-- Контейнер для плавающих работ -->
 <div id="floatingGallery"></div>
+
+<!-- ===== ОВЕРЛЕЙ ДЛЯ УВЕЛИЧЕННОЙ КАРТИНЫ ===== -->
+<div id="expandedOverlay">
+  <button id="closeExpanded" title="Закрыть">✕</button>
+  <img id="expandedImage" src="" alt="Увеличенная работа">
+</div>
 
 <script>
   (function() {
@@ -261,7 +334,12 @@
     const hint = document.getElementById('musicHint');
     const floatingGallery = document.getElementById('floatingGallery');
 
-    // Массив имён файлов: xr1.jpg … xr44.jpg
+    // ===== ОВЕРЛЕЙ =====
+    const overlay = document.getElementById('expandedOverlay');
+    const expandedImg = document.getElementById('expandedImage');
+    const closeBtn = document.getElementById('closeExpanded');
+
+    // ===== МАССИВ КАРТИН (xr1.jpg … xr44.jpg) =====
     const forestPictures = [];
     for (let i = 1; i <= 44; i++) {
       forestPictures.push('xr' + i + '.jpg');
@@ -269,7 +347,47 @@
 
     let pictureIndex = 0;
 
-    // Функция запуска одной плавающей работы
+    // ===== ФУНКЦИЯ: РАЗВЕРНУТЬ КАРТИНУ =====
+    function expandImage(src) {
+      expandedImg.src = src;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden'; // блокируем скролл
+    }
+
+    // ===== ФУНКЦИЯ: ЗАКРЫТЬ РАЗВЕРНУТУЮ =====
+    function closeExpandedImage() {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      // Небольшая задержка, чтобы убрать картинку из памяти
+      setTimeout(() => {
+        if (!overlay.classList.contains('active')) {
+          expandedImg.src = '';
+        }
+      }, 300);
+    }
+
+    // ===== СОБЫТИЯ ДЛЯ ОВЕРЛЕЯ =====
+    closeBtn.addEventListener('click', closeExpandedImage);
+
+    // Клик по фону оверлея (но не по картинке) — закрываем
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        closeExpandedImage();
+      }
+    });
+
+    // Escape — закрыть увеличенную картинку
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (overlay.classList.contains('active')) {
+          closeExpandedImage();
+        } else {
+          window.location.href = 'index.html';
+        }
+      }
+    });
+
+    // ===== ФУНКЦИЯ: ЗАПУСК ОДНОЙ ПЛАВАЮЩЕЙ РАБОТЫ =====
     function launchForestPicture() {
       if (!floatingGallery) return;
 
@@ -277,31 +395,39 @@
       frame.className = 'floatArt';
 
       const img = document.createElement('img');
-      img.src = forestPictures[pictureIndex];
+      const src = forestPictures[pictureIndex];
+      img.src = src;
       img.alt = 'Мария Харалампиева · работа ' + (pictureIndex + 1);
+      img.draggable = false;
 
       frame.appendChild(img);
 
-      // Случайное положение по вертикали
       const top = 5 + Math.random() * 38;
       frame.style.top = top + '%';
 
-      // Случайный размер (от 160 до 250px)
       const size = 160 + Math.random() * 90;
       frame.style.width = size + 'px';
 
+      // ===== КЛИК ПО КАРТИНЕ — РАЗВОРАЧИВАЕМ =====
+      frame.addEventListener('click', function(e) {
+        e.stopPropagation();
+        // Берём src из img внутри frame
+        const imgEl = this.querySelector('img');
+        if (imgEl) {
+          expandImage(imgEl.src);
+        }
+      });
+
       floatingGallery.appendChild(frame);
 
-      // Инкремент индекса (циклично)
       pictureIndex = (pictureIndex + 1) % forestPictures.length;
 
-      // Удаляем элемент через время, равное длительности анимации
       setTimeout(() => {
         if (frame.parentNode) frame.remove();
       }, 30000);
     }
 
-    // Функция запуска музыки (тихого эха)
+    // ===== МУЗЫКА =====
     function startEcho() {
       try {
         echo.src = 'OZERO.mp3';
@@ -318,12 +444,12 @@
       }
     }
 
-    // Старт: музыка + первая картина
+    // ===== СТАРТ =====
     startEcho();
     launchForestPicture();
     setInterval(launchForestPicture, 4800);
 
-    // Клик по странице — запуск музыки, если на паузе
+    // Клик по странице — музыка
     document.addEventListener('click', function() {
       if (echo.paused) {
         startEcho();
@@ -331,14 +457,10 @@
       hint.classList.remove('show');
     }, false);
 
-    // Клавиша H — показать скрытые зоны (хотспоты)
-    // Escape — возврат в index.html
+    // H — показать зоны
     document.addEventListener('keydown', function(e) {
       if (e.key.toLowerCase() === 'h') {
         document.body.classList.toggle('show-hotspots');
-      }
-      if (e.key === 'Escape') {
-        window.location.href = 'index.html';
       }
     });
 
