@@ -164,7 +164,7 @@ body::before{
 
 .controlPanel{
   display:grid;
-  grid-template-columns:1fr 1fr 104px;
+  grid-template-columns:1fr 1fr 1fr 104px;
   gap:10px;
   margin-top:13px;
 }
@@ -483,7 +483,12 @@ button:active{
 
       <div class="inputWrap">
         <span>✎</span>
-        <input id="nameInput" placeholder="Имя художника (например: xr1)">
+        <input id="nameInput" placeholder="Имя художника (отображается)">
+      </div>
+
+      <div class="inputWrap">
+        <span>🖼</span>
+        <input id="fileInput" placeholder="Имя файла аватарки (без .jpg)">
       </div>
 
       <div class="inputWrap">
@@ -565,9 +570,9 @@ async function loadFromGitHub() {
     });
     
     if (response.status === 404) {
-      // ДЕМО-ДАННЫЕ - имя БЕЗ расширения!
+      // ДЕМО-ДАННЫЕ
       artists = [
-        { name: "xr44", url: "https://example.com" }
+        { name: "Иван Иванов", file: "xr44", url: "https://example.com" }
       ];
       await saveToGitHub(true);
       render();
@@ -706,8 +711,15 @@ function updateClock() {
   $("clock").innerHTML = date + "<br>" + time;
 }
 
+function sanitizeFileName(name) {
+  return name.toLowerCase()
+    .replace(/[^a-zа-яё0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+}
+
 // ============================================================
-// 🖼 ОТРИСОВКА КАРТОЧЕК - ИСПОЛЬЗУЕМ ИМЯ КАК ЕСТЬ
+// 🖼 ОТРИСОВКА КАРТОЧЕК
 // ============================================================
 function render() {
   const grid = $("grid");
@@ -718,16 +730,8 @@ function render() {
     const card = document.createElement("article");
     card.className = "card";
 
-    // 🔥 ВАЖНО: ИСПОЛЬЗУЕМ ИМЯ КАК ЕСТЬ - БЕЗ ДОБАВЛЕНИЯ .jpg
-    // Если в имени уже есть расширение - используем как есть
-    let imgPath = x.name.trim();
-    
-    // Проверяем, есть ли расширение
-    if (!imgPath.includes('.')) {
-      // Если нет расширения - добавляем .jpg
-      imgPath = imgPath + '.jpg';
-    }
-    
+    // Формируем путь к фото: file + .jpg
+    const imgPath = (x.file || x.name) + '.jpg';
     console.log(`🔍 Ищем фото: ${imgPath}`);
 
     // Создаем IMG
@@ -800,24 +804,36 @@ $("addBtn").onclick = async function() {
     return;
   }
 
-  let name = $("nameInput").value.trim();
+  let displayName = $("nameInput").value.trim();
+  let fileName = $("fileInput").value.trim();
   const url = $("urlInput").value.trim();
 
-  if (!name || !url) {
-    alert("Заполните имя и ссылку на сайт.");
+  if (!displayName) {
+    alert("Введите имя художника (отображается на карточке).");
     return;
   }
 
-  // Убираем расширение из имени, если оно есть
-  name = name.replace(/\.[^.]+$/, '');
+  if (!fileName) {
+    alert("Введите имя файла аватарки (без расширения).");
+    return;
+  }
 
-  if (artists.some(a => a.name.toLowerCase() === name.toLowerCase())) {
-    alert(`Художник "${name}" уже есть в галерее!`);
+  if (!url) {
+    alert("Введите ссылку на сайт.");
+    return;
+  }
+
+  // Очищаем имя файла
+  fileName = sanitizeFileName(fileName);
+
+  if (artists.some(a => a.file && a.file.toLowerCase() === fileName.toLowerCase())) {
+    alert(`Файл "${fileName}" уже используется!`);
     return;
   }
 
   artists.push({
-    name: name,
+    name: displayName,
+    file: fileName,
     url: normalize(url)
   });
 
@@ -826,9 +842,10 @@ $("addBtn").onclick = async function() {
   updateCounter();
 
   $("nameInput").value = "";
+  $("fileInput").value = "";
   $("urlInput").value = "";
   
-  showMessage(`✅ Художник "${name}" добавлен! Ищем фото: ${name}.jpg`);
+  showMessage(`✅ Художник "${displayName}" добавлен! Ищем фото: ${fileName}.jpg`);
 };
 
 // ============================================================
