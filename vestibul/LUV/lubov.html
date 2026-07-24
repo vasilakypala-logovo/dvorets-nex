@@ -182,7 +182,7 @@ function openWork(n) {
 
     function tryNext() {
         if (index >= extensions.length) {
-            caption.textContent = "Не найден файл works/" + n + ".jpg";
+            caption.textContent = "Не найден файл works/" + n + ".jpg",".html";
             big.removeAttribute("src");
             viewer.style.display = "flex";
             return;
