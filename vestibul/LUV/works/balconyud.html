@@ -87,6 +87,7 @@
       box-shadow: 0 0 35px rgba(180, 230, 130, 0.45);
     }
 
+    /* ===== ОБНОВЛЁННЫЙ ТИТЛ — ЖЁЛТО-ЗЕЛЁНЫЙ ===== */
     #artist-title {
       position: fixed;
       top: 24px;
@@ -96,11 +97,12 @@
       font-family: 'Georgia', serif;
       font-size: 38px;
       letter-spacing: 0.15em;
-      color: #2b1a3a;
+      color: #d4e87a;
       text-shadow:
-        0 0 12px rgba(180, 140, 220, 0.50),
-        0 0 30px rgba(160, 120, 200, 0.35),
-        0 0 60px rgba(130, 90, 180, 0.20);
+        0 0 12px rgba(180, 230, 80, 0.70),
+        0 0 30px rgba(160, 210, 60, 0.50),
+        0 0 60px rgba(130, 190, 40, 0.35),
+        0 0 90px rgba(100, 170, 20, 0.20);
       z-index: 9999;
       pointer-events: none;
       opacity: 0;
@@ -351,14 +353,13 @@
     function expandImage(src) {
       expandedImg.src = src;
       overlay.classList.add('active');
-      document.body.style.overflow = 'hidden'; // блокируем скролл
+      document.body.style.overflow = 'hidden';
     }
 
     // ===== ФУНКЦИЯ: ЗАКРЫТЬ РАЗВЕРНУТУЮ =====
     function closeExpandedImage() {
       overlay.classList.remove('active');
       document.body.style.overflow = '';
-      // Небольшая задержка, чтобы убрать картинку из памяти
       setTimeout(() => {
         if (!overlay.classList.contains('active')) {
           expandedImg.src = '';
@@ -369,14 +370,12 @@
     // ===== СОБЫТИЯ ДЛЯ ОВЕРЛЕЯ =====
     closeBtn.addEventListener('click', closeExpandedImage);
 
-    // Клик по фону оверлея (но не по картинке) — закрываем
     overlay.addEventListener('click', function(e) {
       if (e.target === overlay) {
         closeExpandedImage();
       }
     });
 
-    // Escape — закрыть увеличенную картинку
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         if (overlay.classList.contains('active')) {
@@ -408,10 +407,8 @@
       const size = 160 + Math.random() * 90;
       frame.style.width = size + 'px';
 
-      // ===== КЛИК ПО КАРТИНЕ — РАЗВОРАЧИВАЕМ =====
       frame.addEventListener('click', function(e) {
         e.stopPropagation();
-        // Берём src из img внутри frame
         const imgEl = this.querySelector('img');
         if (imgEl) {
           expandImage(imgEl.src);
@@ -449,7 +446,6 @@
     launchForestPicture();
     setInterval(launchForestPicture, 4800);
 
-    // Клик по странице — музыка
     document.addEventListener('click', function() {
       if (echo.paused) {
         startEcho();
@@ -457,7 +453,6 @@
       hint.classList.remove('show');
     }, false);
 
-    // H — показать зоны
     document.addEventListener('keydown', function(e) {
       if (e.key.toLowerCase() === 'h') {
         document.body.classList.toggle('show-hotspots');
