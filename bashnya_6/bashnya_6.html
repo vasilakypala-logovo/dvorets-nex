@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TOWER 6</title>
+<title>TOWER 6 — Дворцовая АТС</title>
 <style>
+/* Базовые стили (сохранены ваши) */
 html,body{
   margin:0; width:100%; height:100%; overflow:hidden; background:#050607; color:white;
   font-family:Georgia,serif;
@@ -17,32 +18,361 @@ body{
     linear-gradient(180deg,#050607,#11131a 55%,#030304);
 }
 .room{
-  width:min(760px,84vw); min-height:430px; padding:42px 46px; box-sizing:border-box;
+  width:min(820px,90vw); max-height:90vh; padding:32px 36px; box-sizing:border-box;
   border:1px solid rgba(255,255,255,0.22); border-radius:28px;
   background:rgba(0,0,0,0.34); box-shadow:0 0 70px rgba(170,210,255,0.18);
-  text-align:center; position:relative;
+  text-align:center; position:relative; overflow-y:auto;
 }
-.mark{
-  width:110px; height:110px; border-radius:50%; margin:0 auto 24px;
-  background:radial-gradient(circle, rgba(255,255,255,0.96), rgba(190,220,255,0.36) 44%, transparent 70%);
-  filter:blur(1px);
+/* Стили для телефонной панели */
+.ats-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+  text-align: left;
 }
-h1{ margin:0 0 18px; font-size:38px; letter-spacing:0.12em; font-weight:normal; }
-p{ font-size:19px; line-height:1.55; color:rgba(255,255,255,0.82); }
-.back{
-  display:inline-block; margin-top:28px; padding:11px 22px; border-radius:999px;
-  border:1px solid rgba(255,255,255,0.28); color:white; text-decoration:none;
-  background:rgba(255,255,255,0.08); letter-spacing:0.08em; font-size:13px;
+.ats-section {
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
 }
-.back:hover{ background:rgba(255,255,255,0.18); }
+.ats-section h3 {
+  color: #b8d0ff;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 8px;
+  font-weight: normal;
+  letter-spacing: 0.05em;
+}
+.ats-section .number {
+  font-size: 24px;
+  color: #aac8ff;
+  background: rgba(0,0,0,0.3);
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-block;
+}
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.status-online { background: #6fcf97; box-shadow: 0 0 12px #6fcf97; }
+.status-offline { background: #f28b82; box-shadow: 0 0 12px #f28b82; }
+.status-ringing { background: #f9ca24; animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0.4; transform: scale(0.95); }
+}
+
+/* Клавиатура */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+.keypad button {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 12px 0;
+  color: white;
+  font-size: 22px;
+  font-family: Georgia, serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.keypad button:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(180,210,255,0.4);
+  transform: scale(1.03);
+}
+.keypad button:active {
+  transform: scale(0.95);
+}
+.call-btn {
+  background: #2d7d46 !important;
+  border-color: #3a9c5a !important;
+}
+.call-btn:hover { background: #3a9c5a !important; }
+.hangup-btn {
+  background: #7d2d2d !important;
+  border-color: #9c3a3a !important;
+}
+.hangup-btn:hover { background: #9c3a3a !important; }
+.phone-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 20px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  color: white;
+  text-align: center;
+  letter-spacing: 4px;
+  font-family: Georgia, serif;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+.call-log {
+  max-height: 140px;
+  overflow-y: auto;
+  font-size: 14px;
+  opacity: 0.8;
+  text-align: left;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+.log-entry {
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  justify-content: space-between;
+}
+.log-entry.incoming { color: #6fcf97; }
+.log-entry.outgoing { color: #aac8ff; }
+.log-entry.missed { color: #f28b82; }
+
+.back {
+  display: inline-block; margin-top: 20px; padding: 10px 20px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.2); color: white; text-decoration:none;
+  background:rgba(255,255,255,0.05); letter-spacing:0.08em; font-size:13px;
+}
+.back:hover{ background:rgba(255,255,255,0.14); }
+
+/* Адаптация под мобильные */
+@media(max-width: 700px) {
+  .ats-panel { grid-template-columns: 1fr; }
+  .room { padding: 20px; }
+}
 </style>
 </head>
 <body>
-  <main class="room">
-    <div class="mark"></div>
-    <h1>TOWER 6</h1>
-    <p>The sixth tower is open. Here the palace can keep the red spiral of sense.</p>
-    <a class="back" href="../index.html">RETURN TO PALACE</a>
-  </main>
+<main class="room">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+    <span style="font-size:14px; opacity:0.5;">⚜️ ДВОРЕЦ NEX</span>
+    <span style="font-size:14px; opacity:0.5;">БАШНЯ 6 · АТС</span>
+  </div>
+  
+  <div style="display:flex; align-items:center; gap:16px; justify-content:center; margin-bottom:12px;">
+    <div class="mark" style="width:70px;height:70px; margin:0;"></div>
+    <div>
+      <h1 style="margin:0; font-size:32px; letter-spacing:0.1em;">TOWER 6</h1>
+      <p style="margin:4px 0 0; font-size:14px; opacity:0.6;">дворцовая телефонная станция</p>
+    </div>
+    <div style="margin-left:auto; font-size:14px;">
+      <span class="status-indicator status-online" id="statusIndicator"></span>
+      <span id="statusText">готова</span>
+    </div>
+  </div>
+
+  <!-- Телефонная панель -->
+  <div class="ats-panel">
+    <!-- Левая колонка: Набор номера -->
+    <div class="ats-section">
+      <h3>📞 НАБОР</h3>
+      <input class="phone-input" id="phoneInput" placeholder="номер" maxlength="15">
+      <div class="keypad">
+        <button onclick="dial('1')">1</button>
+        <button onclick="dial('2')">2</button>
+        <button onclick="dial('3')">3</button>
+        <button onclick="dial('4')">4</button>
+        <button onclick="dial('5')">5</button>
+        <button onclick="dial('6')">6</button>
+        <button onclick="dial('7')">7</button>
+        <button onclick="dial('8')">8</button>
+        <button onclick="dial('9')">9</button>
+        <button onclick="dial('*')">*</button>
+        <button onclick="dial('0')">0</button>
+        <button onclick="dial('#')">#</button>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="call-btn" style="flex:1; padding:12px; border:none; border-radius:10px; color:white; font-size:16px; cursor:pointer;" onclick="makeCall()">📤 Позвонить</button>
+        <button class="hangup-btn" style="flex:1; padding:12px; border:none; border-radius:10px; color:white; font-size:16px; cursor:pointer;" onclick="hangUp()">📴 Сбросить</button>
+      </div>
+    </div>
+
+    <!-- Правая колонка: Статус и история -->
+    <div class="ats-section">
+      <h3>📋 СОСТОЯНИЕ</h3>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+        <span style="background:rgba(255,255,255,0.05); padding:4px 12px; border-radius:16px;">
+          <span style="opacity:0.5;">внутр.</span> <strong id="internalExt">101</strong>
+        </span>
+        <span style="background:rgba(255,255,255,0.05); padding:4px 12px; border-radius:16px;">
+          <span style="opacity:0.5;">статус</span> <span id="callStatus">свободен</span>
+        </span>
+        <span style="background:rgba(255,255,255,0.05); padding:4px 12px; border-radius:16px;">
+          <span style="opacity:0.5;">время</span> <span id="callTimer">00:00</span>
+        </span>
+      </div>
+      
+      <h3 style="margin-top:16px; font-size:15px;">📜 ИСТОРИЯ</h3>
+      <div class="call-log" id="callLog">
+        <div class="log-entry" style="opacity:0.3; justify-content:center;">— вызовов пока нет —</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Управление операторами (для 2-х линий) -->
+  <div style="display:flex; gap:16px; justify-content:center; margin-top:16px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.06); padding-top:16px;">
+    <span style="font-size:13px; opacity:0.5;">ОПЕРАТОРЫ ДВОРЦА:</span>
+    <span style="font-size:13px; background:rgba(255,255,255,0.04); padding:2px 14px; border-radius:12px;">🔹 Оператор 1 (вн. 101)</span>
+    <span style="font-size:13px; background:rgba(255,255,255,0.04); padding:2px 14px; border-radius:12px;">🔹 Оператор 2 (вн. 102)</span>
+    <span style="font-size:13px; opacity:0.4;">+3 резервных</span>
+  </div>
+
+  <a class="back" href="../index.html">← ВЕРНУТЬСЯ ВО ДВОРЕЦ</a>
+</main>
+
+<script>
+// === Простая логика АТС (без внешних библиотек, только интерфейс) ===
+const phoneInput = document.getElementById('phoneInput');
+const callStatus = document.getElementById('callStatus');
+const callTimer = document.getElementById('callTimer');
+const callLog = document.getElementById('callLog');
+const statusText = document.getElementById('statusText');
+const statusIndicator = document.getElementById('statusIndicator');
+
+let isCallActive = false;
+let timerInterval = null;
+let seconds = 0;
+let internalExt = '101'; // можно менять
+
+// === Кнопки набора ===
+function dial(digit) {
+  phoneInput.value += digit;
+}
+
+// === Совершить вызов ===
+function makeCall() {
+  const number = phoneInput.value.trim();
+  if (!number) {
+    alert('Введите номер');
+    return;
+  }
+  if (isCallActive) {
+    alert('Вызов уже активен');
+    return;
+  }
+
+  // Имитация звонка
+  isCallActive = true;
+  callStatus.textContent = 'вызов...';
+  statusText.textContent = 'звонит';
+  statusIndicator.className = 'status-indicator status-ringing';
+  
+  addLogEntry(`📤 Исходящий → ${number}`, 'outgoing');
+
+  setTimeout(() => {
+    if (isCallActive) {
+      callStatus.textContent = 'в разговоре';
+      statusText.textContent = 'на линии';
+      statusIndicator.className = 'status-indicator status-online';
+      startTimer();
+    }
+  }, 1200);
+}
+
+// === Сбросить вызов ===
+function hangUp() {
+  if (!isCallActive) {
+    alert('Нет активного вызова');
+    return;
+  }
+  
+  isCallActive = false;
+  stopTimer();
+  callStatus.textContent = 'свободен';
+  statusText.textContent = 'готова';
+  statusIndicator.className = 'status-indicator status-online';
+  phoneInput.value = '';
+  
+  addLogEntry(`📴 Завершён (${formatTime(seconds)})`, 'missed');
+  seconds = 0;
+  callTimer.textContent = '00:00';
+}
+
+// === Таймер разговора ===
+function startTimer() {
+  seconds = 0;
+  timerInterval = setInterval(() => {
+    seconds++;
+    callTimer.textContent = formatTime(seconds);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+function formatTime(totalSec) {
+  const m = String(Math.floor(totalSec / 60)).padStart(2, '0');
+  const s = String(totalSec % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+// === Лог истории ===
+function addLogEntry(text, type = '') {
+  const entry = document.createElement('div');
+  entry.className = `log-entry ${type}`;
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  entry.innerHTML = `<span>${text}</span><span style="opacity:0.4;">${time}</span>`;
+  
+  // Убираем заглушку "— вызовов пока нет —"
+  const placeholder = callLog.querySelector('[style*="opacity:0.3;"]');
+  if (placeholder) placeholder.remove();
+  
+  callLog.prepend(entry); // свежие сверху
+  if (callLog.children.length > 20) {
+    callLog.removeChild(callLog.lastChild);
+  }
+}
+
+// === Обработка входящих (имитация) ===
+// Для демонстрации: раз в 30-60 секунд приходит "звонок"
+function simulateIncoming() {
+  if (isCallActive) return;
+  
+  const from = ['101', '102', '+380671234567', 'Аноним'][Math.floor(Math.random() * 4)];
+  addLogEntry(`📞 Входящий от ${from}`, 'incoming');
+  
+  // Показываем уведомление
+  callStatus.textContent = 'входящий...';
+  statusText.textContent = 'входящий';
+  statusIndicator.className = 'status-indicator status-ringing';
+  
+  setTimeout(() => {
+    if (!isCallActive) {
+      callStatus.textContent = 'свободен';
+      statusText.textContent = 'готова';
+      statusIndicator.className = 'status-indicator status-online';
+      addLogEntry(`📵 Пропущен от ${from}`, 'missed');
+    }
+  }, 8000);
+}
+
+// Запускаем имитацию входящих (раз в 25–50 секунд)
+setInterval(() => {
+  if (Math.random() > 0.5) simulateIncoming();
+}, 35000);
+
+// === Инициализация ===
+callStatus.textContent = 'свободен';
+statusText.textContent = 'готова';
+statusIndicator.className = 'status-indicator status-online';
+
+// Подсказка для пользователя
+console.log('🏛️ Дворцовая АТС (Башня 6) запущена');
+console.log('📞 Внутренние номера: 101, 102, 103, 104, 105');
+</script>
 </body>
 </html>
