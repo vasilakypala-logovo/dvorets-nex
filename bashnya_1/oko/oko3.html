@@ -1,0 +1,1131 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удочка Некса v0.3 — с переводом</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0b1219; color: #e4edf5; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: rgba(18, 30, 41, 0.92); backdrop-filter: blur(8px); border-radius: 40px; padding: 30px 35px 40px; border: 1px solid rgba(255, 215, 150, 0.12); box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
+        h1 { font-weight: 300; letter-spacing: 2px; font-size: 2.1rem; color: #f3d9b1; border-bottom: 1px solid rgba(243, 199, 102, 0.15); padding-bottom: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        h1 small { font-size: 0.85rem; font-weight: 300; color: #8ba3b8; margin-left: auto; }
+        .version-badge { background: #1d3342; padding: 4px 16px; border-radius: 30px; font-size: 0.8rem; color: #8ba3b8; }
+        
+        .top-bar { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px; align-items: center; }
+        .btn { padding: 12px 28px; border: none; border-radius: 40px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s; background: #1d3342; color: #c8dce8; border: 1px solid #2d4a5a; }
+        .btn:hover { background: #2a4a5a; transform: translateY(-2px); }
+        .btn-primary { background: linear-gradient(145deg, #2d5a6a, #1a3340); color: #f0f9ff; font-size: 1.2rem; padding: 14px 45px; border-color: #4a7a8a; box-shadow: 0 6px 0 #0d1a22; }
+        .btn-primary:hover { background: #3a6a7a; }
+        .btn-primary:disabled { opacity: 0.6; transform: translateY(4px); box-shadow: 0 2px 0 #0d1a22; pointer-events: none; }
+        .btn-success { background: #1f4a33; border-color: #3a7a5a; color: #8bdcb4; }
+        .btn-success:hover { background: #2a5a3f; }
+        .btn-translate { background: #3a2a5a; border-color: #5a3a7a; color: #c8a8e8; }
+        .btn-translate:hover { background: #4a3a6a; }
+
+        .log-panel { background: #0b141c; border-radius: 20px; padding: 18px 22px; margin: 15px 0 25px; max-height: 200px; overflow-y: auto; border: 1px solid #1a2d39; font-family: 'Consolas', monospace; font-size: 0.85rem; line-height: 1.6; }
+        .log-panel .log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .log-panel .log-ok { color: #7bcfa4; }
+        .log-panel .log-err { color: #d96c6c; }
+        .log-panel .log-info { color: #7ab3d9; }
+        .log-panel .log-warn { color: #e3b35c; }
+
+        .dashboard { display: grid; grid-template-columns: 340px 1fr; gap: 25px; margin: 20px 0 25px; }
+        @media (max-width: 900px) { .dashboard { grid-template-columns: 1fr; } }
+
+        .chart-container { background: rgba(0,0,0,0.3); border-radius: 24px; padding: 20px; text-align: center; border: 1px solid #1a2d39; }
+        .chart-container canvas { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+        .chart-title { font-size: 0.9rem; color: #8ba3b8; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+        .stat-card { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 12px 10px; text-align: center; border-left: 3px solid #4a6a7a; }
+        .stat-card .number { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+        .stat-card .label { font-size: 0.65rem; text-transform: uppercase; opacity: 0.6; letter-spacing: 0.5px; }
+        .stat-card.green { border-left-color: #5fbb8a; }
+        .stat-card.red { border-left-color: #d96c6c; }
+        .stat-card.blue { border-left-color: #6a9fd8; }
+        .stat-card.yellow { border-left-color: #e3b35c; }
+        .stat-card.grey { border-left-color: #6b7b85; }
+
+        .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0 20px; }
+        .filter-btn { padding: 6px 18px; border-radius: 30px; border: 1px solid #2d4a5a; background: transparent; color: #9ab0c0; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+        .filter-btn:hover { background: #1d3342; }
+        .filter-btn.active { background: #2d4a5a; color: #fff; border-color: #5a8a9a; }
+        .filter-btn.green.active { background: #1f4a33; border-color: #5fbb8a; }
+        .filter-btn.red.active { background: #4a2626; border-color: #d96c6c; }
+        .filter-btn.blue.active { background: #1f3b5a; border-color: #6a9fd8; }
+        .filter-btn.yellow.active { background: #4a3d1f; border-color: #e3b35c; }
+        .filter-btn.grey.active { background: #2a3a44; border-color: #8a9aa5; }
+
+        .plugin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 15px 0 20px; font-size: 0.8rem; }
+        .plugin-stat { background: rgba(0,0,0,0.2); padding: 8px 14px; border-radius: 12px; display: flex; justify-content: space-between; border: 1px solid #1a2d39; }
+        .plugin-stat .name { color: #9ab0c0; }
+        .plugin-stat .counts { color: #c8dce8; }
+        .plugin-stat .badge-type { font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; background: #1d3342; color: #6a8a9a; }
+
+        .log-area { background: #0b141c; border-radius: 20px; padding: 15px; max-height: 450px; overflow-y: auto; border: 1px solid #1a2d39; margin-top: 10px; }
+        .event-item { display: grid; grid-template-columns: 70px 1fr 60px 80px 35px; gap: 8px; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; align-items: center; }
+        @media (max-width: 700px) { .event-item { grid-template-columns: 1fr; gap: 4px; } }
+        .event-item .date { color: #6a8a9a; font-size: 0.75rem; }
+        .event-item .title { color: #dbe9f5; cursor: pointer; }
+        .event-item .title:hover { color: #f3d9b1; }
+        .event-item .title .original { color: #6a8a9a; font-size: 0.75rem; display: block; font-style: italic; }
+        .event-item .badge { padding: 2px 12px; border-radius: 30px; font-size: 0.65rem; font-weight: 600; text-align: center; letter-spacing: 0.3px; white-space: nowrap; }
+        .badge.green { background: #1f4a33; color: #8bdcb4; }
+        .badge.red { background: #4a2626; color: #f0a0a0; }
+        .badge.blue { background: #1f3b5a; color: #a3c9f0; }
+        .badge.yellow { background: #4a3d1f; color: #f0d68a; }
+        .badge.grey { background: #2a3a44; color: #b3c9d4; }
+        .event-item .link-icon { color: #4a7a8a; cursor: pointer; font-size: 1.1rem; text-decoration: none; transition: color 0.2s; text-align: center; }
+        .event-item .link-icon:hover { color: #7ab3d9; }
+        .event-item .lang-tag { font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; background: #1d2a33; color: #6a8a9a; text-align: center; }
+        .event-item .lang-tag.translated { background: #2a3a3a; color: #7ab3a9; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #5f7685; font-style: italic; }
+        .footer-meta { margin-top: 20px; font-size: 0.75rem; color: #3d5b6b; text-align: right; border-top: 1px solid #1a2d39; padding-top: 15px; }
+
+        .legend { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #9ab0c0; }
+        .legend-color { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); }
+
+        .translate-progress { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 12px 20px; border-radius: 12px; border: 1px solid #3a5a4a; display: none; z-index: 999; }
+        .translate-progress.active { display: block; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        🎣 УДОЧКА НЕКСА
+        <span class="version-badge">v0.3</span>
+        <small>+ Автоперевод</small>
+    </h1>
+
+    <div class="top-bar">
+        <button id="fishBtn" class="btn btn-primary">🎯 ПОЙМАТЬ СОБЫТИЯ</button>
+        <button id="exportJsonBtn" class="btn btn-success">💾 JSON</button>
+        <button id="exportCsvBtn" class="btn btn-success">📊 CSV</button>
+        <button id="clearBtn" class="btn" style="margin-left:auto;">🗑️ Очистить</button>
+    </div>
+
+    <div id="logPanel" class="log-panel">
+        <div class="log-entry log-info">🌊 Океан информации ждёт. Плагины: RSS, Government, Science, International, Regional.</div>
+        <div class="log-entry log-info">🌐 Украинский → не переводим. Английский и др. → переводим на русский.</div>
+    </div>
+
+    <div class="dashboard">
+        <div class="chart-container">
+            <div class="chart-title">📊 Соотношение категорий (без "Не относится")</div>
+            <canvas id="radialChart" width="320" height="320"></canvas>
+            <div class="legend" id="chartLegend"></div>
+        </div>
+        <div>
+            <div class="stats-grid" id="statsPanel">
+                <div class="stat-card"><div class="number" id="totalFound">0</div><div class="label">Всего найдено</div></div>
+                <div class="stat-card"><div class="number" id="afterFilter">0</div><div class="label">После фильтра</div></div>
+                <div class="stat-card green"><div class="number" id="catDev">0</div><div class="label">🟢 Развитие</div></div>
+                <div class="stat-card red"><div class="number" id="catDec">0</div><div class="label">🔴 Упадок</div></div>
+                <div class="stat-card blue"><div class="number" id="catStab">0</div><div class="label">🔵 Стабильность</div></div>
+                <div class="stat-card yellow"><div class="number" id="catTrans">0</div><div class="label">🟡 Переход</div></div>
+                <div class="stat-card grey"><div class="number" id="catNone">0</div><div class="label">⚪ Не относится</div></div>
+            </div>
+            <div id="pluginStatsContainer" class="plugin-stats"></div>
+        </div>
+    </div>
+
+    <div class="filters" id="filterContainer">
+        <button class="filter-btn active" data-filter="all">Все</button>
+        <button class="filter-btn green" data-filter="development">🟢 Развитие</button>
+        <button class="filter-btn red" data-filter="decline">🔴 Упадок</button>
+        <button class="filter-btn blue" data-filter="stability">🔵 Стабильность</button>
+        <button class="filter-btn yellow" data-filter="transition">🟡 Переход</button>
+        <button class="filter-btn grey" data-filter="none">⚪ Не относится</button>
+    </div>
+
+    <div id="logContainer" class="log-area">
+        <div class="empty-state">🎣 Нажмите «Поймать события», чтобы начать сбор.</div>
+    </div>
+
+    <div class="footer-meta">⚡ Плагины: RSS | Government | Science | International | Regional</div>
+</div>
+
+<!-- Прогресс перевода -->
+<div id="translateProgress" class="translate-progress">
+    <span id="translateStatus">⏳ Перевод...</span>
+</div>
+
+<script>
+// ============================================================
+//  МОДУЛЬ ПЕРЕВОДА
+// ============================================================
+class Translator {
+    constructor() {
+        this.cache = new Map();
+        this.queue = [];
+        this.isProcessing = false;
+        this.totalToTranslate = 0;
+        this.translated = 0;
+    }
+
+    // Определение языка текста
+    detectLanguage(text) {
+        if (!text || text.length < 3) return 'unknown';
+        
+        // Проверка на украинский (характерные буквы)
+        const ukrainianPattern = /[іїєґІЇЄҐ]/;
+        if (ukrainianPattern.test(text)) return 'uk';
+        
+        // Проверка на русский (кириллица без украинских букв)
+        const cyrillicPattern = /[а-яА-Я]/;
+        if (cyrillicPattern.test(text)) {
+            // Если есть кириллица, но нет украинских букв — русский
+            if (!ukrainianPattern.test(text)) return 'ru';
+        }
+        
+        // Проверка на английский (латиница)
+        const latinPattern = /[a-zA-Z]/;
+        if (latinPattern.test(text) && !cyrillicPattern.test(text)) return 'en';
+        
+        return 'unknown';
+    }
+
+    // Нужен ли перевод?
+    needsTranslation(text, sourceLanguage) {
+        if (!text || text.length < 2) return false;
+        
+        // Если указан язык источника
+        if (sourceLanguage) {
+            if (sourceLanguage === 'uk' || sourceLanguage === 'ru') return false;
+            if (sourceLanguage === 'en' || sourceLanguage === 'unknown') return true;
+        }
+        
+        // Определяем автоматически
+        const detected = this.detectLanguage(text);
+        return detected === 'en' || detected === 'unknown';
+    }
+
+    // Перевод через Google Translate (бесплатный API)
+    async translate(text, targetLang = 'ru') {
+        if (!text || text.length < 2) return text;
+        
+        // Проверка кэша
+        const cacheKey = `${text}_${targetLang}`;
+        if (this.cache.has(cacheKey)) {
+            return this.cache.get(cacheKey);
+        }
+        
+        try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+            const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            
+            // Парсинг ответа Google Translate
+            let translated = '';
+            if (Array.isArray(data) && data[0] && Array.isArray(data[0])) {
+                translated = data[0].map(segment => segment[0] || '').join('');
+            }
+            
+            if (translated && translated.length > 0) {
+                this.cache.set(cacheKey, translated);
+                return translated;
+            }
+            
+            return text;
+        } catch (error) {
+            console.warn('Ошибка перевода:', error.message);
+            return text;
+        }
+    }
+
+    // Перевод заголовка и описания события
+    async translateEvent(event) {
+        // Проверяем, нужно ли переводить
+        const titleLang = this.detectLanguage(event.title);
+        const descLang = event.description ? this.detectLanguage(event.description) : 'unknown';
+        
+        // Украинский не переводим
+        if (titleLang === 'uk' || descLang === 'uk') {
+            event.originalLanguage = 'uk';
+            event.translated = false;
+            return event;
+        }
+        
+        // Русский не переводим
+        if (titleLang === 'ru' && (descLang === 'ru' || descLang === 'unknown')) {
+            event.originalLanguage = 'ru';
+            event.translated = false;
+            return event;
+        }
+        
+        // Для английского и других — переводим
+        const needsTranslation = (titleLang === 'en' || titleLang === 'unknown' || 
+                                  descLang === 'en' || descLang === 'unknown');
+        
+        if (!needsTranslation) {
+            event.originalLanguage = titleLang || 'unknown';
+            event.translated = false;
+            return event;
+        }
+        
+        try {
+            // Сохраняем оригинал
+            event.originalTitle = event.title;
+            event.originalDescription = event.description || '';
+            event.originalLanguage = titleLang || 'en';
+            
+            // Переводим заголовок
+            const translatedTitle = await this.translate(event.title, 'ru');
+            if (translatedTitle && translatedTitle !== event.title) {
+                event.title = translatedTitle;
+            }
+            
+            // Переводим описание
+            if (event.description && event.description.length > 10) {
+                const translatedDesc = await this.translate(event.description, 'ru');
+                if (translatedDesc && translatedDesc !== event.description) {
+                    event.description = translatedDesc;
+                }
+            }
+            
+            event.translated = true;
+            this.translated++;
+            
+        } catch (error) {
+            console.warn('Ошибка перевода события:', error.message);
+            event.translated = false;
+        }
+        
+        return event;
+    }
+
+    // Пакетный перевод с прогрессом
+    async translateBatch(events, onProgress) {
+        this.totalToTranslate = events.length;
+        this.translated = 0;
+        
+        const translatedEvents = [];
+        
+        for (let i = 0; i < events.length; i++) {
+            const event = events[i];
+            const translated = await this.translateEvent(event);
+            translatedEvents.push(translated);
+            
+            this.translated = i + 1;
+            if (onProgress) {
+                onProgress(this.translated, this.totalToTranslate);
+            }
+        }
+        
+        return translatedEvents;
+    }
+}
+
+// ============================================================
+//  МЕНЕДЖЕР ПЛАГИНОВ
+// ============================================================
+class PluginManager {
+    constructor() {
+        this.plugins = [];
+    }
+
+    registerPlugin(plugin) {
+        this.plugins.push(plugin);
+        console.log(`✅ Зарегистрирован плагин: ${plugin.name} (${plugin.type})`);
+    }
+
+    getPluginForSource(source) {
+        for (const plugin of this.plugins) {
+            if (plugin.canHandle(source.type)) {
+                return plugin;
+            }
+        }
+        return null;
+    }
+
+    getAllPlugins() {
+        return this.plugins;
+    }
+}
+
+// ============================================================
+//  БАЗОВЫЙ ПЛАГИН
+// ============================================================
+class BasePlugin {
+    constructor(config) {
+        this.name = config.name || 'Базовый плагин';
+        this.type = config.type || 'base';
+        this.version = config.version || '1.0';
+        this.description = config.description || '';
+        this.sources = config.sources || [];
+    }
+
+    canHandle(type) {
+        return this.type === type;
+    }
+
+    async fetch(source) {
+        throw new Error('Метод fetch() должен быть реализован в наследнике');
+    }
+
+    normalize(items, source) {
+        return items.map(item => ({
+            title: item.title || 'Без заголовка',
+            description: item.description || item.content || item.summary || item.title || '',
+            date: item.date || item.pubDate || item.published || new Date().toISOString().slice(0,10),
+            source: source.name || this.name,
+            url: item.link || item.url || item.guid || '#',
+            region: item.region || source.region || 'global',
+            language: item.language || source.language || 'unknown',
+            originalLanguage: item.language || source.language || 'unknown',
+            translated: false
+        }));
+    }
+
+    async safeFetch(source) {
+        try {
+            const items = await this.fetch(source);
+            return this.normalize(items, source);
+        } catch (error) {
+            console.warn(`⚠️ Плагин ${this.name}: ошибка при загрузке ${source.name}:`, error.message);
+            return [];
+        }
+    }
+}
+
+// ============================================================
+//  ПЛАГИНЫ (RSS, Government, Science, International, Regional)
+// ============================================================
+class RssPlugin extends BasePlugin {
+    constructor() {
+        super({ name: 'RSS Плагин', type: 'rss', version: '1.0' });
+    }
+
+    async fetch(source) {
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
+        const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (!data.items || !data.items.length) return [];
+        return data.items.map(item => ({
+            title: item.title || 'Без заголовка',
+            description: item.description || item.content || item.title,
+            link: item.link || '#',
+            date: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : new Date().toISOString().slice(0,10),
+            language: source.language || 'unknown'
+        }));
+    }
+}
+
+class GovernmentPlugin extends BasePlugin {
+    constructor() {
+        super({ name: 'Government Плагин', type: 'government', version: '1.0' });
+    }
+
+    async fetch(source) {
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
+        try {
+            const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.items && data.items.length) {
+                return data.items.map(item => ({
+                    title: item.title || 'Без заголовка',
+                    description: item.description || item.content || item.title,
+                    link: item.link || '#',
+                    date: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : new Date().toISOString().slice(0,10),
+                    language: source.language || 'unknown'
+                }));
+            }
+        } catch (e) {
+            console.warn(`Government: ${source.name} не доступен`);
+        }
+        return this.getDemoData(source);
+    }
+
+    getDemoData(source) {
+        const demos = [
+            { title: 'Правительство утвердило новый бюджет на 2025 год', description: 'Доходы и расходы сбалансированы' },
+            { title: 'Принят закон о цифровой экономике', description: 'Новые правила для IT-компаний' }
+        ];
+        return demos.map((item, i) => ({
+            title: item.title,
+            description: item.description,
+            link: source.url || '#',
+            date: new Date().toISOString().slice(0,10),
+            language: source.language || 'ru'
+        }));
+    }
+}
+
+class SciencePlugin extends BasePlugin {
+    constructor() {
+        super({ name: 'Science Плагин', type: 'science', version: '1.0' });
+    }
+
+    async fetch(source) {
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
+        try {
+            const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.items && data.items.length) {
+                return data.items.map(item => ({
+                    title: item.title || 'Без заголовка',
+                    description: item.description || item.content || item.title,
+                    link: item.link || '#',
+                    date: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : new Date().toISOString().slice(0,10),
+                    language: source.language || 'en'
+                }));
+            }
+        } catch (e) {
+            console.warn(`Science: ${source.name} не доступен`);
+        }
+        return this.getDemoData(source);
+    }
+
+    getDemoData(source) {
+        const demos = [
+            { title: 'New CRISPR-Cas9 gene editing method developed', description: 'Scientists created a more precise technique' },
+            { title: 'Exoplanet discovered in habitable zone', description: 'Planet located 100 light years away' }
+        ];
+        return demos.map((item, i) => ({
+            title: item.title,
+            description: item.description,
+            link: source.url || '#',
+            date: new Date().toISOString().slice(0,10),
+            language: 'en'
+        }));
+    }
+}
+
+class InternationalPlugin extends BasePlugin {
+    constructor() {
+        super({ name: 'International Плагин', type: 'international', version: '1.0' });
+    }
+
+    async fetch(source) {
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
+        try {
+            const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.items && data.items.length) {
+                return data.items.map(item => ({
+                    title: item.title || 'Без заголовка',
+                    description: item.description || item.content || item.title,
+                    link: item.link || '#',
+                    date: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : new Date().toISOString().slice(0,10),
+                    language: source.language || 'en'
+                }));
+            }
+        } catch (e) {
+            console.warn(`International: ${source.name} не доступен`);
+        }
+        return this.getDemoData(source);
+    }
+
+    getDemoData(source) {
+        const orgs = {
+            'un': { title: 'UN General Assembly adopted new resolution', description: 'Resolution concerns climate change' },
+            'who': { title: 'WHO announced new health strategy', description: 'Strategy covers 2025-2030' },
+            'nasa': { title: 'NASA launched new climate satellite', description: 'PACE mission successfully started' }
+        };
+        const key = source.id || 'un';
+        const data = orgs[key] || orgs['un'];
+        return [{
+            title: data.title,
+            description: data.description,
+            link: source.url || '#',
+            date: new Date().toISOString().slice(0,10),
+            language: 'en'
+        }];
+    }
+}
+
+class RegionalPlugin extends BasePlugin {
+    constructor() {
+        super({ name: 'Regional Плагин', type: 'regional', version: '1.0' });
+    }
+
+    async fetch(source) {
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`;
+        try {
+            const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.items && data.items.length) {
+                return data.items.slice(0, 10).map(item => ({
+                    title: item.title || 'Без заголовка',
+                    description: item.description || item.content || item.title,
+                    link: item.link || '#',
+                    date: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : new Date().toISOString().slice(0,10),
+                    language: source.language || 'uk'
+                }));
+            }
+        } catch (e) {
+            console.warn(`Regional: ${source.name} не доступен`);
+        }
+        return this.getDemoData(source);
+    }
+
+    getDemoData(source) {
+        const regions = {
+            'kyiv': { title: 'У Києві відкрили новий культурний центр', description: 'Центр працюватиме для молоді' },
+            'lviv': { title: 'Львів побив туристичний рекорд', description: 'Місто відвідали 2 млн туристів' }
+        };
+        const key = source.id || 'kyiv';
+        const data = regions[key] || regions['kyiv'];
+        return [{
+            title: data.title,
+            description: data.description,
+            link: source.url || '#',
+            date: new Date().toISOString().slice(0,10),
+            language: 'uk'
+        }];
+    }
+}
+
+// ============================================================
+//  КОНФИГУРАЦИЯ
+// ============================================================
+const CONFIG = {
+    sources: [
+        { id: 'ria', name: 'РИА Новости', type: 'rss', url: 'https://ria.ru/export/rss2/archive/index.xml', region: 'russia', language: 'ru' },
+        { id: 'tass', name: 'ТАСС', type: 'rss', url: 'https://tass.ru/rss/v2.xml', region: 'russia', language: 'ru' },
+        { id: 'lenta', name: 'Lenta.ru', type: 'rss', url: 'https://lenta.ru/rss', region: 'russia', language: 'ru' },
+        { id: 'bbc', name: 'BBC News', type: 'rss', url: 'http://feeds.bbci.co.uk/news/rss.xml', region: 'uk', language: 'en' },
+        { id: 'reuters', name: 'Reuters', type: 'rss', url: 'http://feeds.reuters.com/Reuters/domesticNews', region: 'us', language: 'en' },
+        { id: 'gov_ua', name: 'Кабмин Украины', type: 'government', url: 'https://www.kmu.gov.ua/rss', region: 'ukraine', language: 'uk' },
+        { id: 'gov_ru', name: 'Правительство РФ', type: 'government', url: 'http://government.ru/rss/', region: 'russia', language: 'ru' },
+        { id: 'nplus1', name: 'N+1 (наука)', type: 'science', url: 'https://nplus1.ru/rss', region: 'russia', language: 'ru' },
+        { id: 'sciencedaily', name: 'ScienceDaily', type: 'science', url: 'https://www.sciencedaily.com/rss/all.xml', region: 'us', language: 'en' },
+        { id: 'nature', name: 'Nature News', type: 'science', url: 'https://www.nature.com/nature.rss', region: 'uk', language: 'en' },
+        { id: 'un', name: 'ООН', type: 'international', url: 'https://news.un.org/feed/subscribe/ru/news/rss.xml', region: 'global', language: 'en' },
+        { id: 'who', name: 'ВОЗ', type: 'international', url: 'https://www.who.int/rss-feeds/news-english.xml', region: 'global', language: 'en' },
+        { id: 'nasa', name: 'NASA', type: 'international', url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss', region: 'us', language: 'en' },
+        { id: 'kyiv', name: 'Киев (регион)', type: 'regional', url: 'https://kyivcity.gov.ua/rss', region: 'kyiv', language: 'uk' }
+    ],
+
+    categories: {
+        development: { 
+            label: 'Развитие', 
+            color: '#5fbb8a',
+            keywords: ['открыти', 'запуск', 'инвестиц', 'строительств', 'научн', 'разработ', 'новый', 'технолог', 'успеш', 'рекорд', 'создани', 'старт', 'прорыв', 'инновац']
+        },
+        decline: { 
+            label: 'Упадок', 
+            color: '#d96c6c',
+            keywords: ['авари', 'катастроф', 'кризис', 'обвал', 'падени', 'снижени', 'убыт', 'закрыти', 'сокращени', 'штраф', 'потер', 'уволн', 'дтп']
+        },
+        stability: { 
+            label: 'Стабильность', 
+            color: '#6a9fd8',
+            keywords: ['сохран', 'поддерж', 'стабильн', 'план', 'бюджет', 'утвержд', 'подписан', 'продлени', 'регламент', 'норм', 'закон', 'решение']
+        },
+        transition: { 
+            label: 'Переход', 
+            color: '#e3b35c',
+            keywords: ['измен', 'реформ', 'переход', 'сделк', 'слияни', 'поглощ', 'назнач', 'выбор', 'референдум', 'перестановк', 'новый этап']
+        }
+    },
+
+    noisePatterns: ['реклам', 'поздрав', 'прогноз погод', 'курс валют', 'афиш', 'концерт', 'скидк', 'распродаж', 'акци']
+};
+
+// ============================================================
+//  ДИАГРАММА
+// ============================================================
+class RadialChart {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+        this.centerX = this.width / 2;
+        this.centerY = this.height / 2;
+        this.radius = Math.min(this.width, this.height) / 2 - 25;
+        this.innerRadius = this.radius * 0.55;
+        this.data = [];
+    }
+
+    update(data) {
+        this.data = data;
+        this.draw();
+    }
+
+    draw() {
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const cx = this.centerX, cy = this.centerY, r = this.radius, innerR = this.innerRadius;
+        const total = this.data.reduce((sum, d) => sum + d.value, 0);
+
+        ctx.clearRect(0, 0, this.width, this.height);
+
+        if (total === 0) {
+            ctx.fillStyle = '#3d5b6b';
+            ctx.font = '16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Нет данных', cx, cy);
+            return;
+        }
+
+        let startAngle = -Math.PI / 2;
+        for (const item of this.data) {
+            const angle = (item.value / total) * 2 * Math.PI;
+            const endAngle = startAngle + angle;
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, startAngle, endAngle);
+            ctx.arc(cx, cy, innerR, endAngle, startAngle, true);
+            ctx.closePath();
+            ctx.fillStyle = item.color;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+
+            if (item.value / total > 0.04) {
+                const midAngle = startAngle + angle / 2;
+                const labelR = (r + innerR) / 2;
+                const x = cx + Math.cos(midAngle) * labelR;
+                const y = cy + Math.sin(midAngle) * labelR;
+                const percent = Math.round(item.value / total * 100);
+                ctx.save();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 13px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.9)';
+                ctx.shadowBlur = 6;
+                ctx.fillText(percent + '%', x, y);
+                ctx.restore();
+            }
+            startAngle = endAngle;
+        }
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(11, 18, 28, 0.95)';
+        ctx.fill();
+        ctx.fillStyle = '#8ba3b8';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('всего', cx, cy - 10);
+        ctx.fillStyle = '#e4edf5';
+        ctx.font = 'bold 22px sans-serif';
+        ctx.fillText(total, cx, cy + 16);
+    }
+}
+
+// ============================================================
+//  МОДУЛЬ 2: ШАРОКО
+// ============================================================
+class Sharoko {
+    constructor(categories, noisePatterns) {
+        this.categories = categories;
+        this.noisePatterns = noisePatterns.map(p => new RegExp(p, 'i'));
+        this.categoryPatterns = {};
+        for (const [key, cat] of Object.entries(categories)) {
+            this.categoryPatterns[key] = (cat.keywords || []).map(kw => new RegExp(kw, 'i'));
+        }
+    }
+
+    process(items) {
+        const filtered = [];
+        const seen = new Set();
+        for (const item of items) {
+            const text = (item.title + ' ' + (item.description || '')).toLowerCase();
+            let isNoise = false;
+            for (const pattern of this.noisePatterns) {
+                if (pattern.test(text)) { isNoise = true; break; }
+            }
+            if (isNoise) continue;
+            const key = item.title.trim().toLowerCase();
+            if (seen.has(key)) continue;
+            seen.add(key);
+
+            let category = 'none';
+            let catColor = 'grey';
+            for (const [catKey, patterns] of Object.entries(this.categoryPatterns)) {
+                let found = false;
+                for (const pattern of patterns) {
+                    if (pattern.test(text)) { found = true; break; }
+                }
+                if (found) {
+                    category = catKey;
+                    catColor = this.categories[catKey]?.color || 'grey';
+                    break;
+                }
+            }
+            filtered.push({ ...item, category, catColor });
+        }
+        return filtered;
+    }
+}
+
+// ============================================================
+//  ОСНОВНАЯ ПРОГРАММА
+// ============================================================
+const pluginManager = new PluginManager();
+pluginManager.registerPlugin(new RssPlugin());
+pluginManager.registerPlugin(new GovernmentPlugin());
+pluginManager.registerPlugin(new SciencePlugin());
+pluginManager.registerPlugin(new InternationalPlugin());
+pluginManager.registerPlugin(new RegionalPlugin());
+
+const translator = new Translator();
+const sharoko = new Sharoko(CONFIG.categories, CONFIG.noisePatterns);
+const chart = new RadialChart('radialChart');
+
+let state = {
+    rawItems: [],
+    processedItems: [],
+    filteredItems: [],
+    currentFilter: 'all',
+    pluginStats: {},
+    logs: []
+};
+
+// ============================================================
+//  UI
+// ============================================================
+function log(message, type = 'info') {
+    const panel = document.getElementById('logPanel');
+    const entry = document.createElement('div');
+    entry.className = `log-entry log-${type}`;
+    entry.textContent = message;
+    panel.appendChild(entry);
+    panel.scrollTop = panel.scrollHeight;
+}
+
+function updateStats(items) {
+    document.getElementById('totalFound').textContent = state.rawItems.length;
+    document.getElementById('afterFilter').textContent = items.length;
+
+    let dev = 0, dec = 0, stab = 0, trans = 0, none = 0;
+    for (const item of items) {
+        switch (item.category) {
+            case 'development': dev++; break;
+            case 'decline': dec++; break;
+            case 'stability': stab++; break;
+            case 'transition': trans++; break;
+            default: none++;
+        }
+    }
+    document.getElementById('catDev').textContent = dev;
+    document.getElementById('catDec').textContent = dec;
+    document.getElementById('catStab').textContent = stab;
+    document.getElementById('catTrans').textContent = trans;
+    document.getElementById('catNone').textContent = none;
+
+    const chartData = [];
+    const catMap = {
+        development: { value: dev, color: CONFIG.categories.development.color, label: CONFIG.categories.development.label },
+        decline: { value: dec, color: CONFIG.categories.decline.color, label: CONFIG.categories.decline.label },
+        stability: { value: stab, color: CONFIG.categories.stability.color, label: CONFIG.categories.stability.label },
+        transition: { value: trans, color: CONFIG.categories.transition.color, label: CONFIG.categories.transition.label }
+    };
+    for (const [key, data] of Object.entries(catMap)) {
+        if (data.value > 0) {
+            chartData.push({ value: data.value, color: data.color, label: data.label });
+        }
+    }
+    chart.update(chartData);
+
+    const legendContainer = document.getElementById('chartLegend');
+    legendContainer.innerHTML = '';
+    if (chartData.length === 0) {
+        legendContainer.innerHTML = '<span style="color:#5f7685;font-size:0.8rem;">Нет данных</span>';
+    } else {
+        for (const d of chartData) {
+            const item = document.createElement('span');
+            item.className = 'legend-item';
+            item.innerHTML = `<span class="legend-color" style="background:${d.color}"></span> ${d.label} (${d.value})`;
+            legendContainer.appendChild(item);
+        }
+    }
+}
+
+function renderPluginStats(stats) {
+    const container = document.getElementById('pluginStatsContainer');
+    container.innerHTML = '';
+    for (const [id, stat] of Object.entries(stats)) {
+        const div = document.createElement('div');
+        div.className = 'plugin-stat';
+        const errorText = stat.error ? ` ⚠️ ${stat.error}` : '';
+        div.innerHTML = `
+            <span class="name">${stat.name} ${errorText}</span>
+            <span class="counts">${stat.total || 0}</span>
+        `;
+        container.appendChild(div);
+    }
+}
+
+function renderItems(items) {
+    const container = document.getElementById('logContainer');
+    container.innerHTML = '';
+    if (!items || items.length === 0) {
+        container.innerHTML = '<div class="empty-state">🎣 Ничего не найдено.</div>';
+        return;
+    }
+    for (const item of items) {
+        const div = document.createElement('div');
+        div.className = 'event-item';
+        
+        const dateSpan = document.createElement('span');
+        dateSpan.className = 'date';
+        dateSpan.textContent = item.date || '--.--';
+        
+        const titleDiv = document.createElement('span');
+        titleDiv.className = 'title';
+        
+        const titleText = document.createElement('span');
+        titleText.textContent = item.title;
+        titleDiv.appendChild(titleText);
+        
+        // Если есть оригинал (был перевод)
+        if (item.originalTitle && item.translated) {
+            const originalSpan = document.createElement('span');
+            originalSpan.className = 'original';
+            originalSpan.textContent = `📝 ${item.originalTitle}`;
+            titleDiv.appendChild(originalSpan);
+        }
+        
+        titleDiv.title = item.description || item.title;
+        titleDiv.addEventListener('click', () => window.open(item.url || '#', '_blank'));
+        
+        // Языковой тег
+        const langTag = document.createElement('span');
+        langTag.className = `lang-tag${item.translated ? ' translated' : ''}`;
+        const langIcon = item.translated ? '🌐' : '📌';
+        const langLabel = item.originalLanguage || item.language || '?';
+        langTag.textContent = `${langIcon} ${langLabel}`;
+        langTag.title = item.translated ? 'Переведено на русский' : 'Оригинальный язык';
+        
+        const badge = document.createElement('span');
+        badge.className = `badge ${item.catColor || 'grey'}`;
+        const label = item.category === 'none' ? '⚪ Не относится' : 
+                     (CONFIG.categories[item.category]?.label || item.category);
+        badge.textContent = label;
+        
+        const linkIcon = document.createElement('span');
+        linkIcon.className = 'link-icon';
+        linkIcon.textContent = '🔗';
+        linkIcon.title = 'Открыть источник';
+        linkIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.open(item.url || '#', '_blank');
+        });
+        
+        div.appendChild(dateSpan);
+        div.appendChild(titleDiv);
+        div.appendChild(langTag);
+        div.appendChild(badge);
+        div.appendChild(linkIcon);
+        container.appendChild(div);
+    }
+}
+
+function applyFilter(filter) {
+    state.currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+    if (filter === 'all') {
+        state.filteredItems = state.processedItems;
+    } else {
+        state.filteredItems = state.processedItems.filter(item => item.category === filter);
+    }
+    renderItems(state.filteredItems);
+    updateStats(state.filteredItems);
+}
+
+// ============================================================
+//  ЗАПУСК
+// ============================================================
+async function runFishing() {
+    const btn = document.getElementById('fishBtn');
+    const progressEl = document.getElementById('translateProgress');
+    const statusEl = document.getElementById('translateStatus');
+    
+    btn.disabled = true;
+    btn.textContent = '⏳ Ловим...';
+    document.getElementById('logPanel').innerHTML = '';
+    log('🌊 Забрасываем сеть в информационный океан...', 'info');
+    log(`📦 Доступно плагинов: ${pluginManager.getAllPlugins().length}`, 'info');
+
+    try {
+        const allItems = [];
+        const pluginStats = {};
+
+        for (const source of CONFIG.sources) {
+            const plugin = pluginManager.getPluginForSource(source);
+            if (!plugin) {
+                log(`⚠️ Нет плагина для "${source.type}" (${source.name})`, 'warn');
+                continue;
+            }
+
+            log(`🔌 ${plugin.name} → ${source.name} (${source.region || 'global'})`, 'info');
+            
+            try {
+                const items = await plugin.safeFetch(source);
+                if (items && items.length) {
+                    allItems.push(...items.map(item => ({
+                        ...item,
+                        sourceType: plugin.type,
+                        pluginName: plugin.name,
+                        originalLanguage: item.language || source.language || 'unknown'
+                    })));
+                    
+                    if (!pluginStats[plugin.type]) {
+                        pluginStats[plugin.type] = { name: plugin.name, total: 0, error: null };
+                    }
+                    pluginStats[plugin.type].total += items.length;
+                    
+                    log(`✅ ${source.name}: получено ${items.length} событий`, 'ok');
+                } else {
+                    log(`⚠️ ${source.name}: данных нет`, 'warn');
+                }
+            } catch (error) {
+                log(`❌ ${source.name}: ошибка — ${error.message}`, 'err');
+                if (!pluginStats[plugin.type]) {
+                    pluginStats[plugin.type] = { name: plugin.name, total: 0, error: null };
+                }
+            }
+        }
+
+        state.rawItems = allItems;
+        state.pluginStats = pluginStats;
+        
+        log(`📦 Всего получено: ${state.rawItems.length} событий`, 'info');
+
+        // --- ПЕРЕВОД ---
+        if (state.rawItems.length > 0) {
+            log('🌐 Начинаем перевод событий...', 'info');
+            progressEl.classList.add('active');
+            
+            const toTranslate = state.rawItems.filter(item => 
+                translator.needsTranslation(item.title, item.originalLanguage)
+            );
+            
+            if (toTranslate.length > 0) {
+                log(`🌐 Будет переведено: ${toTranslate.length} событий`, 'info');
+                
+                const translatedItems = await translator.translateBatch(state.rawItems, (current, total) => {
+                    statusEl.textContent = `⏳ Перевод: ${current}/${total}`;
+                });
+                state.rawItems = translatedItems;
+                
+                const translatedCount = state.rawItems.filter(item => item.translated).length;
+                log(`✅ Переведено: ${translatedCount} событий`, 'ok');
+            } else {
+                log('ℹ️ Все события уже на русском или украинском', 'info');
+            }
+            
+            progressEl.classList.remove('active');
+        }
+
+        // Шароко сортирует
+        state.processedItems = sharoko.process(state.rawItems);
+        log(`🔍 После фильтрации: ${state.processedItems.length} событий`, 'ok');
+
+        const pluginCounts = {};
+        for (const item of state.processedItems) {
+            const type = item.sourceType || 'unknown';
+            if (!pluginCounts[type]) pluginCounts[type] = 0;
+            pluginCounts[type]++;
+        }
+        for (const [type, count] of Object.entries(pluginCounts)) {
+            if (state.pluginStats[type]) {
+                state.pluginStats[type].filtered = count;
+            }
+        }
+        
+        renderPluginStats(state.pluginStats);
+        state.filteredItems = state.processedItems;
+        applyFilter('all');
+        
+        log(`✅ Готово! Найдено: ${state.rawItems.length}, после сортировки: ${state.processedItems.length}`, 'ok');
+
+    } catch (error) {
+        log(`❌ Критическая ошибка: ${error.message}`, 'err');
+        console.error(error);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '🎯 ПОЙМАТЬ СОБЫТИЯ';
+        document.getElementById('translateProgress').classList.remove('active');
+    }
+}
+
+// ============================================================
+//  ЭКСПОРТ
+// ============================================================
+function exportJSON() {
+    if (!state.processedItems.length) { log('⚠️ Нет данных для экспорта', 'warn'); return; }
+    const data = JSON.stringify(state.processedItems, null, 2);
+    downloadFile(data, 'events.json', 'application/json');
+    log('💾 Экспортировано в JSON', 'ok');
+}
+
+function exportCSV() {
+    if (!state.processedItems.length) { log('⚠️ Нет данных для экспорта', 'warn'); return; }
+    const headers = ['Дата', 'Источник', 'Тип', 'Регион', 'Язык', 'Переведено', 'Заголовок', 'Оригинал', 'Категория', 'Ссылка'];
+    const rows = state.processedItems.map(item => [
+        item.date || '',
+        item.source || '',
+        item.sourceType || '',
+        item.region || '',
+        item.originalLanguage || '',
+        item.translated ? 'да' : 'нет',
+        `"${(item.title || '').replace(/"/g, '""')}"`,
+        `"${(item.originalTitle || '').replace(/"/g, '""')}"`,
+        item.category || 'none',
+        item.url || ''
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    downloadFile(csv, 'events.csv', 'text/csv');
+    log('📊 Экспортировано в CSV', 'ok');
+}
+
+function downloadFile(content, filename, mime) {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// ============================================================
+//  EVENT LISTENERS
+// ============================================================
+document.getElementById('fishBtn').addEventListener('click', runFishing);
+document.getElementById('exportJsonBtn').addEventListener('click', exportJSON);
+document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
+document.getElementById('clearBtn').addEventListener('click', () => {
+    state = { ...state, rawItems: [], processedItems: [], filteredItems: [] };
+    document.getElementById('logContainer').innerHTML = '<div class="empty-state">🧹 Всё очищено.</div>';
+    document.getElementById('pluginStatsContainer').innerHTML = '';
+    chart.update([]);
+    document.getElementById('chartLegend').innerHTML = '';
+    updateStats([]);
+    translator.cache.clear();
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
+});
+
+// Автозапуск
+setTimeout(() => runFishing(), 500);
+</script>
+</body>
+</html>
