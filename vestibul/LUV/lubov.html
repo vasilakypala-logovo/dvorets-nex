@@ -173,15 +173,15 @@ html, body {
 
 <script>
 const extensions = ["jpg", "jpeg", "png", "html", "webp", "JPG", "JPEG", "PNG", "WEBP"];
-    function openWork(n) {
-        // Вторая картина открывает портал
+
+function openWork(n) {
+    // Вторая картина открывает портал на балкон Наталии Русиной
     if (n === 2) {
         window.location.href = "works/rusin/balcony.html";
         return;
     }
 
-function openWork(n) {
-        // Пятая картина открывает портал
+    // Пятая картина открывает портал
     if (n === 5) {
         window.location.href = "works/balconyud.html";
         return;
@@ -192,10 +192,9 @@ function openWork(n) {
     const caption = document.getElementById("caption");
     let index = 0;
 
-
     function tryNext() {
         if (index >= extensions.length) {
-           caption.textContent = "Файл works/" + n + " не найден.";
+            caption.textContent = "Файл works/" + n + " не найден.";
             big.removeAttribute("src");
             viewer.style.display = "flex";
             return;
