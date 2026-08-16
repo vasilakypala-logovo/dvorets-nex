@@ -1,0 +1,440 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Балкон Наталі Русіної</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;font-family:Georgia,serif;}
+#garden{position:relative;width:100%;height:100%;background-image:url('balcony_more.png');background-size:cover;background-position:center;}
+#morningGlow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 19% 15%,rgba(255,245,185,.18),transparent 25%),radial-gradient(circle at 48% 45%,rgba(255,255,255,.055),transparent 28%),linear-gradient(to bottom,rgba(5,20,10,.02),rgba(0,0,0,.10));mix-blend-mode:screen;}
+#dewVeil{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.36) 0 1px,transparent 2px),radial-gradient(circle,rgba(255,230,150,.23) 0 1px,transparent 2px);background-size:130px 95px,210px 150px;background-position:12% 66%,71% 52%;opacity:.22;animation:dew 7s ease-in-out infinite alternate;}
+@keyframes dew{from{opacity:.16;filter:blur(.1px)}to{opacity:.28;filter:blur(.45px)}}
+
+.zone{position:absolute;z-index:20;cursor:pointer;border-radius:50%;}
+#logovoZone{left:35%;top:43%;width:16%;height:22%;border-radius:50%;}
+#backZone{left:2%;top:3%;width:10%;height:12%;border-radius:40%;}
+.show-hotspots .zone{background:rgba(255,244,160,.24);outline:2px solid rgba(255,255,255,.70);box-shadow:0 0 30px rgba(255,235,140,.55);}
+
+#komorny-title{
+  position:fixed;
+  top:22px;
+  left:0;
+  width:100%;
+  text-align:center;
+  font-family:Georgia, serif;
+  font-size:40px;
+  letter-spacing:0.18em;
+  color:rgba(70,30,40,0.92);
+  text-shadow:
+    0 0 6px rgba(255,255,255,0.95),
+    0 0 14px rgba(170,220,255,0.9),
+    0 0 28px rgba(120,190,255,0.7),
+    0 0 54px rgba(80,150,255,0.45);
+  z-index:9999;
+  pointer-events:none;
+  opacity:0;
+  animation:
+    komornyFade 14s ease-in-out infinite,
+    komornyFloat 10s ease-in-out infinite;
+}
+@keyframes komornyFade{
+  0%{opacity:0;}
+  18%{opacity:.82;}
+  70%{opacity:.78;}
+  100%{opacity:0;}
+}
+@keyframes komornyFloat{
+  0%,100%{transform:translateY(0px);}
+  50%{transform:translateY(3px);}
+}
+
+#caption{position:absolute;left:50%;bottom:4.5%;transform:translateX(-50%);z-index:24;padding:9px 18px;color:rgba(255,248,218,.86);background:rgba(15,28,12,.30);border:1px solid rgba(255,238,170,.22);box-shadow:0 0 28px rgba(0,0,0,.28),inset 0 0 18px rgba(255,245,190,.05);backdrop-filter:blur(4px);font-size:13px;letter-spacing:.10em;text-align:center;opacity:.78;pointer-events:none;}
+#musicHint{position:absolute;right:2.5%;bottom:3%;z-index:25;color:rgba(255,248,218,.70);font-size:11px;letter-spacing:.08em;background:rgba(10,22,8,.35);border:1px solid rgba(255,238,170,.16);padding:7px 10px;opacity:0;transition:opacity .5s ease;}
+#musicHint.show{opacity:.9;}
+
+#flyingPainting{
+  position:fixed;
+  left:-340px;
+  top:22%;
+  width:240px;
+  padding:18px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255,210,120,.18), transparent 18%),
+    radial-gradient(circle at 82% 18%, rgba(255,210,120,.14), transparent 17%),
+    radial-gradient(circle at 20% 82%, rgba(255,210,120,.13), transparent 18%),
+    radial-gradient(circle at 82% 80%, rgba(255,210,120,.16), transparent 18%),
+    linear-gradient(135deg,#1b0d05,#3a1c0b,#120804);
+  border:8px ridge #3b1d0c;
+  outline:3px solid rgba(90,45,18,.85);
+  box-shadow:
+    inset 0 0 18px rgba(255,190,95,.16),
+    inset 0 0 34px rgba(0,0,0,.75),
+    0 0 38px rgba(255,205,125,.25),
+    0 18px 38px rgba(0,0,0,.55);
+  border-radius:12px;
+  z-index:18;
+  opacity:0;
+  pointer-events:none;
+  cursor:pointer;
+}
+#flyingPainting::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border:3px double rgba(190,125,58,.75);
+  border-radius:8px;
+  pointer-events:none;
+  box-shadow:inset 0 0 12px rgba(0,0,0,.65);
+}
+#flyingPainting img{
+  width:100%;
+  display:block;
+  border:3px solid rgba(40,18,8,.95);
+  box-shadow:
+    inset 0 0 10px rgba(0,0,0,.8),
+    0 0 10px rgba(255,210,130,.18);
+  pointer-events:none;
+}
+#flyingPainting.fly{
+  animation:paintingFlight 36s ease-in-out forwards;
+  pointer-events:auto;
+}
+@keyframes paintingFlight{
+  0%{left:-340px;top:28%;opacity:0;transform:rotate(-5deg) scale(.88);}
+  8%{opacity:1;}
+  20%{top:22%;transform:rotate(2deg) scale(.96);}
+  36%{top:18%;transform:rotate(-1deg) scale(1.02);}
+  52%{top:21%;transform:rotate(3deg) scale(.98);}
+  68%{top:16%;transform:rotate(-2deg) scale(1.03);}
+  84%{opacity:1;top:23%;transform:rotate(2deg) scale(.96);}
+  100%{left:112vw;top:27%;opacity:0;transform:rotate(-4deg) scale(.90);}
+}
+
+#floatingGallery{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:8;
+}
+.floatArt{
+  position:absolute;
+  width:220px;
+  padding:7px;
+  border-radius:0;
+  background:rgba(245,238,210,0.78);
+  box-shadow:
+    0 0 12px rgba(255,255,255,0.25),
+    0 12px 28px rgba(0,0,0,0.45);
+  opacity:0;
+  transform:translateX(110vw) scale(0.92);
+  animation:balconyFloat 28s linear forwards;
+  cursor:pointer;
+  pointer-events:auto;
+  transition:transform 0.1s;
+}
+.floatArt:hover{
+  transform:translateX(110vw) scale(0.95);
+  box-shadow:0 0 30px rgba(255,255,255,0.40), 0 12px 28px rgba(0,0,0,0.60);
+}
+.floatArt img{
+  width:100%;
+  display:block;
+  border-radius:0;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,0.25);
+  pointer-events:none;
+}
+@keyframes balconyFloat{
+  0%{
+    opacity:0;
+    transform:translateX(110vw) scale(0.88);
+  }
+  10%{opacity:1;}
+  78%{opacity:1;}
+  100%{
+    opacity:0;
+    transform:translateX(-35vw) scale(1);
+  }
+}
+
+#expandedOverlay{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background:rgba(5,12,6,0.88);
+  backdrop-filter:blur(8px);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  animation:fadeIn 0.4s ease;
+}
+#expandedOverlay.active{
+  display:flex;
+}
+@keyframes fadeIn{
+  0%{opacity:0;}
+  100%{opacity:1;}
+}
+#expandedImage{
+  max-height:92vh;
+  max-width:92vw;
+  object-fit:contain;
+  box-shadow:0 0 60px rgba(255,240,180,0.25), 0 20px 60px rgba(0,0,0,0.80);
+  border-radius:4px;
+  background:rgba(0,0,0,0.30);
+  padding:8px;
+  animation:zoomIn 0.5s ease;
+}
+@keyframes zoomIn{
+  0%{transform:scale(0.85);opacity:0;}
+  100%{transform:scale(1);opacity:1;}
+}
+#closeExpanded{
+  position:fixed;
+  top:30px;
+  right:40px;
+  z-index:9999;
+  font-size:48px;
+  color:rgba(255,248,218,0.85);
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-family:Georgia,serif;
+  transition:all 0.3s ease;
+  text-shadow:0 0 30px rgba(0,0,0,0.80);
+  pointer-events:auto;
+  line-height:1;
+}
+#closeExpanded:hover{
+  transform:rotate(90deg) scale(1.2);
+  color:rgba(255,255,255,1);
+}
+
+@media (max-width:700px){
+  #komorny-title{
+    font-size:28px;
+    letter-spacing:0.10em;
+    top:16px;
+  }
+  .floatArt{
+    width:160px;
+  }
+  #caption{
+    font-size:11px;
+    padding:6px 14px;
+    bottom:3.5%;
+  }
+  #closeExpanded{
+    font-size:38px;
+    top:20px;
+    right:25px;
+  }
+  #expandedImage{
+    max-height:80vh;
+    max-width:95vw;
+  }
+  #flyingPainting{
+    width:180px;
+    padding:14px;
+  }
+}
+
+audio{display:none;}
+</style>
+</head>
+<body>
+<div id="garden">
+  <div id="komorny-title">
+    Natalia Rusina •  artist & art educator  •  Odesa
+  </div>
+  <div id="morningGlow"></div>
+  <div id="dewVeil"></div>
+
+  <div id="flyingPainting">
+    <img id="flyingImage" src="run1.jpg" alt="Art by Natalia Rusina">
+  </div>
+
+  <div class="zone" id="backZone" title="Back to Concert Hall" onclick="window.location.href='index.html'"></div>
+  <div class="zone" id="logovoZone" title="Enter Logovo" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/logovo.html'"></div>
+
+  <div id="caption">The music remains behind the leaves.</div>
+  <div id="musicHint">click anywhere — the hall music will breathe quietly here</div>
+  <audio id="echo" loop preload="auto"></audio>
+</div>
+
+<div id="floatingGallery"></div>
+
+<div id="expandedOverlay">
+  <button id="closeExpanded" title="Закрыть">✕</button>
+  <img id="expandedImage" src="" alt="Увеличенная работа Наталі Русіної">
+</div>
+
+<script>
+const echo = document.getElementById('echo');
+const hint = document.getElementById('musicHint');
+const floatingGallery = document.getElementById('floatingGallery');
+
+const overlay = document.getElementById('expandedOverlay');
+const expandedImg = document.getElementById('expandedImage');
+const closeBtn = document.getElementById('closeExpanded');
+
+const flyingPainting = document.getElementById('flyingPainting');
+const flyingImage = document.getElementById('flyingImage');
+
+// ===== МАССИВ КАРТИН (run1.jpg ... run38.jpg) =====
+const balconyPictures = [];
+for(let i=1; i<=38; i++){
+  balconyPictures.push('run' + i + '.jpg');
+}
+
+let balconyIndex = 0;
+let flyingIndex = 0;
+
+// ===== ФУНКЦИЯ: РАЗВЕРНУТЬ КАРТИНУ =====
+function expandImage(src){
+  expandedImg.src = src;
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+// ===== ФУНКЦИЯ: ЗАКРЫТЬ =====
+function closeExpandedImage(){
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  setTimeout(() => {
+    if(!overlay.classList.contains('active')){
+      expandedImg.src = '';
+    }
+  }, 300);
+}
+
+// ===== СОБЫТИЯ ОВЕРЛЕЯ =====
+closeBtn.addEventListener('click', closeExpandedImage);
+overlay.addEventListener('click', function(e){
+  if(e.target === overlay){
+    closeExpandedImage();
+  }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    if(overlay.classList.contains('active')){
+      closeExpandedImage();
+    } else {
+      window.location.href = 'index.html';
+    }
+  }
+});
+
+// ===== КЛИК ПО ЛЕТЯЩЕЙ КАРТИНЕ =====
+flyingPainting.addEventListener('click', function(e){
+  e.stopPropagation();
+  if(flyingImage && flyingImage.src){
+    expandImage(flyingImage.src);
+  }
+});
+
+// ===== ЗАПУСК ПЛАВАЮЩИХ КАРТИН =====
+function launchBalconyPicture(){
+  if(!floatingGallery) return;
+
+  const frame = document.createElement('div');
+  frame.className = 'floatArt';
+
+  const img = document.createElement('img');
+  img.src = balconyPictures[balconyIndex];
+  img.alt = 'Natalia Rusina, art';
+  img.draggable = false;
+
+  frame.appendChild(img);
+
+  const top = 8 + Math.random() * 34;
+  frame.style.top = top + '%';
+
+  const size = 180 + Math.random() * 70;
+  frame.style.width = size + 'px';
+
+  frame.addEventListener('click', function(e){
+    e.stopPropagation();
+    const imgEl = this.querySelector('img');
+    if(imgEl){
+      expandImage(imgEl.src);
+    }
+  });
+
+  floatingGallery.appendChild(frame);
+
+  balconyIndex++;
+  if(balconyIndex >= balconyPictures.length){
+    balconyIndex = 0;
+  }
+
+  setTimeout(function(){
+    frame.remove();
+  }, 29000);
+}
+
+// ===== ЗАПУСК ЛЕТЯЩЕЙ КАРТИНЫ =====
+function launchFlyingPainting(){
+  flyingPainting.classList.remove('fly');
+  
+  const src = balconyPictures[flyingIndex];
+  flyingImage.src = src;
+  flyingImage.alt = 'Natalia Rusina, ' + (flyingIndex + 1);
+  
+  flyingIndex++;
+  if(flyingIndex >= balconyPictures.length){
+    flyingIndex = 0;
+  }
+
+  setTimeout(() => {
+    flyingPainting.classList.add('fly');
+  }, 50);
+}
+
+// ===== МУЗЫКА (ВСТРОЕННАЯ В КОД В ВИДЕ BASE64) =====
+// Это OZERO4.mp3, преобразованный в base64, чтобы быть самостоятельным.
+// Примечание: файл может быть большим, но для самостоятельности он здесь.
+// ВАЖНО: этот код содержит только начало base64 для демонстрации.
+// Для реального использования вставьте сюда полную base64-строку вашего аудиофайла.
+const MUSIC_BASE64 = ""; // <-- СЮДА ВСТАВЬТЕ ПОЛНУЮ BASE64-СТРОКУ ВАШЕГО АУДИОФАЙЛА OZERO4.mp3
+
+function startEcho(){
+  try{
+    // Если музыка встроена, используем её
+    if(MUSIC_BASE64 && MUSIC_BASE64.length > 1000) {
+      echo.src = 'data:audio/mpeg;base64,' + MUSIC_BASE64;
+    } else {
+      // Запасной вариант: если base64 не вставлен, пробуем загрузить файл
+      // Это нужно, чтобы страница работала и без встроенной музыки (для теста)
+      echo.src = 'OZERO4.mp3';
+    }
+    echo.volume = 0.22;
+    echo.currentTime = 0;
+    const p = echo.play();
+    if(p !== undefined){ p.catch(()=>{ hint.classList.add('show'); }); }
+  } catch(e){ 
+    hint.classList.add('show'); 
+  }
+}
+
+// ===== СТАРТ =====
+startEcho();
+launchBalconyPicture();
+launchFlyingPainting();
+
+setInterval(launchBalconyPicture, 5200);
+setInterval(launchFlyingPainting, 38000);
+
+document.addEventListener('click', function(){
+  if(echo.paused) startEcho();
+  hint.classList.remove('show');
+}, false);
+
+document.addEventListener('keydown', function(e){
+  if(e.key.toLowerCase() === 'h') document.body.classList.toggle('show-hotspots');
+});
+</script>
+</body>
+</html>
