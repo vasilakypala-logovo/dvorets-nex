@@ -283,6 +283,41 @@ height:650px;
   }
 }
 
+/* ===== НОВАЯ ЗОНА ДЛЯ AFISHA ===== */
+#afisha-link {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+
+    font-family: 'Georgia', serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: #b0d4ff;
+    text-shadow: 0 0 10px rgba(100, 180, 255, 0.3), 0 0 20px rgba(100, 180, 255, 0.1);
+    padding: 8px 24px;
+    border-radius: 30px;
+    background: rgba(10, 20, 40, 0.3);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+    animation: glowPulse 3s infinite alternate;
+}
+
+#afisha-link:hover {
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(100, 200, 255, 0.8), 0 0 40px rgba(100, 200, 255, 0.4);
+    background: rgba(30, 60, 120, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes glowPulse {
+    0% { opacity: 0.6; text-shadow: 0 0 10px rgba(100, 180, 255, 0.2), 0 0 20px rgba(100, 180, 255, 0.05); }
+    100% { opacity: 1; text-shadow: 0 0 20px rgba(100, 200, 255, 0.6), 0 0 40px rgba(100, 200, 255, 0.2), 0 0 80px rgba(100, 200, 255, 0.1); }
+}
 
 </style>
 </head>
@@ -301,6 +336,8 @@ height:650px;
 
   <audio id="door-sound" src="99999.mp3" preload="auto"></audio>
 
+  <!-- НОВАЯ ЗОНА: AFISHA -->
+  <div id="afisha-link">✦ AFISHA ✦</div>
 
   <!-- ПОЧТА НЕКСА: невидимая зона бюста слева внизу -->
   <div id="mail-bust-zone" title="NEX MAIL"></div>
@@ -545,6 +582,15 @@ window.addEventListener('message', function(e){
       pochta.src = '';
     }
   }
+});
+
+/* ===== НОВЫЙ ОБРАБОТЧИК ДЛЯ AFISHA ===== */
+document.getElementById('afisha-link').addEventListener('click', function() {
+    const fade = document.getElementById('fade');
+    fade.classList.add('active');
+    setTimeout(() => {
+        window.location.href = 'afisha10.html';
+    }, 800);
 });
 
 </script>
