@@ -1,403 +1,392 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>АФИША — Дворец НЕКСА</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>АФИША — Дворец НЕКСА</title>
 
-<style>
-* { box-sizing: border-box; }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: Georgia, "Times New Roman", serif;
-    background: #111;
-}
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Georgia, "Times New Roman", serif;
+            background: #111;
+        }
 
-body {
-    color: #f4ead2;
-}
+        body {
+            color: #f4ead2;
+        }
 
-/* ФОН ДВОРЦА
-   Если есть настоящее изображение дворца,
-   положите его рядом с afisha.html под именем palace.jpg.
-*/
-#palace {
-    position: fixed;
-    inset: 0;
-    background:
-        linear-gradient(rgba(10,12,18,.18), rgba(10,12,18,.42)),
-        url("palace.jpg") center/cover no-repeat,
-        linear-gradient(135deg, #27313a, #766b58 45%, #171a21);
-}
+        /* ФОН ДВОРЦА */
+        #palace {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(10, 12, 18, .18), rgba(10, 12, 18, .42)),
+                url("palace.jpg") center/cover no-repeat,
+                linear-gradient(135deg, #27313a, #766b58 45%, #171a21);
+        }
 
-#mist {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background:
-        radial-gradient(ellipse at center,
-            rgba(255,255,255,.06) 0%,
-            rgba(255,255,255,0) 42%,
-            rgba(0,0,0,.38) 100%);
-}
+        #mist {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center,
+                    rgba(255, 255, 255, .06) 0%,
+                    rgba(255, 255, 255, 0) 42%,
+                    rgba(0, 0, 0, .38) 100%);
+        }
 
-/* Заголовок */
-#title {
-    position: fixed;
-    top: 25px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    z-index: 1000;
-    font-size: clamp(30px, 4vw, 46px);
-    letter-spacing: 12px;
-    text-shadow: 0 2px 6px #000, 0 0 22px rgba(255,220,150,.35);
-}
+        /* Заголовок */
+        #title {
+            position: fixed;
+            top: 25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 1000;
+            font-size: clamp(30px, 4vw, 46px);
+            letter-spacing: 12px;
+            text-shadow: 0 2px 6px #000, 0 0 22px rgba(255, 220, 150, .35);
+        }
 
-#subtitle {
-    position: fixed;
-    top: 79px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    z-index: 1000;
-    color: rgba(255,240,210,.78);
-    font-size: 13px;
-    letter-spacing: 3px;
-}
+        #subtitle {
+            position: fixed;
+            top: 79px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 1000;
+            color: rgba(255, 240, 210, .78);
+            font-size: 13px;
+            letter-spacing: 3px;
+        }
 
-/* Сцена */
-#stage {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 1px;
-    height: 1px;
-    perspective: 1000px;
-    transform-style: preserve-3d;
-}
+        /* Сцена */
+        #stage {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 1px;
+            height: 1px;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
 
-/* Портрет */
-.artist {
-    position: absolute;
-    left: -78px;
-    top: -103px;
-    width: 156px;
-    height: 206px;
+        /* Портрет */
+        .artist {
+            position: absolute;
+            left: -78px;
+            top: -103px;
+            width: 156px;
+            height: 206px;
+            border: 2px solid rgba(244, 230, 190, .82);
+            border-radius: 4px;
+            background: #222;
+            overflow: hidden;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, .65),
+                0 0 12px rgba(255, 220, 160, .18);
+            transition: border-color .35s ease,
+                box-shadow .35s ease;
+        }
 
-    border: 2px solid rgba(244,230,190,.82);
-    border-radius: 4px;
+        .artist:hover {
+            border-color: #fff1bd;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, .8),
+                0 0 28px rgba(255, 225, 150, .48);
+        }
 
-    background: #222;
-    overflow: hidden;
-    cursor: pointer;
+        .artist img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            background: linear-gradient(135deg, #403d39, #aaa17e);
+        }
 
-    transform-style: preserve-3d;
-    will-change: transform, opacity;
+        .artist.missing img {
+            opacity: 0;
+        }
 
-    box-shadow:
-        0 12px 35px rgba(0,0,0,.65),
-        0 0 12px rgba(255,220,160,.18);
+        .artist.missing::before {
+            content: "ПОРТРЕТ";
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            color: rgba(255, 240, 210, .65);
+            font-size: 12px;
+            letter-spacing: 3px;
+        }
 
-    transition:
-        border-color .35s ease,
-        box-shadow .35s ease;
-}
+        .artistName {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 25px 6px 9px;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            letter-spacing: 1px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, .9));
+            pointer-events: none;
+        }
 
-.artist:hover {
-    border-color: #fff1bd;
-    box-shadow:
-        0 18px 45px rgba(0,0,0,.8),
-        0 0 28px rgba(255,225,150,.48);
-}
+        /* Нижняя подсказка */
+        #hint {
+            position: fixed;
+            bottom: 23px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            text-align: center;
+            color: rgba(255, 240, 210, .7);
+            font-size: 13px;
+            letter-spacing: 2px;
+            pointer-events: none;
+        }
 
-.artist img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    background: linear-gradient(135deg, #403d39, #aaa17e);
-}
+        /* Затемнение краёв */
+        #vignette {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 900;
+            background: radial-gradient(ellipse at center,
+                    transparent 34%,
+                    rgba(0, 0, 0, .57) 100%);
+        }
 
-/* Если портрет пока отсутствует — красивое временное поле */
-.artist.missing img {
-    opacity: 0;
-}
+        /* Кнопка возврата */
+        #back {
+            position: fixed;
+            left: 22px;
+            bottom: 19px;
+            z-index: 1100;
+            padding: 8px 14px;
+            border: 1px solid rgba(244, 230, 190, .38);
+            border-radius: 3px;
+            background: rgba(0, 0, 0, .25);
+            color: rgba(255, 240, 210, .75);
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+        }
 
-.artist.missing::before {
-    content: "ПОРТРЕТ";
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    color: rgba(255,240,210,.65);
-    font-size: 12px;
-    letter-spacing: 3px;
-}
+        #back:hover {
+            color: #fff1bd;
+            border-color: rgba(255, 241, 189, .8);
+        }
 
-.artistName {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 25px 6px 9px;
-    color: white;
-    text-align: center;
-    font-size: 14px;
-    letter-spacing: 1px;
-    background: linear-gradient(transparent, rgba(0,0,0,.9));
-    pointer-events: none;
-}
+        /* Кнопка управления звуком */
+        #soundToggle {
+            position: fixed;
+            right: 22px;
+            bottom: 19px;
+            z-index: 1100;
+            padding: 8px 14px;
+            border: 1px solid rgba(244, 230, 190, .38);
+            border-radius: 3px;
+            background: rgba(0, 0, 0, .25);
+            color: rgba(255, 240, 210, .75);
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
 
-/* Нижняя подсказка */
-#hint {
-    position: fixed;
-    bottom: 23px;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    text-align: center;
-    color: rgba(255,240,210,.7);
-    font-size: 13px;
-    letter-spacing: 2px;
-    pointer-events: none;
-}
-
-/* Затемнение краёв */
-#vignette {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 900;
-    background:
-        radial-gradient(ellipse at center,
-            transparent 34%,
-            rgba(0,0,0,.57) 100%);
-}
-
-/* Кнопка возврата */
-#back {
-    position: fixed;
-    left: 22px;
-    bottom: 19px;
-    z-index: 1100;
-
-    padding: 8px 14px;
-    border: 1px solid rgba(244,230,190,.38);
-    border-radius: 3px;
-
-    background: rgba(0,0,0,.25);
-    color: rgba(255,240,210,.75);
-
-    font-family: inherit;
-    font-size: 12px;
-    letter-spacing: 1px;
-
-    cursor: pointer;
-    text-decoration: none;
-}
-
-#back:hover {
-    color: #fff1bd;
-    border-color: rgba(255,241,189,.8);
-}
-</style>
+        #soundToggle:hover {
+            color: #fff1bd;
+            border-color: rgba(255, 241, 189, .8);
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="palace"></div>
-<div id="mist"></div>
+    <!-- АУДИО — ФАЙЛ klavisin.mp3 ДОЛЖЕН ЛЕЖАТЬ РЯДОМ -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="klavisin.mp3" type="audio/mpeg">
+    </audio>
 
-<div id="title">AFISHA</div>
-<div id="subtitle">GALLERY OF PRESENTATIONS OF ORIGINAL EUROPEAN ARTISTS</div>
+    <div id="palace"></div>
+    <div id="mist"></div>
 
-<div id="stage"></div>
+    <div id="title">AFISHA</div>
+    <div id="subtitle">GALLERY OF PRESENTATIONS OF ORIGINAL EUROPEAN ARTISTS</div>
 
-<a id="back" href="index.html">← DVORETS</a>
+    <div id="stage"></div>
 
-<div id="hint">Click on the artist's portrait</div>
+    <a id="back" href="index.html">← DVORETS</a>
 
-<div id="vignette"></div>
+    <div id="hint">Click on the artist's portrait</div>
 
-<script>
+    <div id="vignette"></div>
 
-/* ==========================================================
-   ХУДОЖНИКИ
+    <script>
+        /* ==========================================================
+           ХУДОЖНИКИ
+           ========================================================== */
 
-   Пока стоят 7 демонстрационных записей.
-   Когда дашь реальные файлы, меняем только image и link.
-   ========================================================== */
+        const artists = [{
+            name: "Наталия Русина",
+            image: "artists/nataliarus.jpg",
+            link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/rusin/balcony.html"
+        }, {
+            name: "Татьяна Москалева",
+            image: "artists/taniamosk.jpg",
+            link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/tmosk/balconymos.html"
+        }, {
+            name: "Мария Харлампиева",
+            image: "artists/mariaharl.jpg",
+            link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/volnasia/lesbalkona/balcony_les.html"
+        }, {
+            name: "Сергей Коморный",
+            image: "artists/sergeykom.jpg",
+            link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/concert_nex/balcony.html"
+        }, {
+            name: "Вадим Солодкий",
+            image: "artists/vadimsol.jpg",
+            link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/volnasia/dogbal/balconydog.html"
+        }, {
+            name: "Наталия Калайда",
+            image: "artists/nataliakala.jpg",
+            link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/seas/dvorets_library_room/finkuk/balcony_fin.html"
+        }, {
+            name: "Василий Юдов",
+            image: "artists/vasiliyud.jpg",
+            link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/balconyud.html"
+        }];
 
-const artists = [
-    {
-        name: "Наталия Русина",
-        image: "artists/nataliarus.jpg",
-        link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/rusin/balcony.html"
-    },
-    {
-        name: "Татьяна Москалева",
-        image: "artists/taniamosk.jpg",
-        link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/tmosk/balconymos.html"
-    },
-    {
-        name: "Мария Харлампиева",
-        image: "artists/mariaharl.jpg",
-        link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/volnasia/lesbalkona/balcony_les.html"
-    },
-    {
-        name: "Сергей Коморный",
-        image: "artists/sergeykom.jpg",
-        link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/concert_nex/balcony.html"
-    },
-    {
-        name: "Вадим Солодкий",
-        image: "artists/vadimsol.jpg",
-        link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/volnasia/dogbal/balconydog.html"
-    },
-    {
-        name: "Наталия Калайда",
-        image: "artists/nataliakala.jpg",
-        link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/seas/dvorets_library_room/finkuk/balcony_fin.html"
-    },
-    {
-        name: "Василий Юдов",
-        image: "artists/vasiliyud.jpg",
-        link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/balconyud.html"
-    }
-];
+        /* ==========================================================
+           СОЗДАНИЕ КАРТОЧЕК
+           ========================================================== */
 
-/* ==========================================================
-   СОЗДАНИЕ КАРТОЧЕК
-   ========================================================== */
+        const stage = document.getElementById("stage");
+        const cards = [];
 
-const stage = document.getElementById("stage");
-const cards = [];
+        artists.forEach((artist, i) => {
 
-artists.forEach((artist, i) => {
+            const card = document.createElement("div");
+            card.className = "artist";
 
-    const card = document.createElement("div");
-    card.className = "artist";
+            const img = document.createElement("img");
+            img.src = artist.image;
+            img.alt = artist.name;
 
-    const img = document.createElement("img");
-    img.src = artist.image;
-    img.alt = artist.name;
+            img.addEventListener("error", () => {
+                card.classList.add("missing");
+            });
 
-    img.addEventListener("error", () => {
-        card.classList.add("missing");
-    });
+            const name = document.createElement("div");
+            name.className = "artistName";
+            name.textContent = artist.name;
 
-    const name = document.createElement("div");
-    name.className = "artistName";
-    name.textContent = artist.name;
+            card.appendChild(img);
+            card.appendChild(name);
 
-    card.appendChild(img);
-    card.appendChild(name);
+            card.addEventListener("click", () => {
+                window.location.href = artist.link;
+            });
 
-    card.addEventListener("click", () => {
-        window.location.href = artist.link;
-    });
+            stage.appendChild(card);
 
-    stage.appendChild(card);
+            cards.push({
+                element: card,
+                index: i
+            });
+        });
 
-    cards.push({
-        element: card,
-        index: i
-    });
-});
+        /* ==========================================================
+           ТОРНАДО
+           ========================================================== */
 
-/* ==========================================================
-   ТОРНАДО
+        let angle = 0;
+        const speed = 0.00042;
+        const spiralHeight = 650;
+        const maxRadius = 300;
+        const depth = 430;
 
-   Портреты движутся вокруг невидимой вертикальной оси.
-   ========================================================== */
+        function animate(time) {
 
-let angle = 0;
+            angle += speed * 16;
 
-/* скорость */
-const speed = 0.00042;
+            cards.forEach((card, i) => {
 
-/* высота спирали */
-const spiralHeight = 650;
+                const a = angle + (i / artists.length) * Math.PI * 2;
 
-/* ширина воронки */
-const maxRadius = 300;
+                const y = Math.sin(a) * spiralHeight / 2;
 
-/* глубина пространства */
-const depth = 430;
+                const normalized = Math.abs(y) / (spiralHeight / 2);
+                const radius = 70 + normalized * maxRadius;
 
-function animate(time) {
+                const x = Math.cos(a) * radius;
+                const z = Math.sin(a) * depth;
 
-    angle += speed * 16;
+                const scale = 0.70 + ((z + depth) / (depth * 2)) * 0.58;
+                const opacity = 0.42 + ((z + depth) / (depth * 2)) * 0.58;
+                const rotate = Math.cos(a) * 18;
 
-    cards.forEach((card, i) => {
+                card.element.style.transform = `
+                            translate3d(${x}px, ${y}px, ${z}px)
+                            rotateY(${rotate}deg)
+                            scale(${scale})
+                        `;
 
-        const a =
-            angle +
-            (i / artists.length) * Math.PI * 2;
+                card.element.style.opacity = opacity;
+                card.element.style.zIndex = Math.round(z + depth + 100);
+            });
 
-        /* Вертикальная позиция */
-        const y =
-            Math.sin(a) * spiralHeight / 2;
+            requestAnimationFrame(animate);
+        }
 
-        /*
-           В центре торнадо узко,
-           к краям шире.
-        */
-        const normalized =
-            Math.abs(y) / (spiralHeight / 2);
+        requestAnimationFrame(animate);
 
-        const radius =
-            70 + normalized * maxRadius;
+        /* ==========================================================
+           МУЗЫКА — НЕГРОМКО (15%)
+           ========================================================== */
 
-        /* Горизонтальное движение */
-        const x =
-            Math.cos(a) * radius;
+        const audio = document.getElementById('bgMusic');
+        audio.volume = 0.15;
+        audio.loop = true;
 
-        /* Глубина */
-        const z =
-            Math.sin(a) * depth;
+        // Автозапуск после первого клика
+        document.addEventListener('click', function startAudio() {
+            audio.play().catch(() => {});
+            document.removeEventListener('click', startAudio);
+        }, { once: true });
 
-        /* Перспективный масштаб */
-        const scale =
-            0.70 +
-            ((z + depth) / (depth * 2)) * 0.58;
+        // Кнопка вкл/выкл
+        const toggleBtn = document.createElement('button');
+        toggleBtn.id = 'soundToggle';
+        toggleBtn.textContent = '♫';
+        document.body.appendChild(toggleBtn);
 
-        /* Прозрачность */
-        const opacity =
-            0.42 +
-            ((z + depth) / (depth * 2)) * 0.58;
-
-        /* Наклон */
-        const rotate =
-            Math.cos(a) * 18;
-
-        card.element.style.transform = `
-            translate3d(${x}px, ${y}px, ${z}px)
-            rotateY(${rotate}deg)
-            scale(${scale})
-        `;
-
-        card.element.style.opacity = opacity;
-
-        /*
-           Ближайшие портреты автоматически
-           оказываются поверх дальних.
-        */
-        card.element.style.zIndex =
-            Math.round(z + depth + 100);
-    });
-
-    requestAnimationFrame(animate);
-}
-
-requestAnimationFrame(animate);
-
-</script>
+        let isPlaying = true;
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isPlaying) {
+                audio.pause();
+                toggleBtn.textContent = '♫';
+            } else {
+                audio.play().catch(() => {});
+                toggleBtn.textContent = '♫';
+            }
+            isPlaying = !isPlaying;
+        });
+    </script>
 
 </body>
 </html>
