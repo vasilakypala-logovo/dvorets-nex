@@ -27,6 +27,7 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      transition: background-image 2s ease-in-out;
     }
 
     #morningGlow {
@@ -87,7 +88,6 @@
       box-shadow: 0 0 35px rgba(190, 175, 140, 0.45);
     }
 
-    /* ===== ТИТЛ — ТЁМНО-ОРАНЖЕВЫЙ ===== */
     #artist-title {
       position: fixed;
       top: 24px;
@@ -163,7 +163,6 @@
       opacity: 0.9;
     }
 
-    /* ===== ПЛАВАЮЩАЯ ГАЛЕРЕЯ ===== */
     #floatingGallery {
       position: absolute;
       inset: 0;
@@ -215,7 +214,6 @@
       }
     }
 
-    /* ===== РАЗВЕРНУТАЯ КАРТИНА (оверлей) ===== */
     #expandedOverlay {
       position: fixed;
       inset: 0;
@@ -324,7 +322,6 @@
 
 <div id="floatingGallery"></div>
 
-<!-- ===== ОВЕРЛЕЙ ДЛЯ УВЕЛИЧЕННОЙ КАРТИНЫ ===== -->
 <div id="expandedOverlay">
   <button id="closeExpanded" title="Închide">✕</button>
   <img id="expandedImage" src="" alt="Ion Carchelan — lucrare mărită">
@@ -335,13 +332,23 @@
     const echo = document.getElementById('echo');
     const hint = document.getElementById('musicHint');
     const floatingGallery = document.getElementById('floatingGallery');
+    const garden = document.getElementById('garden');
 
-    // ===== ОВЕРЛЕЙ =====
     const overlay = document.getElementById('expandedOverlay');
     const expandedImg = document.getElementById('expandedImage');
     const closeBtn = document.getElementById('closeExpanded');
 
-    // ===== МАССИВ КАРТИН (io1.jpg … io45.jpg) =====
+    // ===== ФОНЫ: вечер (jpg) и утро (png) =====
+    const backgrounds = ['balconion.jpg', 'balconion.png'];
+    let bgIndex = 0;
+
+    // ===== ПЕРЕКЛЮЧЕНИЕ ФОНА КАЖДЫЕ 15 СЕКУНД =====
+    setInterval(() => {
+      bgIndex = (bgIndex + 1) % backgrounds.length;
+      garden.style.backgroundImage = `url('${backgrounds[bgIndex]}')`;
+    }, 15000);
+
+    // ===== МАССИВ КАРТИН =====
     const forestPictures = [];
     for (let i = 1; i <= 45; i++) {
       forestPictures.push('io' + i + '.jpg');
@@ -349,14 +356,12 @@
 
     let pictureIndex = 0;
 
-    // ===== ФУНКЦИЯ: РАЗВЕРНУТЬ КАРТИНУ =====
     function expandImage(src) {
       expandedImg.src = src;
       overlay.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
 
-    // ===== ФУНКЦИЯ: ЗАКРЫТЬ РАЗВЕРНУТУЮ =====
     function closeExpandedImage() {
       overlay.classList.remove('active');
       document.body.style.overflow = '';
@@ -367,7 +372,6 @@
       }, 300);
     }
 
-    // ===== СОБЫТИЯ ДЛЯ ОВЕРЛЕЯ =====
     closeBtn.addEventListener('click', closeExpandedImage);
 
     overlay.addEventListener('click', function(e) {
@@ -386,7 +390,6 @@
       }
     });
 
-    // ===== ФУНКЦИЯ: ЗАПУСК ОДНОЙ ПЛАВАЮЩЕЙ РАБОТЫ =====
     function launchForestPicture() {
       if (!floatingGallery) return;
 
@@ -424,7 +427,6 @@
       }, 32000);
     }
 
-    // ===== МУЗЫКА =====
     function startEcho() {
       try {
         echo.src = 'OZERO5.mp3';
@@ -441,7 +443,6 @@
       }
     }
 
-    // ===== СТАРТ =====
     startEcho();
     launchForestPicture();
     setInterval(launchForestPicture, 4800);
