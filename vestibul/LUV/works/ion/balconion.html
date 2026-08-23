@@ -23,17 +23,36 @@
       position: relative;
       width: 100%;
       height: 100%;
-      background-image: url('balconion.jpg');
+      overflow: hidden;
+    }
+
+    /* ===== ДВА СЛОЯ ДЛЯ ПЛАВНОГО ПЕРЕКЛЮЧЕНИЯ ===== */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      transition: background-image 2s ease-in-out;
+      transition: opacity 3s ease-in-out;
+    }
+
+    #bgEvening {
+      background-image: url('balconion.jpg');
+      opacity: 1;
+      z-index: 1;
+    }
+
+    #bgMorning {
+      background-image: url('balconion.png');
+      opacity: 0;
+      z-index: 2;
     }
 
     #morningGlow {
       position: absolute;
       inset: 0;
       pointer-events: none;
+      z-index: 3;
       background:
         radial-gradient(circle at 25% 20%, rgba(235, 225, 190, 0.25), transparent 35%),
         radial-gradient(circle at 75% 60%, rgba(210, 195, 165, 0.15), transparent 40%),
@@ -45,6 +64,7 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
+      z-index: 3;
       background-image:
         radial-gradient(circle, rgba(235, 225, 200, 0.20) 0 1px, transparent 2px),
         radial-gradient(circle, rgba(210, 195, 170, 0.15) 0 1px, transparent 2px);
@@ -307,7 +327,9 @@
 <body>
 
 <div id="garden">
-  <div id="artist-title">Ion Carchelan · watercolor · Chisinau</div>
+  <!-- ДВА СЛОЯ ДЛЯ ПЛАВНОГО ПЕРЕКЛЮЧЕНИЯ -->
+  <div id="bgEvening" class="bg-layer"></div>
+  <div id="bgMorning" class="bg-layer"></div>
 
   <div id="morningGlow"></div>
   <div id="dewVeil"></div>
@@ -332,21 +354,33 @@
     const echo = document.getElementById('echo');
     const hint = document.getElementById('musicHint');
     const floatingGallery = document.getElementById('floatingGallery');
-    const garden = document.getElementById('garden');
+
+    const bgEvening = document.getElementById('bgEvening');
+    const bgMorning = document.getElementById('bgMorning');
 
     const overlay = document.getElementById('expandedOverlay');
     const expandedImg = document.getElementById('expandedImage');
     const closeBtn = document.getElementById('closeExpanded');
 
-    // ===== ФОНЫ: вечер (jpg) и утро (png) =====
-    const backgrounds = ['balconion.jpg', 'balconion.png'];
-    let bgIndex = 0;
+    // ===== ПЕРЕКЛЮЧЕНИЕ ФОНОВ С НАЛОЖЕНИЕМ =====
+    // evening = 1 (виден), morning = 0 (скрыт) — начинаем с вечера
+    let isEvening = true;
 
-    // ===== ПЕРЕКЛЮЧЕНИЕ ФОНА КАЖДЫЕ 15 СЕКУНД =====
-    setInterval(() => {
-      bgIndex = (bgIndex + 1) % backgrounds.length;
-      garden.style.backgroundImage = `url('${backgrounds[bgIndex]}')`;
-    }, 15000);
+    function switchBackground() {
+      if (isEvening) {
+        // Переход к утру: вечер исчезает, утро появляется
+        bgEvening.style.opacity = '0';
+        bgMorning.style.opacity = '1';
+      } else {
+        // Переход к вечеру: утро исчезает, вечер появляется
+        bgEvening.style.opacity = '1';
+        bgMorning.style.opacity = '0';
+      }
+      isEvening = !isEvening;
+    }
+
+    // Первое переключение через 15 секунд, затем каждые 15 секунд
+    setInterval(switchBackground, 15000);
 
     // ===== МАССИВ КАРТИН =====
     const forestPictures = [];
