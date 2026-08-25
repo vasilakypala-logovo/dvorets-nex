@@ -108,7 +108,7 @@
       box-shadow: 0 0 40px rgba(150, 135, 110, 0.30);
     }
 
-    /* ===== ТИТЛ ===== */
+    /* ===== ТИТЛ — С ДВУМЯ ФАЗАМИ: СВЕТЛАЯ И ТЁМНАЯ ЗЕЛЁНАЯ ===== */
     #artist-title {
       position: fixed;
       top: 24px;
@@ -118,30 +118,66 @@
       font-family: 'Georgia', serif;
       font-size: 34px;
       letter-spacing: 0.14em;
-      color: #c9b48a;
-      text-shadow:
-        0 0 14px rgba(180, 150, 100, 0.50),
-        0 0 30px rgba(140, 110, 70, 0.35),
-        0 0 60px rgba(100, 80, 50, 0.20),
-        0 0 90px rgba(70, 55, 35, 0.12);
       z-index: 9999;
       pointer-events: none;
-      opacity: 0;
-      animation:
-        titleFade 22s ease-in-out infinite,
-        titleFloat 16s ease-in-out infinite;
+      animation: titleGlow 10s ease-in-out infinite;
     }
 
-    @keyframes titleFade {
-      0% { opacity: 0; }
-      25% { opacity: 0.95; }
-      70% { opacity: 0.85; }
-      100% { opacity: 0; }
-    }
-
-    @keyframes titleFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(4px); }
+    @keyframes titleGlow {
+      0% {
+        color: #c9b48a;
+        text-shadow:
+          0 0 14px rgba(180, 150, 100, 0.50),
+          0 0 30px rgba(140, 110, 70, 0.35),
+          0 0 60px rgba(100, 80, 50, 0.20),
+          0 0 90px rgba(70, 55, 35, 0.12);
+        opacity: 0.95;
+      }
+      40% {
+        color: #c9b48a;
+        text-shadow:
+          0 0 14px rgba(180, 150, 100, 0.50),
+          0 0 30px rgba(140, 110, 70, 0.35),
+          0 0 60px rgba(100, 80, 50, 0.20),
+          0 0 90px rgba(70, 55, 35, 0.12);
+        opacity: 0.95;
+      }
+      50% {
+        color: #1a4a2a;
+        text-shadow:
+          0 0 12px rgba(30, 120, 60, 0.70),
+          0 0 30px rgba(20, 100, 50, 0.55),
+          0 0 60px rgba(10, 80, 40, 0.40),
+          0 0 100px rgba(5, 60, 30, 0.30);
+        opacity: 1;
+      }
+      75% {
+        color: #1a4a2a;
+        text-shadow:
+          0 0 12px rgba(30, 120, 60, 0.70),
+          0 0 30px rgba(20, 100, 50, 0.55),
+          0 0 60px rgba(10, 80, 40, 0.40),
+          0 0 100px rgba(5, 60, 30, 0.30);
+        opacity: 1;
+      }
+      85% {
+        color: #c9b48a;
+        text-shadow:
+          0 0 14px rgba(180, 150, 100, 0.50),
+          0 0 30px rgba(140, 110, 70, 0.35),
+          0 0 60px rgba(100, 80, 50, 0.20),
+          0 0 90px rgba(70, 55, 35, 0.12);
+        opacity: 0.95;
+      }
+      100% {
+        color: #c9b48a;
+        text-shadow:
+          0 0 14px rgba(180, 150, 100, 0.50),
+          0 0 30px rgba(140, 110, 70, 0.35),
+          0 0 60px rgba(100, 80, 50, 0.20),
+          0 0 90px rgba(70, 55, 35, 0.12);
+        opacity: 0.95;
+      }
     }
 
     #caption {
