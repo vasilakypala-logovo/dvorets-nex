@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Луврский переход</title>
+    <style>
+        /* Сброс и полный экран */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+
+        /* Контейнер занимает всё окно */
+        .scene {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #0a0a0a;
+        }
+
+        /* Карта растягивается на весь экран без искажений,
+           но занимает 100% ширины и высоты — фон заполняет всё окно */
+        .map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("roomsvet.png") no-repeat center center;
+            background-size: cover; /* полностью покрывает область */
+        }
+
+        /* Все ссылки-зоны — абсолютно позиционированы внутри .map */
+        .link {
+            position: absolute;
+            display: block;
+            cursor: pointer;
+            /* убираем стандартные рамки и подсветку */
+            outline: none;
+            border: none;
+            background: transparent;
+            /* прозрачные для невидимости, но кликабельные */
+            opacity: 0;
+            /* для отладки можно раскомментировать: */
+            /* opacity: 0.2; background: rgba(255,0,0,0.15); */
+            transition: none;
+        }
+
+        /* При наведении — никаких рамок и свечений */
+        .link:hover {
+            outline: none;
+            box-shadow: none;
+            opacity: 0; /* остаются невидимыми всегда */
+        }
+
+        /* Позиции окон (в % от .map) — оставлены прежними */
+        .w1 { left: 4.6%;  top: 7.2%;  width: 13.0%; height: 59.0%; }
+        .w2 { left: 22.2%; top: 18.0%; width: 8.8%;  height: 46.5%; }
+        .w3 { left: 31.0%; top: 25.0%; width: 5.8%;  height: 36.0%; }
+
+        .w4 { left: 66.8%; top: 25.0%; width: 5.8%;  height: 36.0%; }
+        .w5 { left: 73.4%; top: 18.0%; width: 8.8%;  height: 46.5%; }
+        .w6 { left: 84.0%; top: 7.2%;  width: 12.0%; height: 59.0%; }
+
+        /* Мона Лиза */
+        .mona {
+            left: 45.7%;
+            top: 31.0%;
+            width: 10.0%;
+            height: 23.5%;
+        }
+
+        /* Дополнительно — если нужно, чтобы зоны были видны при разработке,
+           можно временно раскомментировать строки ниже */
+        /*
+        .link {
+            opacity: 0.15;
+            background: rgba(255, 215, 0, 0.1);
+            outline: 1px dashed rgba(255,255,255,0.2);
+        }
+        .link:hover {
+            opacity: 0.25;
+            background: rgba(255, 215, 0, 0.15);
+        }
+        */
+    </style>
+</head>
+<body>
+<div class="scene">
+    <div class="map">
+
+        <!-- Левая группа окон -->
+        <a class="link w1" href="svet/tishina.html"  aria-label="Тишина"></a>
+        <a class="link w2" href="svet/tishina1.html" aria-label="Тишина 1"></a>
+        <a class="link w3" href="svet/tishina2.html" aria-label="Тишина 2"></a>
+
+        <!-- Правая группа окон -->
+        <a class="link w4" href="svet/tishina3.html" aria-label="Тишина 3"></a>
+        <a class="link w5" href="svet/tishina4.html" aria-label="Тишина 4"></a>
+        <a class="link w6" href="svet/tishina5.html" aria-label="Тишина 5"></a>
+
+        <!-- Центральная картина (Мона Лиза) -->
+        <a class="link mona" href="luvr/luvr.html" aria-label="Лувр"></a>
+
+    </div>
+</div>
+</body>
+</html>
