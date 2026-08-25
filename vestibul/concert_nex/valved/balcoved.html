@@ -1,0 +1,505 @@
+﻿<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valery Vedrenko · fine art photo · Minsk</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #2b2a26;
+      font-family: 'Georgia', 'Times New Roman', serif;
+    }
+
+    #garden {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* ===== ДВА СЛОЯ ДЛЯ ПЛАВНОГО ПЕРЕКЛЮЧЕНИЯ ===== */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: opacity 4s ease-in-out;
+    }
+
+    #bgEvening {
+      background-image: url('roomvced.png');
+      opacity: 1;
+      z-index: 1;
+    }
+
+    #bgMorning {
+      background-image: url('roomvced.png');
+      opacity: 0;
+      z-index: 2;
+    }
+
+    #morningGlow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(180, 170, 150, 0.15), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(140, 130, 110, 0.10), transparent 35%),
+        linear-gradient(145deg, rgba(100, 90, 75, 0.06), rgba(40, 35, 28, 0.15));
+      mix-blend-mode: soft-light;
+    }
+
+    #dewVeil {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      background-image:
+        radial-gradient(circle, rgba(200, 190, 170, 0.08) 0 1px, transparent 2px),
+        radial-gradient(circle, rgba(170, 160, 140, 0.06) 0 1px, transparent 2px);
+      background-size: 180px 140px, 260px 200px;
+      background-position: 15% 45%, 75% 35%;
+      opacity: 0.30;
+      animation: dew 14s ease-in-out infinite alternate;
+    }
+
+    @keyframes dew {
+      0% { opacity: 0.20; filter: blur(0.5px); }
+      100% { opacity: 0.35; filter: blur(0.8px); }
+    }
+
+    .zone {
+      position: absolute;
+      z-index: 20;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    #logovoZone {
+      left: 32%;
+      top: 45%;
+      width: 18%;
+      height: 20%;
+      border-radius: 50%;
+    }
+
+    #backZone {
+      left: 2%;
+      top: 3%;
+      width: 10%;
+      height: 12%;
+      border-radius: 40%;
+    }
+
+    .show-hotspots .zone {
+      background: rgba(160, 150, 130, 0.15);
+      outline: 2px solid rgba(180, 165, 140, 0.50);
+      box-shadow: 0 0 40px rgba(150, 135, 110, 0.30);
+    }
+
+    /* ===== ТИТЛ ===== */
+    #artist-title {
+      position: fixed;
+      top: 24px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-family: 'Georgia', serif;
+      font-size: 34px;
+      letter-spacing: 0.14em;
+      color: #c9b48a;
+      text-shadow:
+        0 0 14px rgba(180, 150, 100, 0.50),
+        0 0 30px rgba(140, 110, 70, 0.35),
+        0 0 60px rgba(100, 80, 50, 0.20),
+        0 0 90px rgba(70, 55, 35, 0.12);
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      animation:
+        titleFade 22s ease-in-out infinite,
+        titleFloat 16s ease-in-out infinite;
+    }
+
+    @keyframes titleFade {
+      0% { opacity: 0; }
+      25% { opacity: 0.95; }
+      70% { opacity: 0.85; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes titleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(4px); }
+    }
+
+    #caption {
+      position: absolute;
+      left: 50%;
+      bottom: 4.5%;
+      transform: translateX(-50%);
+      z-index: 24;
+      padding: 10px 24px;
+      color: rgba(200, 185, 160, 0.75);
+      background: rgba(40, 35, 28, 0.40);
+      border: 1px solid rgba(160, 145, 120, 0.20);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.30), inset 0 0 20px rgba(160, 145, 120, 0.05);
+      backdrop-filter: blur(5px);
+      font-size: 14px;
+      letter-spacing: 0.14em;
+      text-align: center;
+      opacity: 0.80;
+      pointer-events: none;
+      border-radius: 2px;
+    }
+
+    #musicHint {
+      position: absolute;
+      right: 2.5%;
+      bottom: 3%;
+      z-index: 25;
+      color: rgba(190, 175, 150, 0.60);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      background: rgba(35, 30, 24, 0.50);
+      border: 1px solid rgba(150, 135, 115, 0.15);
+      padding: 7px 14px;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      border-radius: 2px;
+    }
+
+    #musicHint.show {
+      opacity: 0.9;
+    }
+
+    #floatingGallery {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 8;
+    }
+
+    .floatArt {
+      position: absolute;
+      width: 240px;
+      padding: 6px;
+      background: rgba(30, 28, 24, 0.80);
+      box-shadow:
+        0 0 18px rgba(120, 105, 80, 0.20),
+        0 14px 36px rgba(0, 0, 0, 0.60);
+      opacity: 0;
+      transform: translateX(110vw) scale(0.90);
+      animation: forestFloat 36s linear forwards;
+      border-radius: 2px;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.15s;
+      border: 1px solid rgba(160, 140, 115, 0.15);
+    }
+
+    .floatArt:hover {
+      transform: translateX(110vw) scale(0.94);
+      box-shadow: 0 0 40px rgba(180, 155, 120, 0.30), 0 14px 36px rgba(0, 0, 0, 0.70);
+      border-color: rgba(190, 170, 140, 0.30);
+    }
+
+    .floatArt img {
+      width: 100%;
+      display: block;
+      border-radius: 0;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+      pointer-events: none;
+      filter: grayscale(0.15) contrast(1.05);
+    }
+
+    @keyframes forestFloat {
+      0% {
+        opacity: 0;
+        transform: translateX(110vw) scale(0.85);
+      }
+      14% { opacity: 1; }
+      78% { opacity: 1; }
+      100% {
+        opacity: 0;
+        transform: translateX(-35vw) scale(1.04);
+      }
+    }
+
+    #expandedOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(20, 18, 14, 0.92);
+      backdrop-filter: blur(14px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    #expandedOverlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    #expandedImage {
+      max-height: 90vh;
+      max-width: 92vw;
+      object-fit: contain;
+      box-shadow: 0 0 70px rgba(160, 140, 110, 0.25), 0 20px 60px rgba(0, 0, 0, 0.85);
+      border-radius: 4px;
+      background: rgba(15, 13, 10, 0.50);
+      padding: 8px;
+      animation: zoomIn 0.5s ease;
+      border: 1px solid rgba(180, 160, 130, 0.12);
+    }
+
+    @keyframes zoomIn {
+      0% { transform: scale(0.88); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    #closeExpanded {
+      position: fixed;
+      top: 30px;
+      right: 40px;
+      z-index: 9999;
+      font-size: 48px;
+      color: rgba(200, 185, 160, 0.80);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Georgia', serif;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 40px rgba(0, 0, 0, 0.90);
+      pointer-events: auto;
+      line-height: 1;
+    }
+
+    #closeExpanded:hover {
+      transform: rotate(90deg) scale(1.15);
+      color: rgba(230, 220, 200, 1);
+    }
+
+    @media (max-width: 700px) {
+      #artist-title {
+        font-size: 22px;
+        letter-spacing: 0.10em;
+        top: 16px;
+      }
+      .floatArt {
+        width: 160px;
+      }
+      #caption {
+        font-size: 11px;
+        padding: 6px 14px;
+        bottom: 3.5%;
+      }
+      #closeExpanded {
+        font-size: 38px;
+        top: 20px;
+        right: 25px;
+      }
+      #expandedImage {
+        max-height: 78vh;
+        max-width: 95vw;
+      }
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="garden">
+  <!-- ДВА СЛОЯ ДЛЯ ПЛАВНОГО ПЕРЕКЛЮЧЕНИЯ -->
+  <div id="bgEvening" class="bg-layer"></div>
+  <div id="bgMorning" class="bg-layer"></div>
+
+  <div id="morningGlow"></div>
+  <div id="dewVeil"></div>
+
+  <!-- ===== ТИТЛ ===== -->
+  <div id="artist-title">Valery Vedrenko · fine art photography · Minsk</div>
+
+  <div class="zone" id="backZone" title="Назад в зал" onclick="window.location.href='index.html'"></div>
+  <div class="zone" id="logovoZone" title="В Логово" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/logovo.html'"></div>
+
+  <div id="caption">комната · свет и тишина</div>
+  <div id="musicHint">коснись — музыка оживёт</div>
+  <audio id="echo" loop preload="auto"></audio>
+</div>
+
+<div id="floatingGallery"></div>
+
+<div id="expandedOverlay">
+  <button id="closeExpanded" title="Закрыть">✕</button>
+  <img id="expandedImage" src="" alt="Valery Vedrenko — работа">
+</div>
+
+<script>
+  (function() {
+    const echo = document.getElementById('echo');
+    const hint = document.getElementById('musicHint');
+    const floatingGallery = document.getElementById('floatingGallery');
+
+    const bgEvening = document.getElementById('bgEvening');
+    const bgMorning = document.getElementById('bgMorning');
+
+    const overlay = document.getElementById('expandedOverlay');
+    const expandedImg = document.getElementById('expandedImage');
+    const closeBtn = document.getElementById('closeExpanded');
+
+    // ===== ПЕРЕКЛЮЧЕНИЕ ФОНОВ =====
+    let isEvening = true;
+
+    function switchBackground() {
+      if (isEvening) {
+        bgEvening.style.opacity = '0';
+        bgMorning.style.opacity = '1';
+      } else {
+        bgEvening.style.opacity = '1';
+        bgMorning.style.opacity = '0';
+      }
+      isEvening = !isEvening;
+    }
+
+    setInterval(switchBackground, 18000);
+
+    // ===== МАССИВ КАРТИН (vv1.jpg … vv39.jpg) =====
+    const vedrenkoPictures = [];
+    for (let i = 1; i <= 39; i++) {
+      vedrenkoPictures.push('vv' + i + '.jpg');
+    }
+
+    let pictureIndex = 0;
+
+    function expandImage(src) {
+      expandedImg.src = src;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeExpandedImage() {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        if (!overlay.classList.contains('active')) {
+          expandedImg.src = '';
+        }
+      }, 300);
+    }
+
+    closeBtn.addEventListener('click', closeExpandedImage);
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        closeExpandedImage();
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (overlay.classList.contains('active')) {
+          closeExpandedImage();
+        } else {
+          window.location.href = 'index.html';
+        }
+      }
+    });
+
+    function launchVedrenkoPicture() {
+      if (!floatingGallery) return;
+
+      const frame = document.createElement('div');
+      frame.className = 'floatArt';
+
+      const img = document.createElement('img');
+      const src = vedrenkoPictures[pictureIndex];
+      img.src = src;
+      img.alt = 'Valery Vedrenko · photo ' + (pictureIndex + 1);
+      img.draggable = false;
+
+      frame.appendChild(img);
+
+      const top = 5 + Math.random() * 40;
+      frame.style.top = top + '%';
+
+      const size = 160 + Math.random() * 120;
+      frame.style.width = size + 'px';
+
+      frame.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const imgEl = this.querySelector('img');
+        if (imgEl) {
+          expandImage(imgEl.src);
+        }
+      });
+
+      floatingGallery.appendChild(frame);
+
+      pictureIndex = (pictureIndex + 1) % vedrenkoPictures.length;
+
+      setTimeout(() => {
+        if (frame.parentNode) frame.remove();
+      }, 36000);
+    }
+
+    function startEcho() {
+      try {
+        echo.src = 'OZERO6.mp3';
+        echo.volume = 0.18;
+
+        const playPromise = echo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            hint.classList.add('show');
+          });
+        }
+      } catch (e) {
+        hint.classList.add('show');
+      }
+    }
+
+    startEcho();
+    launchVedrenkoPicture();
+    setInterval(launchVedrenkoPicture, 5200);
+
+    document.addEventListener('click', function() {
+      if (echo.paused) {
+        startEcho();
+      }
+      hint.classList.remove('show');
+    }, false);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key.toLowerCase() === 'h') {
+        document.body.classList.toggle('show-hotspots');
+      }
+    });
+
+  })();
+</script>
+
+</body>
+</html>
