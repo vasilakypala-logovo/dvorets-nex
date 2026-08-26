@@ -294,37 +294,23 @@
 
         /* ==========================================================
            АВТОНОМНЫЙ МАССИВ ДЛЯ ВТОРОГО ПОТОКА
-           — сюда можно добавлять новых участников
+           — используем реальные данные + можно добавлять новых
            ========================================================== */
-        const secondArtists = [{
-            name: "Новый художник 1",
-            image: "artists/new1.jpg",
-            link: "https://example.com/new1"
-        }, {
-            name: "Новый художник 2",
-            image: "artists/new2.jpg",
-            link: "https://example.com/new2"
-        }, {
-            name: "Новый художник 3",
-            image: "artists/new3.jpg",
-            link: "https://example.com/new3"
-        }, {
-            name: "Новый художник 4",
-            image: "artists/new4.jpg",
-            link: "https://example.com/new4"
-        }, {
-            name: "Новый художник 5",
-            image: "artists/new5.jpg",
-            link: "https://example.com/new5"
-        }, {
-            name: "Анна Новая",
-            image: "artists/anna_new.jpg",
-            link: "https://example.com/anna"
-        }, {
-            name: "Петр Новый",
-            image: "artists/petr_new.jpg",
-            link: "https://example.com/petr"
-        }];
+        const secondArtists = [
+            // Реальные художники из основного массива
+            ...mainArtists.map(artist => ({...artist})),
+            // Добавляем новых участников (замените пути и ссылки на реальные)
+            {
+                name: "Новый художник 1",
+                image: "artists/new1.jpg",
+                link: "https://example.com/new1"
+            },
+            {
+                name: "Новый художник 2",
+                image: "artists/new2.jpg",
+                link: "https://example.com/new2"
+            }
+        ];
 
         /* ==========================================================
            ФУНКЦИЯ СОЗДАНИЯ КАРТОЧЕК
@@ -410,7 +396,7 @@
         const offsets = secondArtists.map((_, i) => i / secondArtists.length);
 
         function animateSecond(time) {
-            const progress = (performance.now() / 16000) % 1; // более медленный цикл
+            const progress = (performance.now() / 16000) % 1;
 
             const count = secondCards.length;
             const w = window.innerWidth;
@@ -423,25 +409,21 @@
                 // затем продолжаем расти и уходим за правый край
                 let scale;
                 if (p < 0.5) {
-                    // От 0 до 0.5: рост от миниатюры к максимуму
-                    const t = p / 0.5; // 0->1
-                    scale = 0.3 + t * 0.7; // 0.3 -> 1.0
+                    const t = p / 0.5;
+                    scale = 0.3 + t * 0.7;
                 } else {
-                    // От 0.5 до 1.0: продолжаем расти и уходим за край
-                    const t = (p - 0.5) / 0.5; // 0->1
-                    scale = 1.0 + t * 1.2; // 1.0 -> 2.2 (увеличиваем и уходим)
+                    const t = (p - 0.5) / 0.5;
+                    scale = 1.0 + t * 1.2;
                 }
 
                 // Позиция по X: от левого края до правого + уход за край
                 let xPos;
                 if (p < 0.5) {
-                    // Первая половина: от левого края до центра
                     const t = p / 0.5;
-                    xPos = t * w * 0.5; // 0 -> 50% ширины
+                    xPos = t * w * 0.5;
                 } else {
-                    // Вторая половина: от центра до правого края и дальше
                     const t = (p - 0.5) / 0.5;
-                    xPos = w * 0.5 + t * w * 0.8; // 50% -> 130% ширины (уходим за край)
+                    xPos = w * 0.5 + t * w * 0.8;
                 }
 
                 // Позиция по Y: сверху -> вниз в центре -> сверху
