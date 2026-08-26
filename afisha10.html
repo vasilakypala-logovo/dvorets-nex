@@ -79,7 +79,7 @@
             transform-style: preserve-3d;
         }
 
-        /* Портрет */
+        /* Портрет — общий стиль для обоих массивов */
         .artist {
             position: absolute;
             left: -78px;
@@ -211,6 +211,19 @@
             color: #fff1bd;
             border-color: rgba(255, 241, 189, .8);
         }
+
+        /* Контейнер для второго потока (поверх основного) */
+        #secondStage {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 500;
+        }
+
+        #secondStage .artist {
+            pointer-events: auto;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.8), 0 0 18px rgba(255,220,160,0.3);
+        }
     </style>
 </head>
 
@@ -228,6 +241,7 @@
     <div id="subtitle">GALLERY OF PRESENTATIONS OF ORIGINAL EUROPEAN ARTISTS</div>
 
     <div id="stage"></div>
+    <div id="secondStage"></div>
 
     <a id="back" href="index.html">← DVORETS</a>
 
@@ -237,7 +251,7 @@
 
     <script>
         /* ==========================================================
-           ХУДОЖНИКИ
+           ХУДОЖНИКИ (единый источник данных)
            ========================================================== */
 
         const artists = [{
@@ -272,54 +286,53 @@
             name: "Ион Карчелан",
             image: "artists/Ionсarchelan.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/ion/balconion.html"
-        },{
+        }, {
             name: "Василий Юдов",
             image: "artists/vasiliyud.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/balconyud.html"
         }];
 
         /* ==========================================================
-           СОЗДАНИЕ КАРТОЧЕК
+           ФУНКЦИЯ СОЗДАНИЯ КАРТОЧЕК ДЛЯ КОНТЕЙНЕРА
            ========================================================== */
+        function createCards(container, data) {
+            const cards = [];
+            data.forEach((artist, i) => {
+                const card = document.createElement("div");
+                card.className = "artist";
 
-        const stage = document.getElementById("stage");
-        const cards = [];
+                const img = document.createElement("img");
+                img.src = artist.image;
+                img.alt = artist.name;
+                img.addEventListener("error", () => {
+                    card.classList.add("missing");
+                });
 
-        artists.forEach((artist, i) => {
+                const name = document.createElement("div");
+                name.className = "artistName";
+                name.textContent = artist.name;
 
-            const card = document.createElement("div");
-            card.className = "artist";
+                card.appendChild(img);
+                card.appendChild(name);
 
-            const img = document.createElement("img");
-            img.src = artist.image;
-            img.alt = artist.name;
+                card.addEventListener("click", () => {
+                    window.location.href = artist.link;
+                });
 
-            img.addEventListener("error", () => {
-                card.classList.add("missing");
+                container.appendChild(card);
+                cards.push({
+                    element: card,
+                    index: i
+                });
             });
-
-            const name = document.createElement("div");
-            name.className = "artistName";
-            name.textContent = artist.name;
-
-            card.appendChild(img);
-            card.appendChild(name);
-
-            card.addEventListener("click", () => {
-                window.location.href = artist.link;
-            });
-
-            stage.appendChild(card);
-
-            cards.push({
-                element: card,
-                index: i
-            });
-        });
+            return cards;
+        }
 
         /* ==========================================================
-           ТОРНАДО
+           ОСНОВНОЙ ВИХРЬ (первый массив) — без изменений
            ========================================================== */
+        const stage = document.getElementById("stage");
+        const mainCards = createCards(stage, artists);
 
         let angle = 0;
         const speed = 0.00042;
@@ -327,22 +340,16 @@
         const maxRadius = 300;
         const depth = 430;
 
-        function animate(time) {
-
+        function animateMain(time) {
             angle += speed * 16;
 
-            cards.forEach((card, i) => {
-
+            mainCards.forEach((card, i) => {
                 const a = angle + (i / artists.length) * Math.PI * 2;
-
                 const y = Math.sin(a) * spiralHeight / 2;
-
                 const normalized = Math.abs(y) / (spiralHeight / 2);
                 const radius = 70 + normalized * maxRadius;
-
                 const x = Math.cos(a) * radius;
                 const z = Math.sin(a) * depth;
-
                 const scale = 0.70 + ((z + depth) / (depth * 2)) * 0.58;
                 const opacity = 0.42 + ((z + depth) / (depth * 2)) * 0.58;
                 const rotate = Math.cos(a) * 18;
@@ -352,15 +359,82 @@
                             rotateY(${rotate}deg)
                             scale(${scale})
                         `;
-
                 card.element.style.opacity = opacity;
                 card.element.style.zIndex = Math.round(z + depth + 100);
             });
 
-            requestAnimationFrame(animate);
+            requestAnimationFrame(animateMain);
         }
 
-        requestAnimationFrame(animate);
+        /* ==========================================================
+           ВТОРОЙ ПОТОК — дуга от левого верхнего к правому верхнему
+           с опусканием к нижнему краю в центре
+           ========================================================== */
+        const secondContainer = document.getElementById('secondStage');
+        const secondCards = createCards(secondContainer, artists);
+
+        // Начальная фаза для каждого портрета
+        const offsets = artists.map((_, i) => i / artists.length);
+
+        function animateSecond(time) {
+            // прогресс бесконечно увеличивается
+            const progress = (performance.now() / 14000) % 1; // длительность цикла ~14 сек
+
+            const count = secondCards.length;
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+            for (let i = 0; i < count; i++) {
+                let p = (progress + offsets[i]) % 1;
+
+                // Масштаб: миниатюра в начале и в конце, максимум в центре
+                const scaleFactor = 0.3 + 0.7 * Math.sin(p * Math.PI);
+                const baseSize = 0.35;
+                const maxSize = 1.0;
+                const scale = baseSize + (maxSize - baseSize) * scaleFactor;
+
+                // Позиция по X: от левого края (0) до правого (100%)
+                const xPos = p * w;
+
+                // Позиция по Y: начинаем сверху (5%),
+                // в центре опускаемся до 75% высоты, затем снова поднимаемся
+                // Используем sin(p * PI) для плавного подъёма/спуска
+                const yBase = 0.05 * h; // стартовая позиция сверху
+                const yDrop = 0.70 * h; // насколько опускаемся в центре
+                const yPos = yBase + yDrop * Math.sin(p * Math.PI);
+
+                // Opacity: появляется в начале, исчезает в конце
+                let opacity = 0;
+                if (p < 0.1) {
+                    opacity = p / 0.1;
+                } else if (p > 0.9) {
+                    opacity = (1 - p) / 0.1;
+                } else {
+                    opacity = 1;
+                }
+                opacity = Math.min(1, Math.max(0, opacity));
+
+                // Небольшой поворот для эффекта
+                const rotateY = 15 * Math.sin(p * Math.PI);
+
+                const el = secondCards[i].element;
+                el.style.transform = `
+                            translate3d(${xPos - 78}px, ${yPos - 103}px, 0)
+                            rotateY(${rotateY}deg)
+                            scale(${scale})
+                        `;
+                el.style.opacity = opacity;
+                el.style.zIndex = Math.round(scale * 500 + 50);
+            }
+
+            requestAnimationFrame(animateSecond);
+        }
+
+        /* ==========================================================
+           ЗАПУСК АНИМАЦИЙ
+           ========================================================== */
+        requestAnimationFrame(animateMain);
+        requestAnimationFrame(animateSecond);
 
         /* ==========================================================
            МУЗЫКА — НЕГРОМКО (15%)
@@ -370,13 +444,11 @@
         audio.volume = 0.15;
         audio.loop = true;
 
-        // Автозапуск после первого клика
         document.addEventListener('click', function startAudio() {
             audio.play().catch(() => {});
             document.removeEventListener('click', startAudio);
         }, { once: true });
 
-        // Кнопка вкл/выкл
         const toggleBtn = document.createElement('button');
         toggleBtn.id = 'soundToggle';
         toggleBtn.textContent = '♫';
@@ -395,6 +467,5 @@
             isPlaying = !isPlaying;
         });
     </script>
-
 </body>
 </html>
