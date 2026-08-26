@@ -28,7 +28,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Растягиваем на весь экран */
             opacity: 0;
             user-select: none;
             -webkit-user-drag: none;
@@ -80,6 +79,7 @@
             background: rgba(0, 0, 0, .55);
             color: white;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         button:hover {
@@ -113,7 +113,7 @@
         Кадры лежат рядом с HTML:
         kadr0.png, kadr1.png, ... kadr12.png
 
-        Программа показывает их строго по порядку.
+        Программа показывает их циклически.
         Переход сделан НАЛОЖЕНИЕМ:
         старый кадр остаётся видимым,
         новый плавно проявляется поверх него.
@@ -148,7 +148,6 @@
         let active = frameA;
         let overlay = frameB;
         let busy = false;
-        let isPlaying = false;
 
         /* Предварительная загрузка всех изображений */
         frames.forEach(src => {
@@ -174,13 +173,7 @@
 
             index++;
             if (index >= frames.length) {
-                index = 0;
-                // Если дошли до конца, останавливаем показ кадров
-                clearInterval(timer);
-                timer = null;
-                isPlaying = false;
-                busy = false;
-                return;
+                index = 0; // Циклически возвращаемся к началу
             }
 
             await prepareImage(overlay, frames[index]);
@@ -213,10 +206,11 @@
         }
 
         function resetToZero() {
+            // Останавливаем таймер, но не сбрасываем полностью
+            // Просто сбрасываем индекс на 0 и показываем нулевой кадр
             clearInterval(timer);
             timer = null;
             busy = false;
-            isPlaying = false;
             index = 0;
 
             frameA.classList.remove("fade-in");
@@ -238,51 +232,56 @@
         function start() {
             if (timer !== null) return;
 
-            // Если музыка закончилась, перезапускаем
+            // Если музыка закончилась, перематываем на начало
             if (voice.ended) {
-                restartConversation();
-                return;
+                voice.currentTime = 0;
             }
 
-            voice.play().catch(() => {
-                // Если браузер запретил автозапуск звука,
-                // нажмите кнопку ▶ вручную
-            });
+            // Запускаем музыку (если она ещё не играет)
+            if (voice.paused) {
+                voice.play().catch(() => {
+                    // Если браузер запретил автозапуск звука,
+                    // нажмите кнопку ▶ вручную
+                });
+            }
 
-            isPlaying = true;
+            // Запускаем показ кадров (циклически, без остановки)
             timer = setInterval(showNextFrame, FRAME_TIME);
         }
 
         function pause() {
             clearInterval(timer);
             timer = null;
-            isPlaying = false;
             voice.pause();
         }
 
         function restartConversation() {
+            // Сбрасываем кадры на нулевой
             resetToZero();
 
+            // Перезапускаем музыку с начала
             voice.pause();
             voice.currentTime = 0;
-
             voice.play().catch(() => {});
-            isPlaying = true;
-            timer = setInterval(showNextFrame, FRAME_TIME);
+
+            // Запускаем показ кадров
+            if (timer === null) {
+                timer = setInterval(showNextFrame, FRAME_TIME);
+            }
         }
 
         function zero() {
-            voice.pause();
+            // Останавливаем всё
+            pause();
             voice.currentTime = 0;
             resetToZero();
         }
 
-        /* Обработчик окончания аудио - сброс в начальное состояние */
+        /* Обработчик окончания аудио - только перематываем музыку, кадры продолжают идти */
         voice.addEventListener("ended", () => {
-            resetToZero();
             voice.currentTime = 0;
-            isPlaying = false;
-            // Таймер уже остановлен в resetToZero()
+            // Не останавливаем показ кадров!
+            // Кадры продолжают циклически чередоваться
         });
 
         /* Назначение кнопок */
