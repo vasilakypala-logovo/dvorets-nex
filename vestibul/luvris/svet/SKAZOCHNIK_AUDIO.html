@@ -1,257 +1,263 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SKAZOCHNIK</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKAZOCHNIK</title>
 
-<style>
-html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    overflow: hidden;
-}
+    <style>
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
 
-#stage {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    background: #000;
-}
+        #stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+        }
 
-.frame {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    opacity: 0;
-    user-select: none;
-    -webkit-user-drag: none;
-    pointer-events: none;
-}
+        .frame {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Растягиваем на весь экран */
+            opacity: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+        }
 
-#frameA {
-    z-index: 1;
-    opacity: 1;
-}
+        #frameA {
+            z-index: 1;
+            opacity: 1;
+        }
 
-#frameB {
-    z-index: 2;
-}
+        #frameB {
+            z-index: 2;
+        }
 
-.fade-in {
-    animation: fadeIn 300ms ease-in-out forwards;
-}
+        .fade-in {
+            animation: fadeIn 300ms ease-in-out forwards;
+        }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
 
-#controls {
-    position: fixed;
-    left: 12px;
-    bottom: 12px;
-    z-index: 10;
-    display: flex;
-    gap: 8px;
-    opacity: 0.18;
-    transition: opacity .25s;
-}
+        #controls {
+            position: fixed;
+            left: 12px;
+            bottom: 12px;
+            z-index: 10;
+            display: flex;
+            gap: 8px;
+            opacity: 0.18;
+            transition: opacity .25s;
+        }
 
-#controls:hover {
-    opacity: 1;
-}
+        #controls:hover {
+            opacity: 1;
+        }
 
-button {
-    font-size: 16px;
-    padding: 7px 12px;
-    border: 1px solid rgba(255,255,255,.4);
-    border-radius: 7px;
-    background: rgba(0,0,0,.55);
-    color: white;
-    cursor: pointer;
-}
-</style>
+        button {
+            font-size: 16px;
+            padding: 7px 12px;
+            border: 1px solid rgba(255, 255, 255, .4);
+            border-radius: 7px;
+            background: rgba(0, 0, 0, .55);
+            color: white;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="stage">
-    <img id="frameA" class="frame" src="kadr0.png" alt="">
-    <img id="frameB" class="frame" src="kadr1.png" alt="">
-</div>
+    <div id="stage">
+        <img id="frameA" class="frame" src="kadr0.png" alt="">
+        <img id="frameB" class="frame" src="kadr1.png" alt="">
+    </div>
 
-<audio id="voice" src="privetstvie.mp3" preload="auto"></audio>
+    <audio id="voice" src="privetstvie.mp3" preload="auto"></audio>
 
-<div id="controls">
-    <button id="startBtn">▶</button>
-    <button id="pauseBtn">Ⅱ</button>
-    <button id="zeroBtn">0</button>
-</div>
+    <div id="controls">
+        <button id="startBtn">▶</button>
+        <button id="pauseBtn">Ⅱ</button>
+        <button id="zeroBtn">0</button>
+    </div>
 
-<script>
+    <script>
+        /*
+        =========================================================
+                         SKAZOCHNIK
+        =========================================================
 
-/*
-=========================================================
-                     SKAZOCHNIK
-=========================================================
+        Кадры лежат рядом с HTML:
 
-Кадры лежат рядом с HTML:
+        kadr0.png
+        kadr1.png
+        ...
+        kadr12.png
 
-kadr0.png
-kadr1.png
-...
-kadr12.png
+        Программа показывает их строго по порядку.
+        Переход сделан НАЛОЖЕНИЕМ:
+        старый кадр остаётся видимым,
+        новый плавно проявляется поверх него.
+        =========================================================
+        */
 
-Программа показывает их строго по порядку.
-Переход сделан НАЛОЖЕНИЕМ:
-старый кадр остаётся видимым,
-новый плавно проявляется поверх него.
-=========================================================
-*/
+        const frames = [
+            "kadr0.png",
+            "kadr1.png",
+            "kadr2.png",
+            "kadr3.png",
+            "kadr4.png",
+            "kadr5.png",
+            "kadr6.png",
+            "kadr7.png",
+            "kadr8.png",
+            "kadr9.png",
+            "kadr10.png",
+            "kadr11.png",
+            "kadr12.png"
+        ];
 
-const frames = [
-    "kadr0.png",
-    "kadr1.png",
-    "kadr2.png",
-    "kadr3.png",
-    "kadr4.png",
-    "kadr5.png",
-    "kadr6.png",
-    "kadr7.png",
-    "kadr8.png",
-    "kadr9.png",
-    "kadr10.png",
-    "kadr11.png",
-    "kadr12.png"
-];
+        const FRAME_TIME = 500;
+        const FADE_TIME = 300;
 
-const FRAME_TIME = 500;
-const FADE_TIME = 300;
+        const frameA = document.getElementById("frameA");
+        const frameB = document.getElementById("frameB");
+        const voice = document.getElementById("voice");
 
-const frameA = document.getElementById("frameA");
-const frameB = document.getElementById("frameB");
-const voice = document.getElementById("voice");
+        let index = 0;
+        let timer = null;
+        let active = frameA;
+        let overlay = frameB;
+        let busy = false;
 
-let index = 0;
-let timer = null;
-let active = frameA;
-let overlay = frameB;
-let busy = false;
+        /* Предварительная загрузка */
+        const preload = frames.map(src => {
+            const img = new Image();
+            img.src = src;
+            return img;
+        });
 
-/* Предварительная загрузка */
-const preload = frames.map(src => {
-    const img = new Image();
-    img.src = src;
-    return img;
-});
+        async function prepareImage(element, src) {
+            element.classList.remove("fade-in");
+            element.style.opacity = "0";
+            element.src = src;
 
-async function prepareImage(element, src) {
-    element.classList.remove("fade-in");
-    element.style.opacity = "0";
-    element.src = src;
-
-    try {
-        if (element.decode) {
-            await element.decode();
+            try {
+                if (element.decode) {
+                    await element.decode();
+                }
+            } catch (e) {
+                /* Если decode не поддерживается или не успел — просто продолжаем */
+            }
         }
-    } catch (e) {
-        /* Если decode не поддерживается или не успел — просто продолжаем */
-    }
-}
 
-async function showNextFrame() {
-    if (busy) return;
-    busy = true;
+        async function showNextFrame() {
+            if (busy) return;
+            busy = true;
 
-    index++;
-    if (index >= frames.length) index = 0;
+            index++;
+            if (index >= frames.length) index = 0;
 
-    await prepareImage(overlay, frames[index]);
+            await prepareImage(overlay, frames[index]);
 
-    /* Новый кадр всегда поверх старого */
-    active.style.zIndex = "1";
-    active.style.opacity = "1";
+            /* Новый кадр всегда поверх старого */
+            active.style.zIndex = "1";
+            active.style.opacity = "1";
 
-    overlay.style.zIndex = "2";
-    overlay.style.opacity = "0";
+            overlay.style.zIndex = "2";
+            overlay.style.opacity = "0";
 
-    /* Запускаем плавное проявление поверх старого */
-    void overlay.offsetWidth;
-    overlay.classList.add("fade-in");
+            /* Запускаем плавное проявление поверх старого */
+            void overlay.offsetWidth;
+            overlay.classList.add("fade-in");
 
-    setTimeout(() => {
-        /* Новый кадр уже полностью проявился */
-        overlay.classList.remove("fade-in");
-        overlay.style.opacity = "1";
+            setTimeout(() => {
+                /* Новый кадр уже полностью проявился */
+                overlay.classList.remove("fade-in");
+                overlay.style.opacity = "1";
 
-        /* Старый только теперь убираем */
-        active.style.opacity = "0";
+                /* Старый только теперь убираем */
+                active.style.opacity = "0";
 
-        const oldActive = active;
-        active = overlay;
-        overlay = oldActive;
+                const oldActive = active;
+                active = overlay;
+                overlay = oldActive;
 
-        busy = false;
-    }, FADE_TIME);
-}
+                busy = false;
+            }, FADE_TIME);
+        }
 
-function start() {
-    if (timer !== null) return;
+        function start() {
+            if (timer !== null) return;
 
-    voice.play().catch(() => {
-        /* Если браузер запретил автозапуск звука,
-           нажмите кнопку ▶ вручную */
-    });
+            // Перезапускаем звук, даже если он уже был воспроизведён
+            voice.currentTime = 0;
+            voice.play().catch(() => {
+                // Если браузер запретил автозапуск звука,
+                // нажмите кнопку ▶ вручную
+            });
 
-    timer = setInterval(showNextFrame, FRAME_TIME);
-}
+            timer = setInterval(showNextFrame, FRAME_TIME);
+        }
 
-function pause() {
-    clearInterval(timer);
-    timer = null;
-    voice.pause();
-}
+        function pause() {
+            clearInterval(timer);
+            timer = null;
+            voice.pause();
+        }
 
-function zero() {
-    pause();
-    voice.currentTime = 0;
-    busy = false;
-    index = 0;
+        function zero() {
+            pause();
+            voice.currentTime = 0;
+            busy = false;
+            index = 0;
 
-    frameA.classList.remove("fade-in");
-    frameB.classList.remove("fade-in");
+            frameA.classList.remove("fade-in");
+            frameB.classList.remove("fade-in");
 
-    frameA.src = frames[0];
-    frameB.src = frames[1];
+            frameA.src = frames[0];
+            frameB.src = frames[1];
 
-    frameA.style.zIndex = "1";
-    frameA.style.opacity = "1";
+            frameA.style.zIndex = "1";
+            frameA.style.opacity = "1";
 
-    frameB.style.zIndex = "2";
-    frameB.style.opacity = "0";
+            frameB.style.zIndex = "2";
+            frameB.style.opacity = "0";
 
-    active = frameA;
-    overlay = frameB;
-}
+            active = frameA;
+            overlay = frameB;
+        }
 
-document.getElementById("startBtn").onclick = start;
-document.getElementById("pauseBtn").onclick = pause;
-document.getElementById("zeroBtn").onclick = zero;
+        document.getElementById("startBtn").onclick = start;
+        document.getElementById("pauseBtn").onclick = pause;
+        document.getElementById("zeroBtn").onclick = zero;
 
-window.addEventListener("load", async () => {
-    try {
-        if (frameA.decode) await frameA.decode();
-    } catch (e) {}
+        window.addEventListener("load", async () => {
+            try {
+                if (frameA.decode) await frameA.decode();
+            } catch (e) {}
 
-    start();
-});
-
-</script>
+            start();
+        });
+    </script>
 
 </body>
 </html>
