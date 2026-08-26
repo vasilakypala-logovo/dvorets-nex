@@ -218,6 +218,7 @@
             inset: 0;
             pointer-events: none;
             z-index: 500;
+            overflow: visible;
         }
 
         #secondStage .artist {
@@ -400,8 +401,7 @@
         }
 
         /* ==========================================================
-           АВТОНОМНЫЙ ВТОРОЙ ПОТОК
-           — использует свой массив secondArtists
+           АВТОНОМНЫЙ ВТОРОЙ ПОТОК — увеличение и уход за правый край
            ========================================================== */
         const secondContainer = document.getElementById('secondStage');
         const secondCards = createCards(secondContainer, secondArtists);
@@ -410,7 +410,7 @@
         const offsets = secondArtists.map((_, i) => i / secondArtists.length);
 
         function animateSecond(time) {
-            const progress = (performance.now() / 14000) % 1;
+            const progress = (performance.now() / 16000) % 1; // более медленный цикл
 
             const count = secondCards.length;
             const w = window.innerWidth;
@@ -419,32 +419,48 @@
             for (let i = 0; i < count; i++) {
                 let p = (progress + offsets[i]) % 1;
 
-                // Масштаб: миниатюра в начале и в конце, максимум в центре
-                const scaleFactor = 0.3 + 0.7 * Math.sin(p * Math.PI);
-                const baseSize = 0.35;
-                const maxSize = 1.0;
-                const scale = baseSize + (maxSize - baseSize) * scaleFactor;
+                // Масштаб: начинаем с миниатюры, растем к центру, 
+                // затем продолжаем расти и уходим за правый край
+                let scale;
+                if (p < 0.5) {
+                    // От 0 до 0.5: рост от миниатюры к максимуму
+                    const t = p / 0.5; // 0->1
+                    scale = 0.3 + t * 0.7; // 0.3 -> 1.0
+                } else {
+                    // От 0.5 до 1.0: продолжаем расти и уходим за край
+                    const t = (p - 0.5) / 0.5; // 0->1
+                    scale = 1.0 + t * 1.2; // 1.0 -> 2.2 (увеличиваем и уходим)
+                }
 
-                // Позиция по X: от левого края до правого
-                const xPos = p * w;
+                // Позиция по X: от левого края до правого + уход за край
+                let xPos;
+                if (p < 0.5) {
+                    // Первая половина: от левого края до центра
+                    const t = p / 0.5;
+                    xPos = t * w * 0.5; // 0 -> 50% ширины
+                } else {
+                    // Вторая половина: от центра до правого края и дальше
+                    const t = (p - 0.5) / 0.5;
+                    xPos = w * 0.5 + t * w * 0.8; // 50% -> 130% ширины (уходим за край)
+                }
 
                 // Позиция по Y: сверху -> вниз в центре -> сверху
                 const yBase = 0.05 * h;
                 const yDrop = 0.70 * h;
                 const yPos = yBase + yDrop * Math.sin(p * Math.PI);
 
-                // Opacity: плавное появление и исчезновение
-                let opacity = 0;
-                if (p < 0.1) {
-                    opacity = p / 0.1;
-                } else if (p > 0.9) {
-                    opacity = (1 - p) / 0.1;
+                // Opacity: появляется слева, исчезает справа
+                let opacity;
+                if (p < 0.05) {
+                    opacity = p / 0.05;
+                } else if (p > 0.85) {
+                    opacity = (1 - p) / 0.15;
                 } else {
                     opacity = 1;
                 }
                 opacity = Math.min(1, Math.max(0, opacity));
 
-                const rotateY = 15 * Math.sin(p * Math.PI);
+                const rotateY = 20 * Math.sin(p * Math.PI);
 
                 const el = secondCards[i].element;
                 el.style.transform = `
@@ -453,7 +469,7 @@
                             scale(${scale})
                         `;
                 el.style.opacity = opacity;
-                el.style.zIndex = Math.round(scale * 500 + 50);
+                el.style.zIndex = Math.round(scale * 400 + 50);
             }
 
             requestAnimationFrame(animateSecond);
