@@ -28,6 +28,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            /* Растягиваем на весь экран */
             opacity: 0;
             user-select: none;
             -webkit-user-drag: none;
@@ -80,6 +81,10 @@
             color: white;
             cursor: pointer;
         }
+
+        button:hover {
+            background: rgba(255, 255, 255, .2);
+        }
     </style>
 </head>
 
@@ -93,9 +98,10 @@
     <audio id="voice" src="privetstvie.mp3" preload="auto"></audio>
 
     <div id="controls">
-        <button id="startBtn">▶</button>
-        <button id="pauseBtn">Ⅱ</button>
-        <button id="zeroBtn">0</button>
+        <button id="startBtn" title="Продолжить">▶</button>
+        <button id="pauseBtn" title="Пауза">Ⅱ</button>
+        <button id="restartBtn" title="Начать разговор сначала">↻</button>
+        <button id="zeroBtn" title="Стоп и нулевой кадр">0</button>
     </div>
 
     <script>
@@ -105,11 +111,7 @@
         =========================================================
 
         Кадры лежат рядом с HTML:
-
-        kadr0.png
-        kadr1.png
-        ...
-        kadr12.png
+        kadr0.png, kadr1.png, ... kadr12.png
 
         Программа показывает их строго по порядку.
         Переход сделан НАЛОЖЕНИЕМ:
@@ -146,12 +148,12 @@
         let active = frameA;
         let overlay = frameB;
         let busy = false;
+        let isPlaying = false;
 
-        /* Предварительная загрузка */
-        const preload = frames.map(src => {
+        /* Предварительная загрузка всех изображений */
+        frames.forEach(src => {
             const img = new Image();
             img.src = src;
-            return img;
         });
 
         async function prepareImage(element, src) {
@@ -160,9 +162,7 @@
             element.src = src;
 
             try {
-                if (element.decode) {
-                    await element.decode();
-                }
+                if (element.decode) await element.decode();
             } catch (e) {
                 /* Если decode не поддерживается или не успел — просто продолжаем */
             }
@@ -173,7 +173,15 @@
             busy = true;
 
             index++;
-            if (index >= frames.length) index = 0;
+            if (index >= frames.length) {
+                index = 0;
+                // Если дошли до конца, останавливаем показ кадров
+                clearInterval(timer);
+                timer = null;
+                isPlaying = false;
+                busy = false;
+                return;
+            }
 
             await prepareImage(overlay, frames[index]);
 
@@ -204,32 +212,11 @@
             }, FADE_TIME);
         }
 
-        function start() {
-            if (timer !== null) return;
-
-            // Если аудио уже закончилось, перематываем на начало
-            if (voice.ended) {
-                voice.currentTime = 0;
-            }
-
-            voice.play().catch(() => {
-                // Если браузер запретил автозапуск звука,
-                // нажмите кнопку ▶ вручную
-            });
-
-            timer = setInterval(showNextFrame, FRAME_TIME);
-        }
-
-        function pause() {
+        function resetToZero() {
             clearInterval(timer);
             timer = null;
-            voice.pause();
-        }
-
-        function zero() {
-            pause();
-            voice.currentTime = 0;
             busy = false;
+            isPlaying = false;
             index = 0;
 
             frameA.classList.remove("fade-in");
@@ -248,21 +235,70 @@
             overlay = frameB;
         }
 
-        // Обработчик окончания аудио — просто сбрасываем флаг ended
-        voice.addEventListener('ended', function() {
-            // Ничего не делаем, просто чтобы ended стал true
-            // При следующем нажатии ▶ мы перемотаем на начало
+        function start() {
+            if (timer !== null) return;
+
+            // Если музыка закончилась, перезапускаем
+            if (voice.ended) {
+                restartConversation();
+                return;
+            }
+
+            voice.play().catch(() => {
+                // Если браузер запретил автозапуск звука,
+                // нажмите кнопку ▶ вручную
+            });
+
+            isPlaying = true;
+            timer = setInterval(showNextFrame, FRAME_TIME);
+        }
+
+        function pause() {
+            clearInterval(timer);
+            timer = null;
+            isPlaying = false;
+            voice.pause();
+        }
+
+        function restartConversation() {
+            resetToZero();
+
+            voice.pause();
+            voice.currentTime = 0;
+
+            voice.play().catch(() => {});
+            isPlaying = true;
+            timer = setInterval(showNextFrame, FRAME_TIME);
+        }
+
+        function zero() {
+            voice.pause();
+            voice.currentTime = 0;
+            resetToZero();
+        }
+
+        /* Обработчик окончания аудио - сброс в начальное состояние */
+        voice.addEventListener("ended", () => {
+            resetToZero();
+            voice.currentTime = 0;
+            isPlaying = false;
+            // Таймер уже остановлен в resetToZero()
         });
 
+        /* Назначение кнопок */
         document.getElementById("startBtn").onclick = start;
         document.getElementById("pauseBtn").onclick = pause;
+        document.getElementById("restartBtn").onclick = restartConversation;
         document.getElementById("zeroBtn").onclick = zero;
 
+        /* Загрузка страницы */
         window.addEventListener("load", async () => {
             try {
                 if (frameA.decode) await frameA.decode();
+                if (frameB.decode) await frameB.decode();
             } catch (e) {}
 
+            // Автоматически запускаем всё при загрузке
             start();
         });
     </script>
