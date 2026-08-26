@@ -251,10 +251,9 @@
 
     <script>
         /* ==========================================================
-           ХУДОЖНИКИ (единый источник данных)
+           МАССИВ ДЛЯ ОСНОВНОГО ВИХРЯ (не трогать)
            ========================================================== */
-
-        const artists = [{
+        const mainArtists = [{
             name: "Наталия Русина",
             image: "artists/nataliarus.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/rusin/balcony.html"
@@ -293,7 +292,41 @@
         }];
 
         /* ==========================================================
-           ФУНКЦИЯ СОЗДАНИЯ КАРТОЧЕК ДЛЯ КОНТЕЙНЕРА
+           АВТОНОМНЫЙ МАССИВ ДЛЯ ВТОРОГО ПОТОКА
+           — сюда можно добавлять новых участников
+           ========================================================== */
+        const secondArtists = [{
+            name: "Новый художник 1",
+            image: "artists/new1.jpg",
+            link: "https://example.com/new1"
+        }, {
+            name: "Новый художник 2",
+            image: "artists/new2.jpg",
+            link: "https://example.com/new2"
+        }, {
+            name: "Новый художник 3",
+            image: "artists/new3.jpg",
+            link: "https://example.com/new3"
+        }, {
+            name: "Новый художник 4",
+            image: "artists/new4.jpg",
+            link: "https://example.com/new4"
+        }, {
+            name: "Новый художник 5",
+            image: "artists/new5.jpg",
+            link: "https://example.com/new5"
+        }, {
+            name: "Анна Новая",
+            image: "artists/anna_new.jpg",
+            link: "https://example.com/anna"
+        }, {
+            name: "Петр Новый",
+            image: "artists/petr_new.jpg",
+            link: "https://example.com/petr"
+        }];
+
+        /* ==========================================================
+           ФУНКЦИЯ СОЗДАНИЯ КАРТОЧЕК
            ========================================================== */
         function createCards(container, data) {
             const cards = [];
@@ -332,7 +365,7 @@
            ОСНОВНОЙ ВИХРЬ (первый массив) — без изменений
            ========================================================== */
         const stage = document.getElementById("stage");
-        const mainCards = createCards(stage, artists);
+        const mainCards = createCards(stage, mainArtists);
 
         let angle = 0;
         const speed = 0.00042;
@@ -344,7 +377,7 @@
             angle += speed * 16;
 
             mainCards.forEach((card, i) => {
-                const a = angle + (i / artists.length) * Math.PI * 2;
+                const a = angle + (i / mainArtists.length) * Math.PI * 2;
                 const y = Math.sin(a) * spiralHeight / 2;
                 const normalized = Math.abs(y) / (spiralHeight / 2);
                 const radius = 70 + normalized * maxRadius;
@@ -367,18 +400,17 @@
         }
 
         /* ==========================================================
-           ВТОРОЙ ПОТОК — дуга от левого верхнего к правому верхнему
-           с опусканием к нижнему краю в центре
+           АВТОНОМНЫЙ ВТОРОЙ ПОТОК
+           — использует свой массив secondArtists
            ========================================================== */
         const secondContainer = document.getElementById('secondStage');
-        const secondCards = createCards(secondContainer, artists);
+        const secondCards = createCards(secondContainer, secondArtists);
 
         // Начальная фаза для каждого портрета
-        const offsets = artists.map((_, i) => i / artists.length);
+        const offsets = secondArtists.map((_, i) => i / secondArtists.length);
 
         function animateSecond(time) {
-            // прогресс бесконечно увеличивается
-            const progress = (performance.now() / 14000) % 1; // длительность цикла ~14 сек
+            const progress = (performance.now() / 14000) % 1;
 
             const count = secondCards.length;
             const w = window.innerWidth;
@@ -393,17 +425,15 @@
                 const maxSize = 1.0;
                 const scale = baseSize + (maxSize - baseSize) * scaleFactor;
 
-                // Позиция по X: от левого края (0) до правого (100%)
+                // Позиция по X: от левого края до правого
                 const xPos = p * w;
 
-                // Позиция по Y: начинаем сверху (5%),
-                // в центре опускаемся до 75% высоты, затем снова поднимаемся
-                // Используем sin(p * PI) для плавного подъёма/спуска
-                const yBase = 0.05 * h; // стартовая позиция сверху
-                const yDrop = 0.70 * h; // насколько опускаемся в центре
+                // Позиция по Y: сверху -> вниз в центре -> сверху
+                const yBase = 0.05 * h;
+                const yDrop = 0.70 * h;
                 const yPos = yBase + yDrop * Math.sin(p * Math.PI);
 
-                // Opacity: появляется в начале, исчезает в конце
+                // Opacity: плавное появление и исчезновение
                 let opacity = 0;
                 if (p < 0.1) {
                     opacity = p / 0.1;
@@ -414,7 +444,6 @@
                 }
                 opacity = Math.min(1, Math.max(0, opacity));
 
-                // Небольшой поворот для эффекта
                 const rotateY = 15 * Math.sin(p * Math.PI);
 
                 const el = secondCards[i].element;
@@ -437,7 +466,7 @@
         requestAnimationFrame(animateSecond);
 
         /* ==========================================================
-           МУЗЫКА — НЕГРОМКО (15%)
+           МУЗЫКА
            ========================================================== */
 
         const audio = document.getElementById('bgMusic');
