@@ -28,7 +28,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Растягиваем на весь экран */
             opacity: 0;
             user-select: none;
             -webkit-user-drag: none;
@@ -208,8 +207,11 @@
         function start() {
             if (timer !== null) return;
 
-            // Перезапускаем звук, даже если он уже был воспроизведён
-            voice.currentTime = 0;
+            // Если аудио уже закончилось, перематываем на начало
+            if (voice.ended) {
+                voice.currentTime = 0;
+            }
+
             voice.play().catch(() => {
                 // Если браузер запретил автозапуск звука,
                 // нажмите кнопку ▶ вручную
@@ -245,6 +247,12 @@
             active = frameA;
             overlay = frameB;
         }
+
+        // Обработчик окончания аудио — просто сбрасываем флаг ended
+        voice.addEventListener('ended', function() {
+            // Ничего не делаем, просто чтобы ended стал true
+            // При следующем нажатии ▶ мы перемотаем на начало
+        });
 
         document.getElementById("startBtn").onclick = start;
         document.getElementById("pauseBtn").onclick = pause;
