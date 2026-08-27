@@ -307,9 +307,9 @@
     <script>
 
         /* ==========================================================
-           СТАТИСТИКА АФИШИ
-           Общие публичные счетчики для GitHub Pages.
-           /hit/ увеличивает счетчик, /get/ только читает его.
+           ОБЩАЯ СТАТИСТИКА АФИШИ
+           1) просмотры Афиши
+           2) все переходы из Афиши в галереи
            ========================================================== */
         const STATS_NAMESPACE = "dvorets-nex-afisha-2026";
         const STATS_BASE = "https://abacus.jasoncameron.dev";
@@ -319,7 +319,6 @@
         }
 
         function hitStat(key) {
-            // keepalive позволяет отправить клик даже при мгновенном переходе на балкон
             fetch(statUrl("hit", key), {
                 method: "GET",
                 mode: "cors",
@@ -328,7 +327,7 @@
             }).catch(() => {});
         }
 
-        // Один просмотр Афиши = одна загрузка страницы.
+        // Один просмотр Афиши = одна загрузка страницы
         hitStat("afisha_views");
 
         /* ==========================================================
@@ -336,47 +335,38 @@
            ========================================================== */
         const mainArtists = [{
             name: "Наталия Русина",
-            statKey: "rusina",
             image: "artists/nataliarus.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/rusin/balcony.html"
         }, {
             name: "Татьяна Москалева",
-            statKey: "moskaleva",
             image: "artists/taniamosk.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/tmosk/balconymos.html"
         }, {
             name: "Валерий Ведренко",
-            statKey: "vedrenko",
             image: "artists/vcedrenko.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/concert_nex/valved/balcoved.html"
         }, {
             name: "Мария Харлампиева",
-            statKey: "harlampieva",
             image: "artists/mariaharl.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/volnasia/lesbalkona/balcony_les.html"
         }, {
             name: "Сергей Коморный",
-            statKey: "komorny",
             image: "artists/sergeykom.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/concert_nex/balcony.html"
         }, {
             name: "Вадим Солодкий",
-            statKey: "solodkiy",
             image: "artists/vadimsol.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/volnasia/dogbal/balconydog.html"
         }, {
             name: "Наталия Калайда",
-            statKey: "kalayda",
             image: "artists/nataliakala.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/seas/dvorets_library_room/finkuk/balcony_fin.html"
         }, {
             name: "Ион Карчелан",
-            statKey: "carchelan",
             image: "artists/Ionсarchelan.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/ion/balconion.html"
         }, {
             name: "Василий Юдов",
-            statKey: "yudov",
             image: "artists/vasiliyud.jpg",
             link: "https://vasilakypala-logovo.github.io/dvorets-nex/vestibul/LUV/works/balconyud.html"
         }];
@@ -388,13 +378,11 @@
             ...mainArtists.map(artist => ({...artist})),
             {
                 name: "Наталия Калайда",
-                statKey: "kalayda",
                 image: "artists/nataliakala.jpg",
                 link: "https://example.com/new1"
             },
             {
                 name: "Валерий Ведренко",
-                statKey: "vedrenko",
                 image: "artists/vcedrenko.jpg",
                 link: "https://example.com/new2"
             }
@@ -424,8 +412,7 @@
                 card.appendChild(name);
 
                 card.addEventListener("click", () => {
-                    const key = artist.statKey || ("artist_" + i);
-                    hitStat("click_" + key);
+                    hitStat("gallery_clicks");
                     window.location.href = artist.link;
                 });
 
