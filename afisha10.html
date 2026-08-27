@@ -68,36 +68,52 @@
             letter-spacing: 3px;
         }
 
-        /* Ссылка "Submit your artwork" — УВЕЛИЧЕНА И ЖИРНАЯ */
+        /* Ссылка "Submit your artwork" — английские буквы увеличены и жирные */
         #submitLink {
             position: fixed;
-            top: 108px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 106px;
+            left: 0;
+            width: 100%;
+            text-align: center;
             z-index: 1000;
-            font-size: 22px;
-            font-weight: bold;
-            letter-spacing: 3px;
             text-decoration: none;
-            color: rgba(255, 240, 210, 0.92);
-            padding: 12px 28px;
-            border: 1px solid rgba(255, 220, 150, 0.4);
-            box-shadow: 0 0 18px rgba(255, 220, 150, 0.18), inset 0 0 18px rgba(255, 220, 150, 0.08);
-            border-radius: 3px;
+            color: rgba(255, 240, 210, 0.9);
+            padding: 8px 18px;
+            border: 1px solid rgba(255, 220, 150, 0.35);
+            box-shadow: 0 0 12px rgba(255, 220, 150, 0.15), inset 0 0 12px rgba(255, 220, 150, 0.08);
+            border-radius: 2px;
             transition: border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(1px);
             font-family: Georgia, "Times New Roman", serif;
             cursor: pointer;
-            white-space: nowrap;
-            text-align: center;
-            line-height: 1.4;
+            display: inline-block;
+            width: auto;
+            margin: 0 auto;
+            line-height: 1.5;
         }
 
         #submitLink:hover {
-            border-color: rgba(255, 241, 189, 0.9);
-            box-shadow: 0 0 32px rgba(255, 220, 150, 0.35), inset 0 0 32px rgba(255, 220, 150, 0.15);
+            border-color: rgba(255, 241, 189, 0.8);
+            box-shadow: 0 0 22px rgba(255, 220, 150, 0.3), inset 0 0 22px rgba(255, 220, 150, 0.12);
             color: #fff1bd;
+        }
+
+        /* АНГЛИЙСКАЯ ЧАСТЬ — БОЛЬШАЯ И ЖИРНАЯ */
+        .submit-en {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            display: block;
+        }
+
+        /* РУССКАЯ ЧАСТЬ — ОБЫЧНАЯ */
+        .submit-ru {
+            font-size: 14px;
+            letter-spacing: 1px;
+            display: block;
+            margin-top: 2px;
+            opacity: 0.85;
         }
 
         /* Сцена */
@@ -273,10 +289,10 @@
     <div id="title">AFISHA</div>
     <div id="subtitle">GALLERY OF PRESENTATIONS OF ORIGINAL EUROPEAN ARTISTS</div>
 
-    <!-- НОВАЯ ССЫЛКА — УВЕЛИЧЕНА И ЖИРНАЯ -->
+    <!-- ССЫЛКА — АНГЛИЙСКАЯ ЧАСТЬ БОЛЬШАЯ И ЖИРНАЯ -->
     <a id="submitLink" href="https://vasilakypala-logovo.github.io/dvorets-nex/bashnya_nex/index.html">
-        Submit your artwork<br>
-        Отправить свою работу во Dvorets
+        <span class="submit-en">Submit your artwork</span>
+        <span class="submit-ru">Отправить свою работу во Dvorets</span>
     </a>
 
     <div id="stage"></div>
