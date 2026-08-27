@@ -68,50 +68,36 @@
             letter-spacing: 3px;
         }
 
-        /* Ссылка "Submit your artwork" */
+        /* Ссылка "Submit your artwork" — УВЕЛИЧЕНА И ЖИРНАЯ */
         #submitLink {
             position: fixed;
-            top: 106px;
-            left: 0;
-            width: 100%;
-            text-align: center;
+            top: 108px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 1000;
-            font-size: 14px;
-            letter-spacing: 2px;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 3px;
             text-decoration: none;
-            color: rgba(255, 240, 210, 0.9);
-            padding: 8px 18px;
-            display: inline-block;
-            width: auto;
-            margin: 0 auto;
-            border: 1px solid rgba(255, 220, 150, 0.35);
-            box-shadow: 0 0 12px rgba(255, 220, 150, 0.15), inset 0 0 12px rgba(255, 220, 150, 0.08);
-            border-radius: 2px;
+            color: rgba(255, 240, 210, 0.92);
+            padding: 12px 28px;
+            border: 1px solid rgba(255, 220, 150, 0.4);
+            box-shadow: 0 0 18px rgba(255, 220, 150, 0.18), inset 0 0 18px rgba(255, 220, 150, 0.08);
+            border-radius: 3px;
             transition: border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
-            background: rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(1px);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
             font-family: Georgia, "Times New Roman", serif;
             cursor: pointer;
+            white-space: nowrap;
+            text-align: center;
+            line-height: 1.4;
         }
 
         #submitLink:hover {
-            border-color: rgba(255, 241, 189, 0.8);
-            box-shadow: 0 0 22px rgba(255, 220, 150, 0.3), inset 0 0 22px rgba(255, 220, 150, 0.12);
+            border-color: rgba(255, 241, 189, 0.9);
+            box-shadow: 0 0 32px rgba(255, 220, 150, 0.35), inset 0 0 32px rgba(255, 220, 150, 0.15);
             color: #fff1bd;
-        }
-
-        #submitLinkWrapper {
-            position: fixed;
-            top: 106px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            z-index: 1000;
-            pointer-events: none;
-        }
-
-        #submitLinkWrapper a {
-            pointer-events: auto;
         }
 
         /* Сцена */
@@ -287,13 +273,11 @@
     <div id="title">AFISHA</div>
     <div id="subtitle">GALLERY OF PRESENTATIONS OF ORIGINAL EUROPEAN ARTISTS</div>
 
-    <!-- НОВАЯ ССЫЛКА -->
-    <div id="submitLinkWrapper">
-        <a id="submitLink" href="https://vasilakypala-logovo.github.io/dvorets-nex/bashnya_nex/index.html">
-            Submit your artwork<br>
-            Отправить свою работу во Dvorets
-        </a>
-    </div>
+    <!-- НОВАЯ ССЫЛКА — УВЕЛИЧЕНА И ЖИРНАЯ -->
+    <a id="submitLink" href="https://vasilakypala-logovo.github.io/dvorets-nex/bashnya_nex/index.html">
+        Submit your artwork<br>
+        Отправить свою работу во Dvorets
+    </a>
 
     <div id="stage"></div>
     <div id="secondStage"></div>
@@ -348,12 +332,9 @@
 
         /* ==========================================================
            АВТОНОМНЫЙ МАССИВ ДЛЯ ВТОРОГО ПОТОКА
-           — используем реальные данные + можно добавлять новых
            ========================================================== */
         const secondArtists = [
-            // Реальные художники из основного массива
             ...mainArtists.map(artist => ({...artist})),
-            // Добавляем новых участников (замените пути и ссылки на реальные)
             {
                 name: "Наталия Калайда",
                 image: "artists/nataliakala.jpg",
@@ -403,7 +384,7 @@
         }
 
         /* ==========================================================
-           ОСНОВНОЙ ВИХРЬ (первый массив) — без изменений
+           ОСНОВНОЙ ВИХРЬ
            ========================================================== */
         const stage = document.getElementById("stage");
         const mainCards = createCards(stage, mainArtists);
@@ -441,12 +422,11 @@
         }
 
         /* ==========================================================
-           АВТОНОМНЫЙ ВТОРОЙ ПОТОК — увеличение и уход за правый край
+           ВТОРОЙ ПОТОК
            ========================================================== */
         const secondContainer = document.getElementById('secondStage');
         const secondCards = createCards(secondContainer, secondArtists);
 
-        // Начальная фаза для каждого портрета
         const offsets = secondArtists.map((_, i) => i / secondArtists.length);
 
         function animateSecond(time) {
@@ -459,8 +439,6 @@
             for (let i = 0; i < count; i++) {
                 let p = (progress + offsets[i]) % 1;
 
-                // Масштаб: начинаем с миниатюры, растем к центру, 
-                // затем продолжаем расти и уходим за правый край
                 let scale;
                 if (p < 0.5) {
                     const t = p / 0.5;
@@ -470,7 +448,6 @@
                     scale = 1.0 + t * 1.2;
                 }
 
-                // Позиция по X: от левого края до правого + уход за край
                 let xPos;
                 if (p < 0.5) {
                     const t = p / 0.5;
@@ -480,12 +457,10 @@
                     xPos = w * 0.5 + t * w * 0.8;
                 }
 
-                // Позиция по Y: сверху -> вниз в центре -> сверху
                 const yBase = 0.05 * h;
                 const yDrop = 0.70 * h;
                 const yPos = yBase + yDrop * Math.sin(p * Math.PI);
 
-                // Opacity: появляется слева, исчезает справа
                 let opacity;
                 if (p < 0.05) {
                     opacity = p / 0.05;
@@ -512,7 +487,7 @@
         }
 
         /* ==========================================================
-           ЗАПУСК АНИМАЦИЙ
+           ЗАПУСК
            ========================================================== */
         requestAnimationFrame(animateMain);
         requestAnimationFrame(animateSecond);
