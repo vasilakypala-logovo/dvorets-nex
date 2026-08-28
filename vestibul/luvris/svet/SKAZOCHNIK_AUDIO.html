@@ -117,6 +117,9 @@
         Переход сделан НАЛОЖЕНИЕМ:
         старый кадр остаётся видимым,
         новый плавно проявляется поверх него.
+
+        При окончании аудио происходит переход на
+        skazochka/cactus.html
         =========================================================
         */
 
@@ -148,6 +151,7 @@
         let active = frameA;
         let overlay = frameB;
         let busy = false;
+        let isEnded = false; // Флаг, чтобы не переходить дважды
 
         /* Предварительная загрузка всех изображений */
         frames.forEach(src => {
@@ -206,8 +210,6 @@
         }
 
         function resetToZero() {
-            // Останавливаем таймер, но не сбрасываем полностью
-            // Просто сбрасываем индекс на 0 и показываем нулевой кадр
             clearInterval(timer);
             timer = null;
             busy = false;
@@ -256,6 +258,8 @@
         }
 
         function restartConversation() {
+            isEnded = false; // Сбрасываем флаг при перезапуске
+
             // Сбрасываем кадры на нулевой
             resetToZero();
 
@@ -271,17 +275,28 @@
         }
 
         function zero() {
+            isEnded = false; // Сбрасываем флаг
             // Останавливаем всё
             pause();
             voice.currentTime = 0;
             resetToZero();
         }
 
-        /* Обработчик окончания аудио - только перематываем музыку, кадры продолжают идти */
+        /* Обработчик окончания аудио — переход на cactus.html */
         voice.addEventListener("ended", () => {
-            voice.currentTime = 0;
-            // Не останавливаем показ кадров!
-            // Кадры продолжают циклически чередоваться
+            // Предотвращаем повторный переход
+            if (isEnded) return;
+            isEnded = true;
+
+            // Останавливаем показ кадров
+            clearInterval(timer);
+            timer = null;
+
+            // Делаем паузу в 1 секунду для плавности
+            setTimeout(() => {
+                // Переход на страницу cactus.html в папке skazochka
+                window.location.href = "skazochka/cactus.html";
+            }, 1000);
         });
 
         /* Назначение кнопок */
