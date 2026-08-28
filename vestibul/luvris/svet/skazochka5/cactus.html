@@ -1,0 +1,368 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Кактус → Ёжик Тимофей</title>
+<style>
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:radial-gradient(circle at 50% 55%,#1a1a2e 0%,#0f0f1a 50%,#05050a 100%);
+}
+#stage{position:relative;width:100vw;height:100vh;overflow:hidden}
+#world{
+  position:absolute;left:50%;top:50%;width:1000px;height:600px;
+  transform-origin:center center;
+}
+.stick{
+  position:absolute;border-radius:999px;transform-origin:50% 50%;
+  will-change:left,top,transform,opacity,width,height;
+}
+.cactus-stick{
+  background:linear-gradient(90deg,#e8ffd5 0%,#72e77d 48%,#b58a3f 100%);
+  box-shadow:0 0 5px rgba(180,255,205,.85),0 0 12px rgba(70,255,120,.32);
+}
+.hedgehog-spine{
+  background:linear-gradient(180deg,#f5d6a8 0%,#c4955a 40%,#8b6b3f 100%);
+  box-shadow:0 0 10px rgba(245,214,168,.4),0 0 25px rgba(200,150,80,.15);
+  border:1px solid rgba(255,220,180,.3);
+}
+.hedgehog-fluff{
+  background:linear-gradient(180deg,#e8c89a 0%,#b88a5a 100%);
+  box-shadow:0 0 6px rgba(232,200,154,.25);
+}
+#face{
+  position:absolute;inset:0;width:1000px;height:600px;
+  opacity:0;pointer-events:none;
+}
+#face.show{opacity:1;transition:opacity 1.2s ease;}
+#noseLamp{
+  opacity:0;
+  filter:drop-shadow(0 0 16px #ffdca8);
+}
+#noseLamp.blink{
+  opacity:1;
+  animation:blink 1.2s ease-in-out infinite;
+}
+@keyframes blink{
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:.15;transform:scale(0.8);}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="world">
+<svg id="face" viewBox="0 0 1000 600">
+  <defs>
+    <radialGradient id="bodyGrad" cx="45%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#6b4226"/>
+      <stop offset="100%" stop-color="#2d1a08"/>
+    </radialGradient>
+    <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffe8c0"/>
+      <stop offset="100%" stop-color="#2d1a08"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Тело-основа (тёмное пятно под иголками) -->
+  <ellipse cx="500" cy="340" rx="240" ry="180" fill="url(#bodyGrad)"/>
+  
+  <!-- Голова -->
+  <ellipse cx="500" cy="260" rx="170" ry="140" fill="#4a2a12"/>
+  <ellipse cx="500" cy="270" rx="155" ry="125" fill="#6b3f20"/>
+  
+  <!-- Светлая мордочка -->
+  <ellipse cx="500" cy="320" rx="110" ry="75" fill="#c9956b"/>
+  <ellipse cx="500" cy="325" rx="95" ry="60" fill="#deb887"/>
+  
+  <!-- Глаза -->
+  <ellipse cx="440" cy="285" rx="26" ry="30" fill="#1a0a04"/>
+  <ellipse cx="560" cy="285" rx="26" ry="30" fill="#1a0a04"/>
+  <ellipse cx="444" cy="278" rx="10" ry="11" fill="#fff" opacity="0.95"/>
+  <ellipse cx="564" cy="278" rx="10" ry="11" fill="#fff" opacity="0.95"/>
+  <ellipse cx="438" cy="290" rx="5" ry="5" fill="#ffe8c0" opacity="0.5"/>
+  <ellipse cx="558" cy="290" rx="5" ry="5" fill="#ffe8c0" opacity="0.5"/>
+  
+  <!-- Носик -->
+  <ellipse id="noseLamp" cx="500" cy="320" rx="16" ry="13" fill="#1a0a04"/>
+  <ellipse cx="496" cy="316" rx="6" ry="5" fill="#ffdca8" opacity="0.7"/>
+  
+  <!-- Ротик -->
+  <path d="M470 342 Q500 360 530 342" fill="none" stroke="#2d1a08" stroke-width="3.5" stroke-linecap="round"/>
+  
+  <!-- Ушки -->
+  <ellipse cx="360" cy="200" rx="32" ry="38" fill="#6b3f20" transform="rotate(-15 360 200)"/>
+  <ellipse cx="360" cy="200" rx="20" ry="26" fill="#c9956b" transform="rotate(-15 360 200)"/>
+  <ellipse cx="640" cy="200" rx="32" ry="38" fill="#6b3f20" transform="rotate(15 640 200)"/>
+  <ellipse cx="640" cy="200" rx="20" ry="26" fill="#c9956b" transform="rotate(15 640 200)"/>
+  
+  <!-- Щёчки -->
+  <ellipse cx="405" cy="315" rx="35" ry="20" fill="#e8a87c" opacity="0.45"/>
+  <ellipse cx="595" cy="315" rx="35" ry="20" fill="#e8a87c" opacity="0.45"/>
+  
+  <!-- Лапки -->
+  <ellipse cx="425" cy="465" rx="40" ry="22" fill="#6b3f20"/>
+  <ellipse cx="575" cy="465" rx="40" ry="22" fill="#6b3f20"/>
+  <ellipse cx="425" cy="462" rx="28" ry="14" fill="#deb887"/>
+  <ellipse cx="575" cy="462" rx="28" ry="14" fill="#deb887"/>
+</svg>
+</div>
+</div>
+
+<script>
+const world=document.getElementById('world');
+const face=document.getElementById('face');
+const nose=document.getElementById('noseLamp');
+const W=1000,H=600;
+
+function resizeWorld(){
+ const s=Math.min(innerWidth/W,innerHeight/H);
+ world.style.transform=`translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize',resizeWorld); resizeWorld();
+
+const elements=[];
+
+function addPiece(cx,cy,len,angle,thick=7,opacity=1,type='cactus'){
+ const el=document.createElement('div');
+ el.className='stick';
+ el.style.width=len+'px';
+ el.style.height=thick+'px';
+ el.style.left=(cx-len/2)+'px';
+ el.style.top=(cy-thick/2)+'px';
+ el.style.transform=`rotate(${angle}rad)`;
+ el.style.opacity=opacity;
+ if(type==='cactus'){
+   el.classList.add('cactus-stick');
+ } else if(type==='spine'){
+   el.classList.add('hedgehog-spine');
+ } else if(type==='fluff'){
+   el.classList.add('hedgehog-fluff');
+ }
+ world.insertBefore(el,face);
+ elements.push({el,cx,cy,len,angle,thick,opacity,type});
+}
+
+/* ===== КАКТУС ===== */
+for(let y=180;y<=430;y+=13){
+ for(let x=-45;x<=45;x+=15){
+  addPiece(500+x,y+(Math.random()-.5)*6,34+Math.random()*16,
+           (Math.random()-.5)*.18,6+Math.random()*2,.76+Math.random()*.22,'cactus');
+ }
+}
+for(let i=0;i<70;i++){
+ const a=Math.random()*Math.PI*2,r=Math.sqrt(Math.random());
+ addPiece(500+Math.cos(a)*50*r,170+Math.sin(a)*36*r,
+          28+Math.random()*20,a+(Math.random()-.5)*.45,5+Math.random()*2,.82,'cactus');
+}
+for(let i=0;i<75;i++){
+ const t=Math.random(); let x,y,a;
+ if(t<.55){const u=t/.55;x=455-u*120;y=290-u*35;a=-.15+(Math.random()-.5)*.25}
+ else{const u=(t-.55)/.45;x=335;y=255-u*95;a=Math.PI/2+(Math.random()-.5)*.25}
+ addPiece(x+(Math.random()-.5)*26,y+(Math.random()-.5)*24,28+Math.random()*18,a,5+Math.random()*2,.78,'cactus');
+}
+for(let i=0;i<75;i++){
+ const t=Math.random(); let x,y,a;
+ if(t<.55){const u=t/.55;x=545+u*120;y=315-u*25;a=.12+(Math.random()-.5)*.25}
+ else{const u=(t-.55)/.45;x=665;y=290-u*100;a=Math.PI/2+(Math.random()-.5)*.25}
+ addPiece(x+(Math.random()-.5)*26,y+(Math.random()-.5)*24,28+Math.random()*18,a,5+Math.random()*2,.78,'cactus');
+}
+for(let i=0;i<80;i++){
+ const a=Math.random()*Math.PI*2,r=Math.sqrt(Math.random());
+ addPiece(500+Math.cos(a)*62*r,430+Math.sin(a)*36*r,
+          26+Math.random()*18,(Math.random()-.5)*.35,5+Math.random()*2,.75,'cactus');
+}
+for(let i=0;i<110;i++){
+ const zone=Math.random(); let x,y,a;
+ if(zone<.55){
+  y=185+Math.random()*235; const side=Math.random()<.5?-1:1;
+  x=500+side*(48+Math.random()*12);
+  a=side===1?(Math.random()-.5)*.45:Math.PI+(Math.random()-.5)*.45;
+ }else if(zone<.78){
+  x=340+(Math.random()-.5)*20;y=170+Math.random()*120;a=Math.PI+(Math.random()-.5)*.6;
+ }else{
+  x=660+(Math.random()-.5)*20;y=195+Math.random()*120;a=(Math.random()-.5)*.6;
+ }
+ addPiece(x,y,42+Math.random()*36,a,4+Math.random()*2,.9,'cactus');
+}
+
+/* ===== ЦЕЛИ ДЛЯ ЕЖИКА ===== */
+const targets=[];
+
+function target(cx,cy,len,angle,thick=7,opacity=1,type='spine'){
+ targets.push({cx,cy,len,angle,thick,opacity,type});
+}
+
+const HX=500,HY=330;
+
+/* ГЛАВНЫЕ ИГОЛКИ — длинные, толстые, светлые, их МНОГО */
+for(let i=0;i<400;i++){
+  const a=Math.random()*Math.PI*2;
+  const r=0.3+Math.random()*0.7;
+  const dist=60+Math.random()*150;
+  const x=HX+Math.cos(a)*dist*r;
+  const y=HY+Math.sin(a)*dist*r*0.8;
+  const angle=a+Math.PI/2+(Math.random()-.5)*0.5;
+  const len=50+Math.random()*80;
+  const thick=3+Math.random()*4;
+  target(
+    x+Math.cos(a)*len*0.25,
+    y+Math.sin(a)*len*0.25,
+    len, angle, thick,
+    0.85+Math.random()*0.15,
+    'spine'
+  );
+}
+
+/* КОРОТКИЕ ПУШИСТЫЕ ИГОЛКИ — заполняют объём */
+for(let i=0;i<250;i++){
+  const a=Math.random()*Math.PI*2;
+  const r=0.5+Math.random()*0.5;
+  const dist=30+Math.random()*100;
+  const x=HX+Math.cos(a)*dist*r;
+  const y=HY+Math.sin(a)*dist*r*0.8;
+  const angle=a+Math.PI/2+(Math.random()-.5)*0.7;
+  const len=18+Math.random()*40;
+  const thick=2+Math.random()*3;
+  target(
+    x+Math.cos(a)*len*0.15,
+    y+Math.sin(a)*len*0.15,
+    len, angle, thick,
+    0.7+Math.random()*0.25,
+    'fluff'
+  );
+}
+
+/* ИГОЛКИ НА МАКУШКЕ — торчат вверх */
+for(let i=0;i<120;i++){
+  const a=-Math.PI/2+(Math.random()-.5)*1.2;
+  const dist=40+Math.random()*100;
+  const x=HX+Math.cos(a)*dist*0.4;
+  const y=HY+Math.sin(a)*dist*0.7-30;
+  const angle=a+Math.PI/2+(Math.random()-.5)*0.4;
+  const len=45+Math.random()*60;
+  const thick=3+Math.random()*3.5;
+  target(x,y,len,angle,thick,0.9+Math.random()*0.1,'spine');
+}
+
+/* ДЛИННЫЕ ИГОЛКИ ПО БОКАМ — для красоты */
+for(let i=0;i<60;i++){
+  const a=Math.random()*Math.PI*2;
+  const dist=150+Math.random()*70;
+  const x=HX+Math.cos(a)*dist*0.6;
+  const y=HY+Math.sin(a)*dist*0.5;
+  const angle=a+Math.PI/2+(Math.random()-.5)*0.3;
+  const len=70+Math.random()*60;
+  const thick=3.5+Math.random()*3;
+  target(x,y,len,angle,thick,0.8+Math.random()*0.2,'spine');
+}
+
+/* ДОПОЛНИТЕЛЬНЫЙ СЛОЙ — чтобы иголок было очень много */
+for(let i=0;i<150;i++){
+  const a=Math.random()*Math.PI*2;
+  const dist=20+Math.random()*140;
+  const x=HX+Math.cos(a)*dist*0.7;
+  const y=HY+Math.sin(a)*dist*0.7;
+  const angle=a+Math.PI/2+(Math.random()-.5)*0.6;
+  const len=30+Math.random()*60;
+  const thick=2.5+Math.random()*3.5;
+  target(x,y,len,angle,thick,0.8+Math.random()*0.2,'spine');
+}
+
+/* Заполняем до количества палочек кактуса */
+while(targets.length < elements.length){
+  const a=Math.random()*Math.PI*2;
+  const dist=30+Math.random()*130;
+  const x=HX+Math.cos(a)*dist*0.65;
+  const y=HY+Math.sin(a)*dist*0.65;
+  const angle=a+Math.PI/2+(Math.random()-.5)*0.5;
+  const len=35+Math.random()*55;
+  const thick=2.5+Math.random()*3.5;
+  target(x,y,len,angle,thick,0.85,'spine');
+}
+
+/* Промежуточные хаотичные позиции */
+elements.forEach(p=>{
+ p.hx=50+Math.random()*900;
+ p.hy=50+Math.random()*500;
+ p.ha=p.angle+(Math.random()-.5)*15;
+ p.hx2=50+Math.random()*900;
+ p.hy2=80+Math.random()*450;
+ p.ha2=p.ha+(Math.random()-.5)*10;
+});
+
+function transform(){
+ elements.forEach((p,i)=>{
+  const t=targets[i % targets.length];
+  const isCactus = p.type === 'cactus';
+  
+  p.el.animate([
+   {
+    offset:0,
+    left:(p.cx-p.len/2)+'px',top:(p.cy-p.thick/2)+'px',
+    width:p.len+'px',height:p.thick+'px',
+    transform:`rotate(${p.angle}rad)`,
+    opacity:p.opacity,
+    borderRadius:'999px'
+   },
+   {
+    offset:.15,
+    left:(p.cx-p.len/2+(Math.random()-.5)*60)+'px',
+    top:(p.cy-p.thick/2+30+Math.random()*50)+'px',
+    transform:`rotate(${p.angle+(Math.random()-.5)*5}rad)`,
+    opacity:1,
+    borderRadius:'999px'
+   },
+   {
+    offset:.45,
+    left:(p.hx-p.len/2)+'px',top:(p.hy-p.thick/2)+'px',
+    transform:`rotate(${p.ha}rad)`,
+    opacity:1,
+    borderRadius:'999px'
+   },
+   {
+    offset:.65,
+    left:(p.hx2-p.len/2)+'px',top:(p.hy2-p.thick/2)+'px',
+    transform:`rotate(${p.ha2}rad)`,
+    opacity:1,
+    borderRadius:'999px'
+   },
+   {
+    offset:1,
+    left:(t.cx-t.len/2)+'px',top:(t.cy-t.thick/2)+'px',
+    width:t.len+'px',height:t.thick+'px',
+    transform:`rotate(${t.angle}rad)`,
+    opacity:t.opacity,
+    borderRadius:'999px'
+   }
+  ],{
+   duration:7500+Math.random()*800,
+   delay:Math.random()*400,
+   easing:'cubic-bezier(.25,.4,.15,1)',
+   fill:'forwards'
+  });
+  
+  /* Меняем классы чтобы изменить цвет */
+  setTimeout(()=>{
+   if(!isCactus){
+     p.el.classList.remove('cactus-stick');
+     p.el.classList.add(t.type === 'spine' ? 'hedgehog-spine' : 'hedgehog-fluff');
+   }
+  }, 7000 + Math.random()*500);
+ });
+
+ setTimeout(()=>{
+   face.classList.add('show');
+ },7800);
+
+ setTimeout(()=>{
+   nose.classList.add('blink');
+   nose.style.opacity='1';
+ },8500);
+}
+
+setTimeout(transform,1200);
+</script>
+</body>
+</html>
