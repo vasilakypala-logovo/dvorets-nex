@@ -6,15 +6,103 @@
 <title>Balcony Garden of Nex</title>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;font-family:Georgia,serif;}
-#garden{position:relative;width:100%;height:100%;background-image:url('balcony_garden.png');background-size:cover;background-position:center;}
-#morningGlow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 19% 15%,rgba(255,245,185,.18),transparent 25%),radial-gradient(circle at 48% 45%,rgba(255,255,255,.055),transparent 28%),linear-gradient(to bottom,rgba(5,20,10,.02),rgba(0,0,0,.10));mix-blend-mode:screen;}
-#dewVeil{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.36) 0 1px,transparent 2px),radial-gradient(circle,rgba(255,230,150,.23) 0 1px,transparent 2px);background-size:130px 95px,210px 150px;background-position:12% 66%,71% 52%;opacity:.22;animation:dew 7s ease-in-out infinite alternate;}
-@keyframes dew{from{opacity:.16;filter:blur(.1px)}to{opacity:.28;filter:blur(.45px)}}
 
-.zone{position:absolute;z-index:20;cursor:pointer;border-radius:50%;}
-#logovoZone{left:35%;top:43%;width:16%;height:22%;border-radius:50%;}
-#backZone{left:2%;top:3%;width:10%;height:12%;border-radius:40%;}
-.show-hotspots .zone{background:rgba(255,244,160,.24);outline:2px solid rgba(255,255,255,.70);box-shadow:0 0 30px rgba(255,235,140,.55);}
+/* ===== КОНТЕЙНЕР ДЛЯ ФОНОВ С ПЕРЕКЛЮЧЕНИЕМ ===== */
+#gardenWrapper{
+  position:relative;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+
+#gardenBg1, #gardenBg2{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  transition:opacity 2.5s ease;
+  will-change:opacity;
+}
+
+#gardenBg1{
+  background-image:url('balcony_garden.png');
+  opacity:1;
+  z-index:1;
+}
+
+#gardenBg2{
+  background-image:url('balcony_garden1.png');
+  opacity:0;
+  z-index:2;
+}
+
+/* Контент поверх фонов */
+#gardenContent{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+}
+
+#morningGlow{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle at 19% 15%,rgba(255,245,185,.18),transparent 25%),
+              radial-gradient(circle at 48% 45%,rgba(255,255,255,.055),transparent 28%),
+              linear-gradient(to bottom,rgba(5,20,10,.02),rgba(0,0,0,.10));
+  mix-blend-mode:screen;
+  z-index:1;
+}
+
+#dewVeil{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.36) 0 1px,transparent 2px),
+                   radial-gradient(circle,rgba(255,230,150,.23) 0 1px,transparent 2px);
+  background-size:130px 95px,210px 150px;
+  background-position:12% 66%,71% 52%;
+  opacity:.22;
+  animation:dew 7s ease-in-out infinite alternate;
+  z-index:2;
+}
+
+@keyframes dew{
+  from{opacity:.16;filter:blur(.1px)}
+  to{opacity:.28;filter:blur(.45px)}
+}
+
+/* ===== ЗОНЫ (кликабельные) ===== */
+.zone{
+  position:absolute;
+  z-index:20;
+  cursor:pointer;
+  border-radius:50%;
+  pointer-events:auto;
+}
+
+#logovoZone{
+  left:35%;
+  top:43%;
+  width:16%;
+  height:22%;
+  border-radius:50%;
+}
+
+#backZone{
+  left:2%;
+  top:3%;
+  width:10%;
+  height:12%;
+  border-radius:40%;
+}
+
+.show-hotspots .zone{
+  background:rgba(255,244,160,.24);
+  outline:2px solid rgba(255,255,255,.70);
+  box-shadow:0 0 30px rgba(255,235,140,.55);
+}
 
 #komorny-title{
   position:fixed;
@@ -51,11 +139,44 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;fon
   50%{transform:translateY(3px);}
 }
 
-#caption{position:absolute;left:50%;bottom:4.5%;transform:translateX(-50%);z-index:24;padding:9px 18px;color:rgba(255,248,218,.86);background:rgba(15,28,12,.30);border:1px solid rgba(255,238,170,.22);box-shadow:0 0 28px rgba(0,0,0,.28),inset 0 0 18px rgba(255,245,190,.05);backdrop-filter:blur(4px);font-size:13px;letter-spacing:.10em;text-align:center;opacity:.78;pointer-events:none;}
-#musicHint{position:absolute;right:2.5%;bottom:3%;z-index:25;color:rgba(255,248,218,.70);font-size:11px;letter-spacing:.08em;background:rgba(10,22,8,.35);border:1px solid rgba(255,238,170,.16);padding:7px 10px;opacity:0;transition:opacity .5s ease;}
+#caption{
+  position:absolute;
+  left:50%;
+  bottom:4.5%;
+  transform:translateX(-50%);
+  z-index:24;
+  padding:9px 18px;
+  color:rgba(255,248,218,.86);
+  background:rgba(15,28,12,.30);
+  border:1px solid rgba(255,238,170,.22);
+  box-shadow:0 0 28px rgba(0,0,0,.28),inset 0 0 18px rgba(255,245,190,.05);
+  backdrop-filter:blur(4px);
+  font-size:13px;
+  letter-spacing:.10em;
+  text-align:center;
+  opacity:.78;
+  pointer-events:none;
+}
+
+#musicHint{
+  position:absolute;
+  right:2.5%;
+  bottom:3%;
+  z-index:25;
+  color:rgba(255,248,218,.70);
+  font-size:11px;
+  letter-spacing:.08em;
+  background:rgba(10,22,8,.35);
+  border:1px solid rgba(255,238,170,.16);
+  padding:7px 10px;
+  opacity:0;
+  transition:opacity .5s ease;
+  pointer-events:auto;
+}
+
 #musicHint.show{opacity:.9;}
 
-/* ===== ЛЕТЯЩАЯ КАРТИНА (flyingPainting) ===== */
+/* ===== ЛЕТЯЩАЯ КАРТИНА ===== */
 #flyingPainting{
   position:fixed;
   left:-340px;
@@ -170,7 +291,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;fon
   }
 }
 
-/* ===== РАЗВЕРНУТАЯ КАРТИНА (оверлей) ===== */
+/* ===== РАЗВЕРНУТАЯ КАРТИНА ===== */
 #expandedOverlay{
   position:fixed;
   inset:0;
@@ -265,23 +386,30 @@ audio{display:none;}
 </head>
 
 <body>
-<div id="garden">
-  <div id="komorny-title">
-    Serhii Komorny • white paper • soft pastel • Kharkiv
+<!-- ===== ФОНЫ С ПЕРЕКЛЮЧЕНИЕМ ===== -->
+<div id="gardenWrapper">
+  <div id="gardenBg1"></div>
+  <div id="gardenBg2"></div>
+  
+  <!-- ВСЁ ОСТАЛЬНОЕ ВНУТРИ gardenContent -->
+  <div id="gardenContent">
+    <div id="komorny-title">
+      Serhii Komorny • white paper • soft pastel • Kharkiv
+    </div>
+    <div id="morningGlow"></div>
+    <div id="dewVeil"></div>
+
+    <div id="flyingPainting">
+      <img id="flyingImage" src="HIT1.jpg" alt="Hit painting">
+    </div>
+
+    <div class="zone" id="backZone" title="Back to Concert Hall" onclick="window.location.href='index.html'"></div>
+    <div class="zone" id="logovoZone" title="Enter Logovo" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/logovo.html'"></div>
+
+    <div id="caption">The music remains behind the leaves.</div>
+    <div id="musicHint">click anywhere — the hall music will breathe quietly here</div>
+    <audio id="echo" loop preload="auto"></audio>
   </div>
-  <div id="morningGlow"></div>
-  <div id="dewVeil"></div>
-
-  <div id="flyingPainting">
-    <img id="flyingImage" src="HIT1.jpg" alt="Hit painting">
-  </div>
-
-  <div class="zone" id="backZone" title="Back to Concert Hall" onclick="window.location.href='index.html'"></div>
-  <div class="zone" id="logovoZone" title="Enter Logovo" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/logovo.html'"></div>
-
-  <div id="caption">The music remains behind the leaves.</div>
-  <div id="musicHint">click anywhere — the hall music will breathe quietly here</div>
-  <audio id="echo" loop preload="auto"></audio>
 </div>
 
 <div id="floatingGallery"></div>
@@ -296,6 +424,26 @@ audio{display:none;}
 const echo = document.getElementById('echo');
 const hint = document.getElementById('musicHint');
 const floatingGallery = document.getElementById('floatingGallery');
+
+// ===== ФОНОВОЕ ПЕРЕКЛЮЧЕНИЕ =====
+const bg1 = document.getElementById('gardenBg1');
+const bg2 = document.getElementById('gardenBg2');
+let currentBg = 1; // 1 = bg1 активен, 2 = bg2 активен
+
+function switchBackground(){
+  if(currentBg === 1){
+    bg1.style.opacity = '0';
+    bg2.style.opacity = '1';
+    currentBg = 2;
+  } else {
+    bg1.style.opacity = '1';
+    bg2.style.opacity = '0';
+    currentBg = 1;
+  }
+}
+
+// Запускаем переключение каждые 30 секунд
+setInterval(switchBackground, 30000);
 
 // ===== ОВЕРЛЕЙ =====
 const overlay = document.getElementById('expandedOverlay');
@@ -318,14 +466,14 @@ const balconyPictures = [
 let balconyIndex = 0;
 let flyingIndex = 0;
 
-// ===== ФУНКЦИЯ: РАЗВЕРНУТЬ КАРТИНУ =====
+// ===== РАЗВЕРНУТЬ КАРТИНУ =====
 function expandImage(src){
   expandedImg.src = src;
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
-// ===== ФУНКЦИЯ: ЗАКРЫТЬ =====
+// ===== ЗАКРЫТЬ =====
 function closeExpandedImage(){
   overlay.classList.remove('active');
   document.body.style.overflow = '';
@@ -383,7 +531,6 @@ function launchBalconyPicture(){
   const size = 180 + Math.random() * 70;
   frame.style.width = size + 'px';
 
-  // ===== КЛИК ПО КАРТИНЕ =====
   frame.addEventListener('click', function(e){
     e.stopPropagation();
     const imgEl = this.querySelector('img');
@@ -408,7 +555,6 @@ function launchBalconyPicture(){
 function launchFlyingPainting(){
   flyingPainting.classList.remove('fly');
   
-  // Меняем картинку
   const src = balconyPictures[flyingIndex];
   flyingImage.src = src;
   flyingImage.alt = 'Serhii Komorny, ' + (flyingIndex + 1);
@@ -418,7 +564,6 @@ function launchFlyingPainting(){
     flyingIndex = 0;
   }
 
-  // Запускаем анимацию с небольшой задержкой
   setTimeout(() => {
     flyingPainting.classList.add('fly');
   }, 50);
@@ -443,8 +588,6 @@ launchBalconyPicture();
 launchFlyingPainting();
 
 setInterval(launchBalconyPicture, 5200);
-
-// Летящая картина запускается реже (каждые 36 секунд)
 setInterval(launchFlyingPainting, 38000);
 
 document.addEventListener('click', function(){
