@@ -1,0 +1,468 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YULIIA KOTOVA • lacquer miniature</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0c0b0a;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    #garden {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-image: url('balconykot.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    #morningGlow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 22% 18%, rgba(235, 215, 175, 0.20), transparent 30%),
+        radial-gradient(circle at 60% 55%, rgba(255, 240, 200, 0.08), transparent 30%),
+        linear-gradient(to bottom, rgba(15, 12, 8, 0.02), rgba(0,0,0,0.15));
+      mix-blend-mode: soft-light;
+    }
+
+    #dewVeil {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(240, 230, 200, 0.30) 0 1px, transparent 2px),
+        radial-gradient(circle, rgba(220, 200, 160, 0.20) 0 1px, transparent 2px);
+      background-size: 140px 100px, 220px 160px;
+      background-position: 15% 70%, 65% 45%;
+      opacity: 0.18;
+      animation: dew 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes dew {
+      from { opacity: 0.12; filter: blur(0.2px); }
+      to   { opacity: 0.26; filter: blur(0.6px); }
+    }
+
+    /* активные зоны (кликабельные) */
+    .zone {
+      position: absolute;
+      z-index: 20;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    #logovoZone {
+      left: 38%;
+      top: 44%;
+      width: 14%;
+      height: 20%;
+      border-radius: 50%;
+    }
+    #backZone {
+      left: 2%;
+      top: 3%;
+      width: 10%;
+      height: 12%;
+      border-radius: 40%;
+    }
+
+    .show-hotspots .zone {
+      background: rgba(200, 180, 140, 0.20);
+      outline: 2px solid rgba(220, 200, 160, 0.70);
+      box-shadow: 0 0 30px rgba(200, 180, 130, 0.40);
+    }
+
+    /* заголовок – имя художницы */
+    #komorny-title {
+      position: fixed;
+      top: 22px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-family: Georgia, serif;
+      font-size: 38px;
+      letter-spacing: 0.12em;
+      color: rgba(245, 235, 210, 0.96);
+      text-shadow:
+        0 0 8px rgba(220, 200, 170, 0.90),
+        0 0 18px rgba(200, 180, 140, 0.80),
+        0 0 34px rgba(180, 150, 110, 0.60),
+        0 0 60px rgba(150, 120, 80, 0.35),
+        0 0 90px rgba(130, 100, 70, 0.20);
+      filter: brightness(1.06);
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      animation:
+        komornyFade 16s ease-in-out infinite,
+        komornyFloat 12s ease-in-out infinite;
+    }
+
+    @keyframes komornyFade {
+      0%   { opacity: 0; }
+      20%  { opacity: 0.85; }
+      72%  { opacity: 0.80; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes komornyFloat {
+      0%, 100% { transform: translateY(0px); }
+      50%      { transform: translateY(4px); }
+    }
+
+    /* нижняя подпись */
+    #caption {
+      position: absolute;
+      left: 50%;
+      bottom: 4.5%;
+      transform: translateX(-50%);
+      z-index: 24;
+      padding: 8px 20px;
+      color: rgba(240, 230, 205, 0.88);
+      background: rgba(20, 18, 14, 0.35);
+      border: 1px solid rgba(200, 180, 150, 0.25);
+      box-shadow: 0 0 28px rgba(0,0,0,0.30), inset 0 0 18px rgba(220, 200, 160, 0.06);
+      backdrop-filter: blur(4px);
+      font-size: 14px;
+      letter-spacing: 0.10em;
+      text-align: center;
+      opacity: 0.80;
+      pointer-events: none;
+      border-radius: 24px;
+    }
+
+    #musicHint {
+      position: absolute;
+      right: 2.5%;
+      bottom: 3%;
+      z-index: 25;
+      color: rgba(235, 220, 195, 0.70);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      background: rgba(20, 18, 14, 0.40);
+      border: 1px solid rgba(200, 180, 150, 0.20);
+      padding: 6px 12px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
+    }
+    #musicHint.show { opacity: 0.9; }
+
+    /* плавающая галерея */
+    #floatingGallery {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 8;
+    }
+
+    .floatArt {
+      position: absolute;
+      width: 200px;
+      padding: 6px;
+      background: rgba(30, 27, 22, 0.75);
+      box-shadow:
+        0 0 12px rgba(200, 180, 150, 0.20),
+        0 12px 28px rgba(0,0,0,0.55);
+      opacity: 0;
+      transform: translateX(110vw) scale(0.90);
+      animation: balconyFloat 30s linear forwards;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.15s, box-shadow 0.2s;
+      border-radius: 6px;
+      border: 1px solid rgba(180, 160, 130, 0.30);
+    }
+
+    .floatArt:hover {
+      transform: translateX(110vw) scale(0.93);
+      box-shadow: 0 0 30px rgba(220, 200, 170, 0.40), 0 12px 32px rgba(0,0,0,0.65);
+      border-color: rgba(210, 190, 160, 0.60);
+    }
+
+    .floatArt img {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.20);
+      pointer-events: none;
+      background: #1a1714;
+    }
+
+    @keyframes balconyFloat {
+      0%   { opacity: 0; transform: translateX(110vw) scale(0.86); }
+      12%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { opacity: 0; transform: translateX(-30vw) scale(1); }
+    }
+
+    /* оверлей для увеличенной работы */
+    #expandedOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(8, 7, 6, 0.92);
+      backdrop-filter: blur(10px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.35s ease;
+    }
+
+    #expandedOverlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      0%   { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    #expandedImage {
+      max-height: 90vh;
+      max-width: 92vw;
+      object-fit: contain;
+      box-shadow: 0 0 50px rgba(190, 170, 140, 0.25), 0 20px 60px rgba(0,0,0,0.80);
+      border-radius: 6px;
+      background: rgba(20, 18, 14, 0.40);
+      padding: 8px;
+      animation: zoomIn 0.45s ease;
+      border: 1px solid rgba(180, 160, 130, 0.20);
+    }
+
+    @keyframes zoomIn {
+      0%   { transform: scale(0.88); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    #closeExpanded {
+      position: fixed;
+      top: 30px;
+      right: 40px;
+      z-index: 9999;
+      font-size: 46px;
+      color: rgba(230, 215, 190, 0.85);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      transition: all 0.25s ease;
+      text-shadow: 0 0 30px rgba(0,0,0,0.80);
+      pointer-events: auto;
+      line-height: 1;
+    }
+
+    #closeExpanded:hover {
+      transform: rotate(90deg) scale(1.2);
+      color: #fff;
+    }
+
+    /* адаптив */
+    @media (max-width: 700px) {
+      #komorny-title {
+        font-size: 26px;
+        letter-spacing: 0.08em;
+        top: 16px;
+      }
+      .floatArt {
+        width: 140px;
+      }
+      #caption {
+        font-size: 11px;
+        padding: 5px 14px;
+        bottom: 3%;
+      }
+      #closeExpanded {
+        font-size: 36px;
+        top: 20px;
+        right: 25px;
+      }
+      #expandedImage {
+        max-height: 78vh;
+        max-width: 94vw;
+      }
+    }
+
+    audio { display: none; }
+  </style>
+</head>
+<body>
+
+<div id="garden">
+  <div id="komorny-title">Yuliia Kotova • Lacquer Miniature on Stone • Poltava</div>
+
+  <div id="morningGlow"></div>
+  <div id="dewVeil"></div>
+
+  <!-- кликабельные зоны -->
+  <div class="zone" id="backZone" title="Back to Concert Hall" onclick="window.location.href='index.html'"></div>
+  <div class="zone" id="logovoZone" title="Enter Logovo" onclick="window.location.href='https://vasilakypala-logovo.github.io/logovo/logovo.html'"></div>
+
+  <div id="caption">The stone breathes with lacquer warmth.</div>
+  <div id="musicHint">click anywhere — the music will breathe quietly here</div>
+  <audio id="echo" loop preload="auto"></audio>
+</div>
+
+<div id="floatingGallery"></div>
+
+<!-- оверлей -->
+<div id="expandedOverlay">
+  <button id="closeExpanded" title="Закрыть">✕</button>
+  <img id="expandedImage" src="" alt="Yuliia Kotova – lacquer miniature on stone">
+</div>
+
+<script>
+  (function() {
+    const echo = document.getElementById('echo');
+    const hint = document.getElementById('musicHint');
+    const floatingGallery = document.getElementById('floatingGallery');
+
+    // Оверлей
+    const overlay = document.getElementById('expandedOverlay');
+    const expandedImg = document.getElementById('expandedImage');
+    const closeBtn = document.getElementById('closeExpanded');
+
+    // ===== МАССИВ КАРТИН (kot1.png … kot29.png) =====
+    const pictures = [];
+    for (let i = 1; i <= 29; i++) {
+      pictures.push('kot' + i + '.png');
+    }
+
+    let pictureIndex = 0;
+
+    // ===== ФУНКЦИЯ РАЗВЕРНУТЬ =====
+    function expandImage(src) {
+      expandedImg.src = src;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // ===== ЗАКРЫТЬ =====
+    function closeExpandedImage() {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        if (!overlay.classList.contains('active')) {
+          expandedImg.src = '';
+        }
+      }, 300);
+    }
+
+    // ===== СОБЫТИЯ ОВЕРЛЕЯ =====
+    closeBtn.addEventListener('click', closeExpandedImage);
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        closeExpandedImage();
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (overlay.classList.contains('active')) {
+          closeExpandedImage();
+        } else {
+          window.location.href = 'index.html';
+        }
+      }
+    });
+
+    // ===== ЗАПУСК ПЛАВАЮЩИХ КАРТИН =====
+    function launchPicture() {
+      if (!floatingGallery) return;
+
+      const frame = document.createElement('div');
+      frame.className = 'floatArt';
+
+      const img = document.createElement('img');
+      img.src = pictures[pictureIndex];
+      img.alt = 'Yuliia Kotova lacquer miniature';
+      img.draggable = false;
+
+      frame.appendChild(img);
+
+      const top = 8 + Math.random() * 34;
+      frame.style.top = top + '%';
+
+      const size = 170 + Math.random() * 80;
+      frame.style.width = size + 'px';
+
+      // клик по картине → оверлей
+      frame.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const imgEl = this.querySelector('img');
+        if (imgEl) {
+          expandImage(imgEl.src);
+        }
+      });
+
+      floatingGallery.appendChild(frame);
+
+      pictureIndex++;
+      if (pictureIndex >= pictures.length) {
+        pictureIndex = 0;
+      }
+
+      setTimeout(function() {
+        if (frame.parentNode) frame.remove();
+      }, 30000);
+    }
+
+    // ===== МУЗЫКА =====
+    function startEcho() {
+      try {
+        echo.src = 'OZERO8.mp3';
+        echo.volume = 0.20;
+
+        const p = echo.play();
+        if (p !== undefined) {
+          p.catch(function() {
+            hint.classList.add('show');
+          });
+        }
+      } catch (e) {
+        hint.classList.add('show');
+      }
+    }
+
+    // ===== СТАРТ =====
+    startEcho();
+    // запускаем первую картину сразу, затем по интервалу
+    launchPicture();
+    setInterval(launchPicture, 4800);
+
+    // клик по странице — музыка
+    document.addEventListener('click', function() {
+      if (echo.paused) startEcho();
+      hint.classList.remove('show');
+    }, false);
+
+    // хоткей 'h' для подсветки зон
+    document.addEventListener('keydown', function(e) {
+      if (e.key.toLowerCase() === 'h') {
+        document.body.classList.toggle('show-hotspots');
+      }
+    });
+
+  })();
+</script>
+
+</body>
+</html>
