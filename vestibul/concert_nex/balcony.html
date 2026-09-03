@@ -7,7 +7,7 @@
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;font-family:Georgia,serif;}
 
-/* ===== КОНТЕЙНЕР ДЛЯ ФОНОВ С ПЕРЕКЛЮЧЕНИЕМ ===== */
+/* ===== КОНТЕЙНЕР ДЛЯ ФОНОВ ===== */
 #gardenWrapper{
   position:relative;
   width:100%;
@@ -27,20 +27,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;fon
 #gardenBg1{
   background-image:url('balcony_garden.png');
   opacity:1;
-  z-index:1;
 }
 
 #gardenBg2{
   background-image:url('balcony_garden1.png');
   opacity:0;
-  z-index:2;
 }
 
-/* Контент поверх фонов */
+/* Контент поверх фонов (без z-index, чтобы не создавать контекст) */
 #gardenContent{
   position:absolute;
   inset:0;
-  z-index:3;
   pointer-events:none;
 }
 
@@ -52,7 +49,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;fon
               radial-gradient(circle at 48% 45%,rgba(255,255,255,.055),transparent 28%),
               linear-gradient(to bottom,rgba(5,20,10,.02),rgba(0,0,0,.10));
   mix-blend-mode:screen;
-  z-index:1;
 }
 
 #dewVeil{
@@ -65,7 +61,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;fon
   background-position:12% 66%,71% 52%;
   opacity:.22;
   animation:dew 7s ease-in-out infinite alternate;
-  z-index:2;
 }
 
 @keyframes dew{
@@ -239,9 +234,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071006;fon
   100%{left:112vw;top:27%;opacity:0;transform:rotate(-4deg) scale(.90);}
 }
 
-/* ===== ПЛАВАЮЩАЯ ГАЛЕРЕЯ ===== */
+/* ===== ПЛАВАЮЩАЯ ГАЛЕРЕЯ (вынесена наружу) ===== */
 #floatingGallery{
-  position:absolute;
+  position:fixed;
   inset:0;
   pointer-events:none;
   overflow:hidden;
@@ -386,12 +381,12 @@ audio{display:none;}
 </head>
 
 <body>
-<!-- ===== ФОНЫ С ПЕРЕКЛЮЧЕНИЕМ ===== -->
+<!-- ===== ФОНЫ ===== -->
 <div id="gardenWrapper">
   <div id="gardenBg1"></div>
   <div id="gardenBg2"></div>
   
-  <!-- ВСЁ ОСТАЛЬНОЕ ВНУТРИ gardenContent -->
+  <!-- КОНТЕНТ (без z-index) -->
   <div id="gardenContent">
     <div id="komorny-title">
       Serhii Komorny • white paper • soft pastel • Kharkiv
@@ -412,6 +407,7 @@ audio{display:none;}
   </div>
 </div>
 
+<!-- ===== ПЛАВАЮЩАЯ ГАЛЕРЕЯ (отдельно) ===== -->
 <div id="floatingGallery"></div>
 
 <!-- ===== ОВЕРЛЕЙ ===== -->
@@ -428,7 +424,7 @@ const floatingGallery = document.getElementById('floatingGallery');
 // ===== ФОНОВОЕ ПЕРЕКЛЮЧЕНИЕ =====
 const bg1 = document.getElementById('gardenBg1');
 const bg2 = document.getElementById('gardenBg2');
-let currentBg = 1; // 1 = bg1 активен, 2 = bg2 активен
+let currentBg = 1;
 
 function switchBackground(){
   if(currentBg === 1){
@@ -441,8 +437,6 @@ function switchBackground(){
     currentBg = 1;
   }
 }
-
-// Запускаем переключение каждые 30 секунд
 setInterval(switchBackground, 30000);
 
 // ===== ОВЕРЛЕЙ =====
@@ -466,14 +460,12 @@ const balconyPictures = [
 let balconyIndex = 0;
 let flyingIndex = 0;
 
-// ===== РАЗВЕРНУТЬ КАРТИНУ =====
 function expandImage(src){
   expandedImg.src = src;
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
-// ===== ЗАКРЫТЬ =====
 function closeExpandedImage(){
   overlay.classList.remove('active');
   document.body.style.overflow = '';
@@ -484,89 +476,56 @@ function closeExpandedImage(){
   }, 300);
 }
 
-// ===== СОБЫТИЯ ОВЕРЛЕЯ =====
 closeBtn.addEventListener('click', closeExpandedImage);
-
 overlay.addEventListener('click', function(e){
-  if(e.target === overlay){
-    closeExpandedImage();
-  }
+  if(e.target === overlay) closeExpandedImage();
 });
-
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){
-    if(overlay.classList.contains('active')){
-      closeExpandedImage();
-    } else {
-      window.location.href = 'index.html';
-    }
+    if(overlay.classList.contains('active')) closeExpandedImage();
+    else window.location.href = 'index.html';
   }
 });
 
-// ===== КЛИК ПО ЛЕТЯЩЕЙ КАРТИНЕ =====
 flyingPainting.addEventListener('click', function(e){
   e.stopPropagation();
-  if(flyingImage && flyingImage.src){
-    expandImage(flyingImage.src);
-  }
+  if(flyingImage && flyingImage.src) expandImage(flyingImage.src);
 });
 
 // ===== ЗАПУСК ПЛАВАЮЩИХ КАРТИН =====
 function launchBalconyPicture(){
   if(!floatingGallery) return;
-
   const frame = document.createElement('div');
   frame.className = 'floatArt';
-
   const img = document.createElement('img');
   img.src = balconyPictures[balconyIndex];
   img.alt = 'Serhii Komorny, soft pastel';
   img.draggable = false;
-
   frame.appendChild(img);
 
   const top = 8 + Math.random() * 34;
   frame.style.top = top + '%';
-
   const size = 180 + Math.random() * 70;
   frame.style.width = size + 'px';
 
   frame.addEventListener('click', function(e){
     e.stopPropagation();
     const imgEl = this.querySelector('img');
-    if(imgEl){
-      expandImage(imgEl.src);
-    }
+    if(imgEl) expandImage(imgEl.src);
   });
 
   floatingGallery.appendChild(frame);
-
-  balconyIndex++;
-  if(balconyIndex >= balconyPictures.length){
-    balconyIndex = 0;
-  }
-
-  setTimeout(function(){
-    frame.remove();
-  }, 29000);
+  balconyIndex = (balconyIndex + 1) % balconyPictures.length;
+  setTimeout(() => frame.remove(), 29000);
 }
 
 // ===== ЗАПУСК ЛЕТЯЩЕЙ КАРТИНЫ =====
 function launchFlyingPainting(){
   flyingPainting.classList.remove('fly');
-  
-  const src = balconyPictures[flyingIndex];
-  flyingImage.src = src;
+  flyingImage.src = balconyPictures[flyingIndex];
   flyingImage.alt = 'Serhii Komorny, ' + (flyingIndex + 1);
-  
-  flyingIndex++;
-  if(flyingIndex >= balconyPictures.length){
-    flyingIndex = 0;
-  }
-
-  setTimeout(() => {
-    flyingPainting.classList.add('fly');
-  }, 50);
+  flyingIndex = (flyingIndex + 1) % balconyPictures.length;
+  setTimeout(() => flyingPainting.classList.add('fly'), 50);
 }
 
 // ===== МУЗЫКА =====
@@ -586,7 +545,6 @@ function startEcho(){
 startEcho();
 launchBalconyPicture();
 launchFlyingPainting();
-
 setInterval(launchBalconyPicture, 5200);
 setInterval(launchFlyingPainting, 38000);
 
