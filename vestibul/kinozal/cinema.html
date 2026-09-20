@@ -813,12 +813,11 @@ function releaseLocalVideo(){
    Только закрываем меню YouTube.
    ========================================================== */
 
-document
-  .getElementById("p2")
-  .addEventListener(
-    "click",
-    closeYoutubeMenu
-  );
+document.getElementById("p2")
+  .addEventListener("click", () => {
+    closeYoutubeMenu();
+    window.location.href = "kinoobitel/kinoobitel.html";
+  });
 
 
 
