@@ -185,7 +185,7 @@ const BUCKET = "kino";
 
   Вставьте ключ между кавычками:
 */
-const SUPABASE_KEY = "ВСТАВЬТЕ_СЮДА_ANON_ИЛИ_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "sb_publishable_arQvVM0huxdB5jbiLPpSPA_7tksXK-Y";
 
 const playerBox = document.getElementById("playerBox");
 const movieList = document.getElementById("movieList");
@@ -277,10 +277,6 @@ async function loadMovies(){
 }
 
 uploadBtn.addEventListener("click", () => {
-  if(SUPABASE_KEY.startsWith("ВСТАВЬТЕ_")){
-    statusBox.textContent = "Сначала вставьте ключ Supabase в HTML";
-    return;
-  }
   fileInput.click();
 });
 
@@ -320,12 +316,8 @@ fileInput.addEventListener("change", async () => {
   }
 });
 
-/* Если ключ уже вставлен — сразу строим список. */
-if(!SUPABASE_KEY.startsWith("ВСТАВЬТЕ_")){
-  loadMovies();
-}else{
-  statusBox.textContent = "Нужен публичный ключ Supabase";
-}
+/* При открытии Кинообители сразу строим список фильмов. */
+loadMovies();
 </script>
 
 </body>
