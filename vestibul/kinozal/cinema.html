@@ -825,10 +825,10 @@ document.getElementById("p2")
 
 document
   .getElementById("p4")
-  .addEventListener(
-    "click",
-    closeYoutubeMenu
-  );
+  .addEventListener("click", () => {
+    closeYoutubeMenu();
+    window.location.href = "other.html";
+  });
 
 
 
