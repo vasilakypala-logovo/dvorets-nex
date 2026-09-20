@@ -13,7 +13,9 @@ body{font-family:Georgia,"Times New Roman",serif}
 #playerBox iframe,#playerBox video{width:100%;height:100%;border:0;display:block;background:#000}
 #screenHint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8b8173;font-size:clamp(12px,1.1vw,20px);letter-spacing:.16em;text-transform:uppercase;pointer-events:none;opacity:.45}
 #panel{position:absolute;left:78.7%;top:8.5%;width:18%;min-height:25%;padding:1.1% 1%;color:#ead9ae;background:rgba(10,8,6,.55);border:1px solid rgba(225,190,115,.25);box-shadow:inset 0 0 20px rgba(0,0,0,.55)}
-#panelTitle{margin:0 0 10px;text-align:center;font-size:clamp(10px,.9vw,16px);letter-spacing:.10em}
+#closePanel{position:absolute;right:5px;top:3px;width:24px;height:24px;padding:0;border:0;background:transparent;color:#d6b978;font:20px/24px Arial,sans-serif;cursor:pointer;opacity:.8}
+#closePanel:hover{color:#fff0bd;opacity:1}
+#panelTitle{margin:0 22px 10px 0;text-align:center;font-size:clamp(10px,.9vw,16px);letter-spacing:.10em}
 #sourceUrl{width:100%;min-height:62px;resize:none;padding:7px;border:1px solid rgba(230,197,126,.42);border-radius:4px;outline:none;background:rgba(0,0,0,.72);color:#f1dfb4;font:clamp(9px,.72vw,12px) Arial,sans-serif}
 #openBtn,#externalBtn{width:100%;margin-top:8px;padding:8px 6px;border:1px solid rgba(230,197,126,.45);border-radius:4px;color:#f1dfb4;background:rgba(35,27,17,.82);font-family:Georgia,"Times New Roman",serif;font-size:clamp(9px,.78vw,13px);cursor:pointer}
 #openBtn:hover,#externalBtn:hover{background:rgba(75,55,28,.9)}
@@ -28,6 +30,7 @@ body{font-family:Georgia,"Times New Roman",serif}
 <div id="stage">
   <div id="playerBox"><div id="screenHint">ВСТАВЬТЕ ССЫЛКУ СПРАВА</div></div>
   <div id="panel">
+    <button id="closePanel" type="button" aria-label="Закрыть">×</button>
     <div id="panelTitle">ДРУГИЕ ИСТОЧНИКИ</div>
     <textarea id="sourceUrl" spellcheck="false" placeholder="Вставьте полную ссылку Facebook, TikTok или прямую ссылку на видео"></textarea>
     <button id="openBtn" type="button">ПОКАЗАТЬ</button>
@@ -38,11 +41,15 @@ body{font-family:Georgia,"Times New Roman",serif}
 </div>
 <script>
 const playerBox=document.getElementById("playerBox");
+const panel=document.getElementById("panel");
+const closePanel=document.getElementById("closePanel");
 const sourceUrl=document.getElementById("sourceUrl");
 const openBtn=document.getElementById("openBtn");
 const externalBtn=document.getElementById("externalBtn");
 const statusBox=document.getElementById("status");
 let originalUrl="";
+
+closePanel.addEventListener("click",()=>{window.location.href="cinema.html"});
 
 function showIframe(src,title){
   playerBox.innerHTML="";
@@ -70,18 +77,15 @@ function openSource(){
   let url;
   try{url=new URL(normalizeUrl(value))}
   catch(e){statusBox.textContent="Не похоже на правильную ссылку.";return}
-
   originalUrl=url.href;
   externalBtn.style.display="block";
   const host=url.hostname.toLowerCase().replace(/^www\./,"");
-
   if(host==="facebook.com"||host.endsWith(".facebook.com")||host==="fb.watch"){
     const embed="https://www.facebook.com/plugins/video.php?href="+encodeURIComponent(originalUrl)+"&show_text=false&width=1280";
     showIframe(embed,"Facebook video");
     statusBox.textContent="Facebook: пробуем показать ролик на экране.";
     return;
   }
-
   if(host==="tiktok.com"||host.endsWith(".tiktok.com")){
     const match=url.pathname.match(/\/video\/(\d+)/);
     if(match){
@@ -93,17 +97,14 @@ function openSource(){
     statusBox.textContent="Для короткой ссылки TikTok может понадобиться полный адрес вида tiktok.com/@.../video/...";
     return;
   }
-
   if(/\.(mp4|webm|ogg|ogv|m4v|mov)(?:$|[?#])/i.test(url.pathname+url.search)){
     showVideo(originalUrl);
     statusBox.textContent="Прямая видеоссылка открыта.";
     return;
   }
-
   showIframe(originalUrl,"Внешний источник");
   statusBox.textContent="Пробуем открыть источник. Если сайт запрещает встраивание — нажмите «ОТКРЫТЬ ИСТОЧНИК».";
 }
-
 openBtn.addEventListener("click",openSource);
 sourceUrl.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();openSource()}});
 externalBtn.addEventListener("click",()=>{if(originalUrl)window.open(originalUrl,"_blank","noopener,noreferrer")});
