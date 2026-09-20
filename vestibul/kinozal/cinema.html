@@ -6,311 +6,247 @@
 <title>Кинозал Некса</title>
 
 <style>
-  *{box-sizing:border-box}
+*{box-sizing:border-box}
 
-  html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    background:#050608;
-    overflow:hidden;
-  }
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:#050608;
+  overflow:hidden;
+}
 
-  body{
-    font-family:Georgia,"Times New Roman",serif;
-  }
+body{
+  font-family:Georgia,"Times New Roman",serif;
+}
 
+#stage{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  background:#050608 url("kinozal.jpg") center center/contain no-repeat;
+}
+
+/* =========================================================
+   ЭКРАН КИНОЗАЛА
+   ========================================================= */
+
+#playerBox{
+  position:absolute;
+  left:7.78%;
+  top:8.29%;
+  width:60.17%;
+  aspect-ratio:16/9;
+  background:#000;
+  overflow:hidden;
+  box-shadow:0 0 2px rgba(255,255,255,.15);
+}
+
+#playerBox iframe,
+#playerBox video{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+  background:#000;
+}
+
+#screenHint{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#8b8173;
+  font-size:clamp(12px,1.1vw,20px);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  pointer-events:none;
+  opacity:.45;
+}
+
+/* =========================================================
+   НЕВИДИМЫЕ АКТИВНЫЕ ЗОНЫ СПРАВА
+   ========================================================= */
+
+.poster{
+  position:absolute;
+  left:79.7%;
+  width:15.4%;
+  cursor:pointer;
+  border:0;
+  background:transparent;
+}
+
+#p1{top:12.7%;height:10.6%}
+#p2{top:23.8%;height:10.5%}
+#p3{top:34.8%;height:10.7%}
+#p4{top:45.9%;height:10.5%}
+
+/* =========================================================
+   ПЛАШКА YOUTUBE
+   ========================================================= */
+
+#youtubeMenu{
+  position:absolute;
+  right:20.8%;
+  top:12.7%;
+  width:27%;
+  padding:10px 12px;
+
+  background:rgba(8,8,10,.82);
+  border:1px solid rgba(214,185,120,.45);
+
+  box-shadow:
+    0 4px 18px rgba(0,0,0,.55),
+    inset 0 0 15px rgba(255,210,120,.035);
+
+  backdrop-filter:blur(3px);
+
+  opacity:0;
+  visibility:hidden;
+  transform:translateX(8px);
+
+  transition:
+    opacity .22s ease,
+    transform .22s ease,
+    visibility .22s;
+
+  z-index:20;
+}
+
+#youtubeMenu.open{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(0);
+}
+
+#youtubeMenuTitle{
+  color:#d6b978;
+  font-size:clamp(10px,.85vw,15px);
+  letter-spacing:.18em;
+  text-align:center;
+  padding:2px 5px 8px;
+  border-bottom:1px solid rgba(214,185,120,.25);
+  margin-bottom:4px;
+}
+
+.youtubeFilm{
+  width:100%;
+  display:block;
+  border:0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:transparent;
+  color:#ddd0b5;
+  padding:9px 8px;
+  text-align:left;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(10px,.95vw,16px);
+  letter-spacing:.055em;
+  cursor:pointer;
+
+  transition:
+    background .18s,
+    color .18s,
+    padding-left .18s;
+}
+
+.youtubeFilm:last-child{
+  border-bottom:0;
+}
+
+.youtubeFilm:hover,
+.youtubeFilm:focus-visible{
+  outline:none;
+  color:#ffe2a0;
+  background:rgba(214,185,120,.12);
+  padding-left:13px;
+}
+
+/* =========================================================
+   ВЫХОД ВО ДВОРЕЦ
+   ========================================================= */
+
+#exit{
+  position:absolute;
+  left:80.2%;
+  top:54.0%;
+  width:15.0%;
+  height:22.0%;
+  cursor:pointer;
+}
+
+.poster:hover,
+.poster:focus-visible,
+#exit:hover,
+#exit:focus-visible{
+  outline:2px solid rgba(255,205,95,.75);
+  outline-offset:-2px;
+  background:rgba(255,190,70,.05);
+}
+
+/* =========================================================
+   ПОДСКАЗКА
+   ========================================================= */
+
+#help{
+  position:absolute;
+  left:50%;
+  bottom:1.4%;
+  transform:translateX(-50%);
+  color:#d6b978;
+  background:rgba(0,0,0,.58);
+  border:1px solid rgba(214,185,120,.35);
+  padding:7px 12px;
+  border-radius:999px;
+  font:12px Arial,sans-serif;
+  opacity:0;
+  transition:.25s;
+  pointer-events:none;
+}
+
+#stage:hover #help{
+  opacity:.85;
+}
+
+/* =========================================================
+   МАСШТАБИРОВАНИЕ СЦЕНЫ
+   ========================================================= */
+
+@media (max-aspect-ratio:1672/941){
   #stage{
-    position:relative;
-    width:100vw;
+    width:calc(100vh * 1672 / 941);
     height:100vh;
-    background:#050608 url("kinozal.jpg") center center/contain no-repeat;
-  }
-
-
-  /* =========================================================
-     ЭКРАН КИНОЗАЛА
-     ========================================================= */
-
-  #playerBox{
-    position:absolute;
-    left:7.78%;
-    top:8.29%;
-    width:60.17%;
-    aspect-ratio:16/9;
-    background:#000;
-    overflow:hidden;
-    box-shadow:0 0 2px rgba(255,255,255,.15);
-  }
-
-  #playerBox iframe,
-  #playerBox video{
-    width:100%;
-    height:100%;
-    border:0;
-    display:block;
-    background:#000;
-  }
-
-  #screenHint{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    color:#8b8173;
-
-    font-size:clamp(12px,1.1vw,20px);
-    letter-spacing:.16em;
-    text-transform:uppercase;
-
-    pointer-events:none;
-    opacity:.45;
-  }
-
-
-  /* =========================================================
-     НЕВИДИМЫЕ АКТИВНЫЕ ЗОНЫ СПРАВА
-     ========================================================= */
-
-  .poster{
-    position:absolute;
-    left:79.7%;
-    width:15.4%;
-
-    cursor:pointer;
-
-    border:0;
-    background:transparent;
-  }
-
-  #p1{top:12.7%;height:10.6%}
-  #p2{top:23.8%;height:10.5%}
-  #p3{top:34.8%;height:10.7%}
-  #p4{top:45.9%;height:10.5%}
-
-
-  /* =========================================================
-     ПЛАШКА С ФИЛЬМАМИ YOUTUBE
-     ========================================================= */
-
-  #youtubeMenu{
-    position:absolute;
-
-    right:20.8%;
-    top:12.7%;
-
-    width:27%;
-
-    padding:10px 12px;
-
-    background:rgba(8,8,10,.82);
-
-    border:1px solid rgba(214,185,120,.45);
-
-    box-shadow:
-      0 4px 18px rgba(0,0,0,.55),
-      inset 0 0 15px rgba(255,210,120,.035);
-
-    backdrop-filter:blur(3px);
-
-    opacity:0;
-    visibility:hidden;
-
-    transform:translateX(8px);
-
-    transition:
-      opacity .22s ease,
-      transform .22s ease,
-      visibility .22s;
-
-    z-index:20;
-  }
-
-  #youtubeMenu.open{
-    opacity:1;
-    visibility:visible;
-    transform:translateX(0);
-  }
-
-  #youtubeMenuTitle{
-    color:#d6b978;
-
-    font-size:clamp(10px,.85vw,15px);
-    letter-spacing:.18em;
-
-    text-align:center;
-
-    padding:2px 5px 8px;
-
-    border-bottom:1px solid rgba(214,185,120,.25);
-
-    margin-bottom:4px;
-  }
-
-  .youtubeFilm{
-    width:100%;
-    display:block;
-
-    border:0;
-    border-bottom:1px solid rgba(255,255,255,.08);
-
-    background:transparent;
-    color:#ddd0b5;
-
-    padding:9px 8px;
-
-    text-align:left;
-
-    font-family:Georgia,"Times New Roman",serif;
-    font-size:clamp(10px,.95vw,16px);
-    letter-spacing:.055em;
-
-    cursor:pointer;
-
-    transition:
-      background .18s,
-      color .18s,
-      padding-left .18s;
-  }
-
-  .youtubeFilm:last-child{
-    border-bottom:0;
-  }
-
-  .youtubeFilm:hover,
-  .youtubeFilm:focus-visible{
-    outline:none;
-
-    color:#ffe2a0;
-    background:rgba(214,185,120,.12);
-
-    padding-left:13px;
-  }
-
-
-  /* =========================================================
-     ДВЕРЬ ОБРАТНО ВО ДВОРЕЦ
-     ========================================================= */
-
-  #exit{
-    position:absolute;
-
-    left:80.2%;
-    top:54.0%;
-
-    width:15.0%;
-    height:22.0%;
-
-    cursor:pointer;
-  }
-
-
-  .poster:hover,
-  .poster:focus-visible,
-  #exit:hover,
-  #exit:focus-visible{
-
-    outline:2px solid rgba(255,205,95,.75);
-    outline-offset:-2px;
-
-    background:rgba(255,190,70,.05);
-  }
-
-
-  /* =========================================================
-     ПОДСКАЗКА
-     ========================================================= */
-
-  #help{
-    position:absolute;
-
     left:50%;
-    bottom:1.4%;
-
     transform:translateX(-50%);
-
-    color:#d6b978;
-    background:rgba(0,0,0,.58);
-
-    border:1px solid rgba(214,185,120,.35);
-
-    padding:7px 12px;
-
-    border-radius:999px;
-
-    font:12px Arial,sans-serif;
-
-    opacity:0;
-
-    transition:.25s;
-
-    pointer-events:none;
   }
+}
 
-  #stage:hover #help{
-    opacity:.85;
+@media (min-aspect-ratio:1672/941){
+  #stage{
+    width:100vw;
+    height:calc(100vw * 941 / 1672);
+    top:50%;
+    transform:translateY(-50%);
   }
-
-
-  /* =========================================================
-     МАСШТАБИРОВАНИЕ СЦЕНЫ
-     ========================================================= */
-
-  @media (max-aspect-ratio:1672/941){
-
-    #stage{
-      width:calc(100vh * 1672 / 941);
-      height:100vh;
-
-      left:50%;
-
-      transform:translateX(-50%);
-    }
-
-  }
-
-
-  @media (min-aspect-ratio:1672/941){
-
-    #stage{
-      width:100vw;
-
-      height:calc(100vw * 941 / 1672);
-
-      top:50%;
-
-      transform:translateY(-50%);
-    }
-
-  }
-
+}
 </style>
 </head>
-
 
 <body>
 
 <div id="stage">
 
-
-  <!-- =======================================================
-       ЭКРАН
-       ======================================================= -->
+  <!-- ЭКРАН -->
 
   <div id="playerBox">
-
     <div id="screenHint">
       выберите источник справа
     </div>
-
   </div>
 
 
-  <!-- =======================================================
-       АКТИВНЫЕ ЗОНЫ
-       ======================================================= -->
+  <!-- АКТИВНЫЕ ЗОНЫ -->
 
   <button
     class="poster"
@@ -319,20 +255,17 @@
     aria-expanded="false">
   </button>
 
-
   <button
     class="poster"
     id="p2"
     aria-label="Фильм Обители">
   </button>
 
-
   <button
     class="poster"
     id="p3"
     aria-label="Мой компьютер">
   </button>
-
 
   <button
     class="poster"
@@ -341,13 +274,7 @@
   </button>
 
 
-  <!-- =======================================================
-       СКРЫТЫЙ ВЫБОР ВИДЕО С КОМПЬЮТЕРА
-
-       Поддерживаем разные расширения.
-       Фактическое воспроизведение зависит от кодека,
-       который понимает браузер.
-       ======================================================= -->
+  <!-- СКРЫТЫЙ ВЫБОР ВИДЕО С ПК -->
 
   <input
     type="file"
@@ -357,9 +284,7 @@
   >
 
 
-  <!-- =======================================================
-       ПЛАШКА YOUTUBE
-       ======================================================= -->
+  <!-- ПЛАШКА YOUTUBE -->
 
   <div id="youtubeMenu">
 
@@ -372,16 +297,13 @@
   </div>
 
 
-  <!-- =======================================================
-       ВЫХОД
-       ======================================================= -->
+  <!-- ВЫХОД -->
 
   <a
     id="exit"
     href="../vestibul.html"
     aria-label="Выход во Дворец">
   </a>
-
 
   <div id="help">
     Выберите источник справа · дверь — выход во Дворец
@@ -390,31 +312,18 @@
 </div>
 
 
-
 <script>
 
 /* ==========================================================
    КИНОЗАЛ НЕКСА
-
-   YOUTUBE + ВИДЕО С КОМПЬЮТЕРА
    ========================================================== */
-
 
 
 /* ==========================================================
    КАТАЛОГ YOUTUBE
 
-   НОВЫЕ ФИЛЬМЫ ДОБАВЛЯТЬ СЮДА.
-
-   Пример:
-
-   {
-     title: "НОВЫЙ ФИЛЬМ",
-     youtubeId: "AbCdEf12345"
-   },
-
+   Новые фильмы добавляем сюда.
    ========================================================== */
-
 
 const youtubeFilms = [
 
@@ -436,7 +345,6 @@ const youtubeFilms = [
 ];
 
 
-
 /* ==========================================================
    ОСНОВНЫЕ ЭЛЕМЕНТЫ
    ========================================================== */
@@ -447,56 +355,44 @@ const playerBox =
 const youtubeButton =
   document.getElementById("p1");
 
+const obitelButton =
+  document.getElementById("p2");
+
+const computerButton =
+  document.getElementById("p3");
+
 const youtubeMenu =
   document.getElementById("youtubeMenu");
 
 const youtubeFilmList =
   document.getElementById("youtubeFilmList");
 
-const computerButton =
-  document.getElementById("p3");
-
 const computerFile =
   document.getElementById("computerFile");
-
-
-/*
-   Здесь хранится временный адрес выбранного
-   файла на компьютере.
-*/
 
 let localVideoURL = null;
 
 
-
 /* ==========================================================
-   СОЗДАЁМ СПИСОК ФИЛЬМОВ YOUTUBE
+   YOUTUBE — СОЗДАНИЕ КАТАЛОГА
    ========================================================== */
 
 function buildYoutubeMenu(){
 
   youtubeFilmList.innerHTML = "";
 
-
   youtubeFilms.forEach((film,index)=>{
 
     const button =
       document.createElement("button");
 
-
     button.className = "youtubeFilm";
-
     button.type = "button";
-
     button.textContent = film.title;
 
-
     button.addEventListener("click",()=>{
-
       playYoutubeFilm(index);
-
     });
-
 
     youtubeFilmList.appendChild(button);
 
@@ -505,9 +401,8 @@ function buildYoutubeMenu(){
 }
 
 
-
 /* ==========================================================
-   ЗАПУСК ФИЛЬМА YOUTUBE
+   YOUTUBE — ЗАПУСК ФИЛЬМА
    ========================================================== */
 
 function playYoutubeFilm(index){
@@ -516,25 +411,16 @@ function playYoutubeFilm(index){
 
   if(!film) return;
 
-
-  /*
-     Если до этого смотрели фильм с компьютера,
-     освобождаем его временный адрес.
-  */
-
   releaseLocalVideo();
-
 
   const id =
     encodeURIComponent(
       film.youtubeId.trim()
     );
 
-
   playerBox.innerHTML = `
 
     <iframe
-
       src="https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&playsinline=1"
 
       title="${film.title}"
@@ -550,30 +436,20 @@ function playYoutubeFilm(index){
       "
 
       allowfullscreen>
-
     </iframe>
 
   `;
 
-
   document.title =
     film.title + " — Кинозал Некса";
 
-
-  /*
-     Запоминаем выбранный YouTube-фильм
-     в адресе страницы.
-  */
-
   const url =
     new URL(location.href);
-
 
   url.searchParams.set(
     "youtube",
     index
   );
-
 
   history.replaceState(
     null,
@@ -581,21 +457,18 @@ function playYoutubeFilm(index){
     url
   );
 
-
   closeYoutubeMenu();
 
 }
 
 
-
 /* ==========================================================
-   ПЛАШКА YOUTUBE
+   YOUTUBE — ПЛАШКА
    ========================================================== */
 
 function openYoutubeMenu(){
 
   youtubeMenu.classList.add("open");
-
 
   youtubeButton.setAttribute(
     "aria-expanded",
@@ -604,11 +477,9 @@ function openYoutubeMenu(){
 
 }
 
-
 function closeYoutubeMenu(){
 
   youtubeMenu.classList.remove("open");
-
 
   youtubeButton.setAttribute(
     "aria-expanded",
@@ -617,26 +488,15 @@ function closeYoutubeMenu(){
 
 }
 
-
 function toggleYoutubeMenu(){
 
-  if(
-    youtubeMenu.classList.contains("open")
-  ){
-
+  if(youtubeMenu.classList.contains("open")){
     closeYoutubeMenu();
-
-  }
-
-  else{
-
+  }else{
     openYoutubeMenu();
-
   }
 
 }
-
-
 
 youtubeButton.addEventListener(
   "click",
@@ -644,16 +504,31 @@ youtubeButton.addEventListener(
 );
 
 
+/* ==========================================================
+   ФИЛЬМ ОБИТЕЛИ
+
+   Вторая активная зона переводит на отдельный
+   уровень кинотеатра:
+
+   kinoobitel/kinoobitel.html
+   ========================================================== */
+
+obitelButton.addEventListener(
+  "click",
+  ()=>{
+
+    closeYoutubeMenu();
+
+    window.location.href =
+      "kinoobitel/kinoobitel.html";
+
+  }
+);
+
 
 /* ==========================================================
    МОЙ КОМПЬЮТЕР
    ========================================================== */
-
-
-/*
-   Нажатие третьей зоны открывает
-   стандартное окно выбора файла Windows.
-*/
 
 computerButton.addEventListener(
   "click",
@@ -661,20 +536,7 @@ computerButton.addEventListener(
 
     closeYoutubeMenu();
 
-
-    /*
-       Очищаем прежний выбор.
-
-       Благодаря этому можно выбрать повторно
-       даже тот же самый файл.
-    */
-
     computerFile.value = "";
-
-
-    /*
-       Открываем окно выбора файла.
-    */
 
     computerFile.click();
 
@@ -682,61 +544,28 @@ computerButton.addEventListener(
 );
 
 
-
 /* ==========================================================
-   ПОСЛЕ ВЫБОРА ФАЙЛА
+   ВЫБОР ВИДЕО С КОМПЬЮТЕРА
    ========================================================== */
 
 computerFile.addEventListener(
   "change",
   ()=>{
 
-
     const file =
       computerFile.files[0];
 
-
-    /*
-       Если пользователь закрыл окно,
-       ничего не выбрав — ничего не делаем.
-    */
-
     if(!file) return;
 
-
-
-    /*
-       Освобождаем старую временную ссылку.
-    */
-
     releaseLocalVideo();
-
-
-
-    /*
-       Создаём временный локальный адрес файла.
-
-       ВАЖНО:
-       видео никуда в интернет не загружается.
-       Оно читается непосредственно с ПК.
-    */
 
     localVideoURL =
       URL.createObjectURL(file);
 
-
-
-    /*
-       Убираем параметр YouTube из адреса,
-       поскольку теперь смотрим локальный фильм.
-    */
-
     const url =
       new URL(location.href);
 
-
     url.searchParams.delete("youtube");
-
 
     history.replaceState(
       null,
@@ -744,26 +573,14 @@ computerFile.addEventListener(
       url
     );
 
-
-
-    /*
-       Выводим видео на экран кинотеатра.
-    */
-
     playerBox.innerHTML = `
 
       <video
-
         id="localVideo"
-
         src="${localVideoURL}"
-
         controls
-
         autoplay
-
         playsinline
-
         preload="metadata">
 
         Ваш браузер не поддерживает
@@ -773,13 +590,6 @@ computerFile.addEventListener(
 
     `;
 
-
-
-    /*
-       Название файла показываем
-       в заголовке вкладки браузера.
-    */
-
     document.title =
       file.name + " — Кинозал Некса";
 
@@ -787,9 +597,8 @@ computerFile.addEventListener(
 );
 
 
-
 /* ==========================================================
-   ОСВОБОЖДЕНИЕ ЛОКАЛЬНОГО ФАЙЛА
+   ОСВОБОЖДЕНИЕ ЛОКАЛЬНОГО ВИДЕО
    ========================================================== */
 
 function releaseLocalVideo(){
@@ -803,23 +612,6 @@ function releaseLocalVideo(){
   }
 
 }
-
-
-
-/* ==========================================================
-   ФИЛЬМ ОБИТЕЛИ
-
-   Пока ничего не запускаем.
-   Только закрываем меню YouTube.
-   ========================================================== */
-
-document
-  .getElementById("p2")
-  .addEventListener(
-    "click",
-    closeYoutubeMenu
-  );
-
 
 
 /* ==========================================================
@@ -836,9 +628,8 @@ document
   );
 
 
-
 /* ==========================================================
-   ESC ЗАКРЫВАЕТ ПЛАШКУ YOUTUBE
+   ESC ЗАКРЫВАЕТ YOUTUBE-МЕНЮ
    ========================================================== */
 
 document.addEventListener(
@@ -846,32 +637,22 @@ document.addEventListener(
   event=>{
 
     if(event.key === "Escape"){
-
       closeYoutubeMenu();
-
     }
 
   }
 );
 
 
-
 /* ==========================================================
-   СОЗДАЁМ YOUTUBE-КАТАЛОГ
+   ЗАПУСК
    ========================================================== */
 
 buildYoutubeMenu();
 
 
-
 /* ==========================================================
-   ЕСЛИ СТРАНИЦА ОТКРЫТА С АДРЕСОМ:
-
-   cinema.html?youtube=0
-   cinema.html?youtube=1
-   cinema.html?youtube=2
-
-   сразу запускаем соответствующий фильм.
+   ПРЯМАЯ ССЫЛКА НА YOUTUBE-ФИЛЬМ
    ========================================================== */
 
 const requested =
@@ -880,29 +661,23 @@ const requested =
   )
   .get("youtube");
 
-
 if(requested !== null){
 
   const index =
     Number(requested);
 
-
   if(
     Number.isInteger(index) &&
     youtubeFilms[index]
   ){
-
     playYoutubeFilm(index);
-
   }
 
 }
 
 
-
 /* ==========================================================
-   ПЕРЕД ЗАКРЫТИЕМ СТРАНИЦЫ
-   ОСВОБОЖДАЕМ ВРЕМЕННЫЙ АДРЕС ФАЙЛА
+   ОЧИСТКА ПРИ ВЫХОДЕ
    ========================================================== */
 
 window.addEventListener(
