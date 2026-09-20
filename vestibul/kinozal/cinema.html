@@ -83,6 +83,9 @@
 
     border:0;
     background:transparent;
+
+    outline:none;
+    -webkit-tap-highlight-color:transparent;
   }
 
   #p1{top:12.7%;height:10.6%}
@@ -204,18 +207,9 @@
     height:22.0%;
 
     cursor:pointer;
-  }
 
-
-  .poster:hover,
-  .poster:focus-visible,
-  #exit:hover,
-  #exit:focus-visible{
-
-    outline:2px solid rgba(255,205,95,.75);
-    outline-offset:-2px;
-
-    background:rgba(255,190,70,.05);
+    outline:none;
+    -webkit-tap-highlight-color:transparent;
   }
 
 
@@ -809,8 +803,7 @@ function releaseLocalVideo(){
 /* ==========================================================
    ФИЛЬМ ОБИТЕЛИ
 
-   Пока ничего не запускаем.
-   Только закрываем меню YouTube.
+   Переходим на страницу фильма Обители.
    ========================================================== */
 
 document.getElementById("p2")
