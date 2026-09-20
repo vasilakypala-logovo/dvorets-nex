@@ -12,15 +12,29 @@ body{font-family:Georgia,"Times New Roman",serif}
 #playerBox{position:absolute;left:7.78%;top:8.29%;width:60.17%;aspect-ratio:16/9;background:#000;overflow:hidden;box-shadow:0 0 2px rgba(255,255,255,.15)}
 #playerBox iframe,#playerBox video{width:100%;height:100%;border:0;display:block;background:#000}
 #screenHint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8b8173;font-size:clamp(12px,1.1vw,20px);letter-spacing:.16em;text-transform:uppercase;pointer-events:none;opacity:.45}
-#panel{position:absolute;left:78.7%;top:8.5%;width:18%;min-height:25%;padding:1.1% 1%;color:#ead9ae;background:rgba(10,8,6,.55);border:1px solid rgba(225,190,115,.25);box-shadow:inset 0 0 20px rgba(0,0,0,.55)}
+#panel{position:absolute;left:78.7%;top:8.5%;width:18%;min-height:25%;max-height:44%;display:flex;flex-direction:column;padding:1.1% 1%;color:#ead9ae;background:rgba(10,8,6,.55);border:1px solid rgba(225,190,115,.25);box-shadow:inset 0 0 20px rgba(0,0,0,.55)}
 #closePanel{position:absolute;right:5px;top:3px;width:24px;height:24px;padding:0;border:0;background:transparent;color:#d6b978;font:20px/24px Arial,sans-serif;cursor:pointer;opacity:.8}
 #closePanel:hover{color:#fff0bd;opacity:1}
 #panelTitle{margin:0 22px 10px 0;text-align:center;font-size:clamp(10px,.9vw,16px);letter-spacing:.10em}
-#sourceUrl{width:100%;min-height:62px;resize:none;padding:7px;border:1px solid rgba(230,197,126,.42);border-radius:4px;outline:none;background:rgba(0,0,0,.72);color:#f1dfb4;font:clamp(9px,.72vw,12px) Arial,sans-serif}
-#openBtn,#externalBtn{width:100%;margin-top:8px;padding:8px 6px;border:1px solid rgba(230,197,126,.45);border-radius:4px;color:#f1dfb4;background:rgba(35,27,17,.82);font-family:Georgia,"Times New Roman",serif;font-size:clamp(9px,.78vw,13px);cursor:pointer}
+#sourceUrl{flex:0 0 auto;width:100%;min-height:62px;resize:vertical;padding:7px;border:1px solid rgba(230,197,126,.42);border-radius:4px;outline:none;background:rgba(0,0,0,.72);color:#f1dfb4;font:clamp(9px,.72vw,12px) Arial,sans-serif}
+#openBtn,#externalBtn{flex:0 0 auto;width:100%;margin-top:8px;padding:8px 6px;border:1px solid rgba(230,197,126,.45);border-radius:4px;color:#f1dfb4;background:rgba(35,27,17,.82);font-family:Georgia,"Times New Roman",serif;font-size:clamp(9px,.78vw,13px);cursor:pointer}
 #openBtn:hover,#externalBtn:hover{background:rgba(75,55,28,.9)}
 #externalBtn{display:none}
-#status{margin-top:8px;min-height:28px;text-align:center;color:#bcae91;font:clamp(8px,.66vw,11px) Arial,sans-serif;line-height:1.35}
+#status{flex:0 0 auto;margin-top:8px;min-height:28px;text-align:center;color:#bcae91;font:clamp(8px,.66vw,11px) Arial,sans-serif;line-height:1.35}
+#savedHead{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(225,190,115,.22);color:#c9b487;font-size:clamp(8px,.66vw,11px);letter-spacing:.12em}
+#clearAll{flex:0 0 auto;padding:0 2px;border:0;background:transparent;color:#a8916a;font:clamp(8px,.6vw,10px) Arial,sans-serif;letter-spacing:.08em;cursor:pointer}
+#clearAll:hover{color:#ffb3b3}
+#historyList{flex:1 1 auto;min-height:0;overflow-y:auto;margin-top:6px;padding-right:2px;scrollbar-width:thin;scrollbar-color:rgba(225,190,115,.35) transparent}
+#historyList::-webkit-scrollbar{width:6px}
+#historyList::-webkit-scrollbar-thumb{background:rgba(225,190,115,.3);border-radius:3px}
+#historyList::-webkit-scrollbar-track{background:transparent}
+.srcItem{display:flex;align-items:center;gap:3px;margin-bottom:5px;border:1px solid rgba(230,197,126,.22);border-radius:4px;background:rgba(0,0,0,.5)}
+.srcItem.active{border-color:rgba(240,205,130,.75);background:rgba(60,44,20,.75)}
+.srcOpen{flex:1 1 auto;min-width:0;padding:6px 5px;border:0;background:transparent;color:#ead9ae;font:clamp(8px,.66vw,11px) Arial,sans-serif;text-align:left;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srcOpen:hover{color:#fff0bd}
+.srcDel{flex:0 0 auto;width:20px;height:24px;padding:0;border:0;background:transparent;color:#a8916a;font:15px/24px Arial,sans-serif;cursor:pointer}
+.srcDel:hover{color:#ffb3b3}
+#historyEmpty{color:#8b8173;font:clamp(8px,.62vw,10px) Arial,sans-serif;text-align:center;padding:6px 0;opacity:.8}
 #exit{position:absolute;left:80.2%;top:54%;width:15%;height:22%;cursor:pointer;background:transparent;border:0;outline:none}
 @media (max-aspect-ratio:1672/941){#stage{width:calc(100vh * 1672 / 941);height:100vh;left:50%;transform:translateX(-50%)}}
 @media (min-aspect-ratio:1672/941){#stage{width:100vw;height:calc(100vw * 941 / 1672);top:50%;transform:translateY(-50%)}}
@@ -36,78 +50,221 @@ body{font-family:Georgia,"Times New Roman",serif}
     <button id="openBtn" type="button">ПОКАЗАТЬ</button>
     <button id="externalBtn" type="button">ОТКРЫТЬ ИСТОЧНИК</button>
     <div id="status">Facebook · TikTok · прямое видео</div>
+
+    <div id="savedHead">
+      <span>СОХРАНЁННЫЕ</span>
+      <button id="clearAll" type="button">ОЧИСТИТЬ</button>
+    </div>
+    <div id="historyList"></div>
   </div>
   <a id="exit" href="cinema.html" aria-label="Вернуться в кинотеатр"></a>
 </div>
 <script>
-const playerBox=document.getElementById("playerBox");
-const panel=document.getElementById("panel");
-const closePanel=document.getElementById("closePanel");
-const sourceUrl=document.getElementById("sourceUrl");
-const openBtn=document.getElementById("openBtn");
-const externalBtn=document.getElementById("externalBtn");
-const statusBox=document.getElementById("status");
-let originalUrl="";
+const playerBox   = document.getElementById("playerBox");
+const panel       = document.getElementById("panel");
+const closePanel  = document.getElementById("closePanel");
+const sourceUrl   = document.getElementById("sourceUrl");
+const openBtn     = document.getElementById("openBtn");
+const externalBtn = document.getElementById("externalBtn");
+const statusBox   = document.getElementById("status");
+const historyList = document.getElementById("historyList");
+const clearAll    = document.getElementById("clearAll");
 
-closePanel.addEventListener("click",()=>{window.location.href="cinema.html"});
+const STORE_KEY = "nexa_sources_v1";
+const MAX_ITEMS = 50;
 
-function showIframe(src,title){
-  playerBox.innerHTML="";
-  const f=document.createElement("iframe");
-  f.src=src; f.title=title||"Видео";
-  f.allow="autoplay; encrypted-media; picture-in-picture; fullscreen";
-  f.allowFullscreen=true;
-  f.referrerPolicy="strict-origin-when-cross-origin";
+let originalUrl = "";
+let activeUrl   = "";
+let saved       = [];
+let storageOk   = true;
+
+/* ---------- хранилище ---------- */
+try {
+  localStorage.setItem("__nexa_test__", "1");
+  localStorage.removeItem("__nexa_test__");
+} catch (e) {
+  storageOk = false;
+}
+
+function loadSaved(){
+  if (!storageOk) return;
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    saved = Array.isArray(arr)
+      ? arr.filter(it => it && typeof it.url === "string" && it.url)
+           .map(it => ({ url: it.url, ts: it.ts || 0 }))
+      : [];
+  }catch(e){ saved = []; }
+}
+function persist(){
+  if (!storageOk) return;
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(saved)); }catch(e){}
+}
+function remember(url){
+  saved = saved.filter(it => it.url !== url);      // убираем дубль
+  saved.unshift({ url: url, ts: Date.now() });     // новая — наверх
+  if (saved.length > MAX_ITEMS) saved = saved.slice(0, MAX_ITEMS);
+  persist();
+  renderSaved();
+}
+function forget(url){
+  saved = saved.filter(it => it.url !== url);
+  persist();
+  renderSaved();
+}
+
+/* ---------- список ---------- */
+function prettyLabel(u){
+  try{
+    const x = new URL(u);
+    const s = (x.hostname.replace(/^www\./,"") + x.pathname + x.search).replace(/\/$/,"");
+    return s || u;
+  }catch(e){ return u; }
+}
+
+function renderSaved(){
+  historyList.innerHTML = "";
+  if (!saved.length){
+    const d = document.createElement("div");
+    d.id = "historyEmpty";
+    d.textContent = storageOk
+      ? "Пока пусто. Ссылки сохраняются сами."
+      : "Сохранение недоступно в этом режиме.";
+    historyList.appendChild(d);
+    return;
+  }
+  saved.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "srcItem" + (it.url === activeUrl ? " active" : "");
+
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "srcOpen";
+    open.textContent = prettyLabel(it.url);
+    open.title = it.url;
+    open.addEventListener("click", () => {
+      sourceUrl.value = it.url;
+      openSource();
+    });
+
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "srcDel";
+    del.textContent = "×";
+    del.title = "Удалить из списка";
+    del.addEventListener("click", e => {
+      e.stopPropagation();
+      forget(it.url);
+    });
+
+    row.appendChild(open);
+    row.appendChild(del);
+    historyList.appendChild(row);
+  });
+}
+
+/* ---------- плеер ---------- */
+closePanel.addEventListener("click", () => { window.location.href = "cinema.html"; });
+
+function showIframe(src, title){
+  playerBox.innerHTML = "";
+  const f = document.createElement("iframe");
+  f.src = src; f.title = title || "Видео";
+  f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+  f.allowFullscreen = true;
+  f.referrerPolicy = "strict-origin-when-cross-origin";
   playerBox.appendChild(f);
 }
 function showVideo(src){
-  playerBox.innerHTML="";
-  const v=document.createElement("video");
-  v.src=src; v.controls=true; v.autoplay=true; v.playsInline=true; v.preload="metadata";
+  playerBox.innerHTML = "";
+  const v = document.createElement("video");
+  v.src = src; v.controls = true; v.autoplay = true; v.playsInline = true; v.preload = "metadata";
   playerBox.appendChild(v); v.play().catch(()=>{});
 }
 function normalizeUrl(v){
-  v=v.trim();
-  if(!/^https?:\/\//i.test(v)) v="https://"+v;
+  v = v.trim();
+  if (!/^https?:\/\//i.test(v)) v = "https://" + v;
   return v;
 }
+
+/* ---------- открытие источника ---------- */
 function openSource(){
-  const value=sourceUrl.value.trim();
-  if(!value){statusBox.textContent="Сначала вставьте ссылку.";return}
+  const value = sourceUrl.value.trim();
+  if (!value){ statusBox.textContent = "Сначала вставьте ссылку."; return; }
+
   let url;
-  try{url=new URL(normalizeUrl(value))}
-  catch(e){statusBox.textContent="Не похоже на правильную ссылку.";return}
-  originalUrl=url.href;
-  externalBtn.style.display="block";
-  const host=url.hostname.toLowerCase().replace(/^www\./,"");
-  if(host==="facebook.com"||host.endsWith(".facebook.com")||host==="fb.watch"){
-    const embed="https://www.facebook.com/plugins/video.php?href="+encodeURIComponent(originalUrl)+"&show_text=false&width=1280";
-    showIframe(embed,"Facebook video");
-    statusBox.textContent="Facebook: пробуем показать ролик на экране.";
+  try{ url = new URL(normalizeUrl(value)); }
+  catch(e){ statusBox.textContent = "Не похоже на правильную ссылку."; return; }
+
+  originalUrl = url.href;
+  activeUrl   = url.href;
+  externalBtn.style.display = "block";
+
+  remember(url.href);          // ← вот тут ссылка записывается в память
+  renderSaved();
+
+  const host = url.hostname.toLowerCase().replace(/^www\./,"");
+
+  if (host === "facebook.com" || host.endsWith(".facebook.com") || host === "fb.watch"){
+    const embed = "https://www.facebook.com/plugins/video.php?href=" +
+                  encodeURIComponent(originalUrl) + "&show_text=false&width=1280";
+    showIframe(embed, "Facebook video");
+    statusBox.textContent = "Facebook: пробуем показать ролик на экране.";
     return;
   }
-  if(host==="tiktok.com"||host.endsWith(".tiktok.com")){
-    const match=url.pathname.match(/\/video\/(\d+)/);
-    if(match){
-      showIframe("https://www.tiktok.com/player/v1/"+encodeURIComponent(match[1]),"TikTok video");
-      statusBox.textContent="TikTok: ролик открыт на экране.";
+
+  if (host === "tiktok.com" || host.endsWith(".tiktok.com")){
+    const match = url.pathname.match(/\/video\/(\d+)/);
+    if (match){
+      showIframe("https://www.tiktok.com/player/v1/" + encodeURIComponent(match[1]), "TikTok video");
+      statusBox.textContent = "TikTok: ролик открыт на экране.";
       return;
     }
-    showIframe(originalUrl,"TikTok");
-    statusBox.textContent="Для короткой ссылки TikTok может понадобиться полный адрес вида tiktok.com/@.../video/...";
+    showIframe(originalUrl, "TikTok");
+    statusBox.textContent = "Для короткой ссылки TikTok может понадобиться полный адрес вида tiktok.com/@.../video/...";
     return;
   }
-  if(/\.(mp4|webm|ogg|ogv|m4v|mov)(?:$|[?#])/i.test(url.pathname+url.search)){
+
+  if (/\.(mp4|webm|ogg|ogv|m4v|mov)(?:$|[?#])/i.test(url.pathname + url.search)){
     showVideo(originalUrl);
-    statusBox.textContent="Прямая видеоссылка открыта.";
+    statusBox.textContent = "Прямая видеоссылка открыта.";
     return;
   }
-  showIframe(originalUrl,"Внешний источник");
-  statusBox.textContent="Пробуем открыть источник. Если сайт запрещает встраивание — нажмите «ОТКРЫТЬ ИСТОЧНИК».";
+
+  showIframe(originalUrl, "Внешний источник");
+  statusBox.textContent = "Пробуем открыть источник. Если сайт запрещает встраивание — нажмите «ОТКРЫТЬ ИСТОЧНИК».";
 }
-openBtn.addEventListener("click",openSource);
-sourceUrl.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();openSource()}});
-externalBtn.addEventListener("click",()=>{if(originalUrl)window.open(originalUrl,"_blank","noopener,noreferrer")});
+
+openBtn.addEventListener("click", openSource);
+
+sourceUrl.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); openSource(); }
+});
+
+externalBtn.addEventListener("click", () => {
+  if (originalUrl) window.open(originalUrl, "_blank", "noopener,noreferrer");
+});
+
+clearAll.addEventListener("click", () => {
+  if (!saved.length) return;
+  if (confirm("Удалить все сохранённые ссылки?")){
+    saved = [];
+    persist();
+    renderSaved();
+  }
+});
+
+/* ---------- старт ---------- */
+loadSaved();
+if (saved.length){
+  sourceUrl.value = saved[0].url;   // последняя ссылка подставлена в поле
+  statusBox.textContent = "Последняя ссылка подставлена — нажмите «ПОКАЗАТЬ».";
+}
+renderSaved();
+if (!storageOk){
+  statusBox.textContent = "Браузер запретил сохранение — откройте страницу через сервер (http), тогда список будет запоминаться.";
+}
 </script>
 </body>
 </html>
