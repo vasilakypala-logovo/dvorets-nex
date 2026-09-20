@@ -7,10 +7,7 @@
 <title>Кинообитель Некса</title>
 
 <style>
-
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 html,body{
   margin:0;
@@ -24,196 +21,312 @@ body{
   font-family:Georgia,"Times New Roman",serif;
 }
 
-
-/* =========================================================
-   КИНООБИТЕЛЬ
-
-   Фон — очищенный kinozal.jpg
-   ========================================================= */
-
 #stage{
   position:relative;
-
   width:100vw;
   height:100vh;
-
-  background:
-    #050608
-    url("kinozal.jpg")
-    center center / contain
-    no-repeat;
+  background:#050608 url("kinozal.jpg") center center / contain no-repeat;
 }
-
-
-/* =========================================================
-   ЭКРАН
-
-   Координаты сохранены точно такими же,
-   как в основном кинотеатре.
-   ========================================================= */
 
 #playerBox{
   position:absolute;
-
   left:7.78%;
   top:8.29%;
-
   width:60.17%;
-
   aspect-ratio:16/9;
-
   background:#000;
-
   overflow:hidden;
-
-  box-shadow:
-    0 0 2px rgba(255,255,255,.15);
+  box-shadow:0 0 2px rgba(255,255,255,.15);
 }
 
-
-#playerBox iframe,
 #playerBox video{
   width:100%;
   height:100%;
-
   border:0;
-
   display:block;
-
   background:#000;
 }
 
-
-/* =========================================================
-   НАДПИСЬ НА ПУСТОМ ЭКРАНЕ
-   ========================================================= */
-
 #screenHint{
   position:absolute;
-
   inset:0;
-
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   color:#8b8173;
-
   font-size:clamp(12px,1.1vw,20px);
-
   letter-spacing:.16em;
-
   text-transform:uppercase;
-
   pointer-events:none;
-
   opacity:.45;
 }
 
+/* ПУЛЬТ НА ПРАВОЙ СТЕНКЕ */
+#panel{
+  position:absolute;
+  left:70.2%;
+  top:8.5%;
+  width:26.5%;
+  height:41%;
+  padding:1.1% 1.2%;
+  overflow:auto;
+  color:#ead9ae;
+  background:rgba(10,8,6,.48);
+  border:1px solid rgba(225,190,115,.25);
+  box-shadow:inset 0 0 20px rgba(0,0,0,.55);
+}
 
-/* =========================================================
-   НЕВИДИМАЯ ЗОНА ДВЕРИ
+#panelTitle{
+  margin:0 0 10px;
+  text-align:center;
+  font-size:clamp(12px,1.15vw,20px);
+  letter-spacing:.12em;
+}
 
-   Теперь дверь возвращает не во Дворец,
-   а в ОСНОВНОЙ КИНОТЕАТР.
-   ========================================================= */
+#uploadBtn,
+.movieBtn{
+  width:100%;
+  margin:0 0 8px;
+  padding:8px 10px;
+  border:1px solid rgba(230,197,126,.45);
+  border-radius:4px;
+  color:#f1dfb4;
+  background:rgba(35,27,17,.78);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(10px,.88vw,15px);
+  cursor:pointer;
+}
+
+#uploadBtn:hover,
+.movieBtn:hover{
+  background:rgba(75,55,28,.86);
+}
+
+.movieBtn.active{
+  background:rgba(105,77,34,.9);
+}
+
+#fileInput{display:none}
+
+#status{
+  min-height:18px;
+  margin:5px 0 9px;
+  text-align:center;
+  color:#bcae91;
+  font-size:clamp(9px,.72vw,12px);
+}
+
+#movieList{
+  display:flex;
+  flex-direction:column;
+}
 
 #exit{
   position:absolute;
-
   left:80.2%;
   top:54.0%;
-
   width:15.0%;
   height:22.0%;
-
   cursor:pointer;
-
   background:transparent;
   border:0;
   outline:none;
 }
 
-
-/* =========================================================
-   МАСШТАБИРОВАНИЕ
-
-   То же самое, что в основном кинотеатре.
-   ========================================================= */
-
 @media (max-aspect-ratio:1672/941){
-
   #stage{
-
     width:calc(100vh * 1672 / 941);
-
     height:100vh;
-
     left:50%;
-
     transform:translateX(-50%);
   }
-
 }
-
 
 @media (min-aspect-ratio:1672/941){
-
   #stage{
-
     width:100vw;
-
     height:calc(100vw * 941 / 1672);
-
     top:50%;
-
     transform:translateY(-50%);
   }
-
 }
-
 </style>
 </head>
 
-
 <body>
-
 <div id="stage">
 
+  <div id="playerBox">
+    <div id="screenHint">КИНООБИТЕЛЬ</div>
+  </div>
 
-  <!-- ЭКРАН -->
+  <div id="panel">
+    <div id="panelTitle">ФИЛЬМЫ ОБИТЕЛИ</div>
 
- <div id="playerBox">
+    <button id="uploadBtn" type="button">ЗАГРУЗИТЬ ФИЛЬМ</button>
+    <input id="fileInput" type="file" accept="video/mp4,video/webm,video/ogg">
 
-  <video controls preload="metadata">
-    <source
-      src="https://qekemclxegswolddmqxa.supabase.co/storage/v1/object/public/kino/VID_20250821_133601.mp4"
-      type="video/mp4">
-  </video>
+    <div id="status">Загрузка списка...</div>
+    <div id="movieList"></div>
+  </div>
 
-</div>
-
-
-  <!--
-       ДВЕРЬ НАЗАД
-
-       kinoobitel находится внутри:
-
-       kinozal/kinoobitel/
-
-       Поэтому ../cinema.html
-       возвращает нас на один уровень вверх.
-  -->
-
-  <a
-    id="exit"
-    href="../cinema.html"
-    aria-label="Вернуться в кинотеатр">
-  </a>
-
+  <a id="exit" href="../cinema.html" aria-label="Вернуться в кинотеатр"></a>
 
 </div>
+
+<script>
+const SUPABASE_URL = "https://qekemclxegswolddmqxa.supabase.co";
+const BUCKET = "kino";
+
+/*
+  Для ПРОСМОТРА публичного bucket ключ не нужен.
+  Для загрузки из браузера нужен публичный publishable/anon key
+  и INSERT policy для storage.objects на bucket kino.
+
+  Вставьте ключ между кавычками:
+*/
+const SUPABASE_KEY = "ВСТАВЬТЕ_СЮДА_ANON_ИЛИ_PUBLISHABLE_KEY";
+
+const playerBox = document.getElementById("playerBox");
+const movieList = document.getElementById("movieList");
+const statusBox = document.getElementById("status");
+const uploadBtn = document.getElementById("uploadBtn");
+const fileInput = document.getElementById("fileInput");
+
+function publicUrl(name){
+  return SUPABASE_URL + "/storage/v1/object/public/" + BUCKET + "/" +
+         name.split("/").map(encodeURIComponent).join("/");
+}
+
+function cleanTitle(name){
+  return name.replace(/\.[^.]+$/, "").replace(/_/g, " ");
+}
+
+function playMovie(name, button){
+  playerBox.innerHTML = "";
+
+  const video = document.createElement("video");
+  video.controls = true;
+  video.autoplay = true;
+  video.preload = "metadata";
+  video.playsInline = true;
+  video.src = publicUrl(name);
+
+  playerBox.appendChild(video);
+
+  document.querySelectorAll(".movieBtn").forEach(b => b.classList.remove("active"));
+  if(button) button.classList.add("active");
+
+  video.play().catch(() => {});
+}
+
+async function loadMovies(){
+  movieList.innerHTML = "";
+  statusBox.textContent = "Загрузка списка...";
+
+  try{
+    const response = await fetch(
+      SUPABASE_URL + "/storage/v1/object/list/" + BUCKET,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization":"Bearer " + SUPABASE_KEY
+        },
+        body:JSON.stringify({
+          prefix:"",
+          limit:100,
+          offset:0,
+          sortBy:{column:"name",order:"asc"}
+        })
+      }
+    );
+
+    if(!response.ok){
+      throw new Error("Не удалось получить список: " + response.status);
+    }
+
+    const files = await response.json();
+
+    const videos = files.filter(file =>
+      file.name && /\.(mp4|webm|ogg|mov|m4v)$/i.test(file.name)
+    );
+
+    if(!videos.length){
+      statusBox.textContent = "Фильмов пока нет";
+      return;
+    }
+
+    statusBox.textContent = "Фильмов: " + videos.length;
+
+    videos.forEach(file => {
+      const btn = document.createElement("button");
+      btn.className = "movieBtn";
+      btn.type = "button";
+      btn.textContent = cleanTitle(file.name);
+      btn.title = file.name;
+      btn.addEventListener("click", () => playMovie(file.name, btn));
+      movieList.appendChild(btn);
+    });
+
+  }catch(err){
+    console.error(err);
+    statusBox.textContent = "Не удалось получить список фильмов";
+  }
+}
+
+uploadBtn.addEventListener("click", () => {
+  if(SUPABASE_KEY.startsWith("ВСТАВЬТЕ_")){
+    statusBox.textContent = "Сначала вставьте ключ Supabase в HTML";
+    return;
+  }
+  fileInput.click();
+});
+
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files[0];
+  if(!file) return;
+
+  statusBox.textContent = "Загрузка: " + file.name;
+
+  try{
+    const response = await fetch(
+      SUPABASE_URL + "/storage/v1/object/" + BUCKET + "/" + encodeURIComponent(file.name),
+      {
+        method:"POST",
+        headers:{
+          "apikey":SUPABASE_KEY,
+          "Authorization":"Bearer " + SUPABASE_KEY,
+          "Content-Type":file.type || "application/octet-stream",
+          "x-upsert":"false"
+        },
+        body:file
+      }
+    );
+
+    if(!response.ok){
+      const message = await response.text();
+      throw new Error(message);
+    }
+
+    statusBox.textContent = "Фильм загружен";
+    fileInput.value = "";
+    await loadMovies();
+
+  }catch(err){
+    console.error(err);
+    statusBox.textContent = "Ошибка загрузки";
+  }
+});
+
+/* Если ключ уже вставлен — сразу строим список. */
+if(!SUPABASE_KEY.startsWith("ВСТАВЬТЕ_")){
+  loadMovies();
+}else{
+  statusBox.textContent = "Нужен публичный ключ Supabase";
+}
+</script>
 
 </body>
 </html>
