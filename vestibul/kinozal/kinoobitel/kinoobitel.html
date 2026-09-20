@@ -3,174 +3,224 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Кинозал Некса</title>
+
+<title>Кинообитель Некса</title>
+
 <style>
-  *{box-sizing:border-box}
-  html,body{margin:0;width:100%;height:100%;background:#050608;overflow:hidden}
-  body{font-family:Georgia,"Times New Roman",serif}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:#050608;
+  overflow:hidden;
+}
+
+body{
+  font-family:Georgia,"Times New Roman",serif;
+}
+
+
+/* =========================================================
+   КИНООБИТЕЛЬ
+
+   Фон — очищенный kinozal.jpg
+   ========================================================= */
+
+#stage{
+  position:relative;
+
+  width:100vw;
+  height:100vh;
+
+  background:
+    #050608
+    url("kinozal.jpg")
+    center center / contain
+    no-repeat;
+}
+
+
+/* =========================================================
+   ЭКРАН
+
+   Координаты сохранены точно такими же,
+   как в основном кинотеатре.
+   ========================================================= */
+
+#playerBox{
+  position:absolute;
+
+  left:7.78%;
+  top:8.29%;
+
+  width:60.17%;
+
+  aspect-ratio:16/9;
+
+  background:#000;
+
+  overflow:hidden;
+
+  box-shadow:
+    0 0 2px rgba(255,255,255,.15);
+}
+
+
+#playerBox iframe,
+#playerBox video{
+  width:100%;
+  height:100%;
+
+  border:0;
+
+  display:block;
+
+  background:#000;
+}
+
+
+/* =========================================================
+   НАДПИСЬ НА ПУСТОМ ЭКРАНЕ
+   ========================================================= */
+
+#screenHint{
+  position:absolute;
+
+  inset:0;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  color:#8b8173;
+
+  font-size:clamp(12px,1.1vw,20px);
+
+  letter-spacing:.16em;
+
+  text-transform:uppercase;
+
+  pointer-events:none;
+
+  opacity:.45;
+}
+
+
+/* =========================================================
+   НЕВИДИМАЯ ЗОНА ДВЕРИ
+
+   Теперь дверь возвращает не во Дворец,
+   а в ОСНОВНОЙ КИНОТЕАТР.
+   ========================================================= */
+
+#exit{
+  position:absolute;
+
+  left:80.2%;
+  top:54.0%;
+
+  width:15.0%;
+  height:22.0%;
+
+  cursor:pointer;
+}
+
+
+#exit:hover,
+#exit:focus-visible{
+
+  outline:
+    2px solid rgba(255,205,95,.75);
+
+  outline-offset:-2px;
+
+  background:
+    rgba(255,190,70,.05);
+}
+
+
+/* =========================================================
+   МАСШТАБИРОВАНИЕ
+
+   То же самое, что в основном кинотеатре.
+   ========================================================= */
+
+@media (max-aspect-ratio:1672/941){
+
   #stage{
-    position:relative;
-    width:100vw;height:100vh;
-    background:#050608 url("kinozal.jpg") center center/contain no-repeat;
-  }
-  /* Координаты привязаны к исходной картинке 1672×941.
-     Экран специально сделан ровным 16:9. */
-  #playerBox{
-    position:absolute;
-    left:7.78%; top:8.29%;
-    width:60.17%; aspect-ratio:16/9;
-    background:#000;
-    overflow:hidden;
-    box-shadow:0 0 2px rgba(255,255,255,.15);
-  }
-  #playerBox iframe,#playerBox video{
-    width:100%;height:100%;border:0;display:block;background:#000
-  }
-  #screenHint{
-    position:absolute;inset:0;
-    display:flex;align-items:center;justify-content:center;
-    color:#8b8173;font-size:clamp(12px,1.1vw,20px);
-    letter-spacing:.16em;text-transform:uppercase;
-    pointer-events:none;opacity:.45;
+
+    width:calc(100vh * 1672 / 941);
+
+    height:100vh;
+
+    left:50%;
+
+    transform:translateX(-50%);
   }
 
-  /* Невидимые зоны афиш справа */
-  .poster{
-    position:absolute;
-    left:79.7%; width:15.4%;
-    cursor:pointer;
-    border:0;background:transparent;
-  }
-  #p1{top:12.7%;height:10.6%}
-  #p2{top:23.8%;height:10.5%}
-  #p3{top:34.8%;height:10.7%}
-  #p4{top:45.9%;height:10.5%}
+}
 
-  /* Дверь обратно во Дворец */
-  #exit{
-    position:absolute;
-    left:80.2%;top:54.0%;width:15.0%;height:22.0%;
-    cursor:pointer;
+
+@media (min-aspect-ratio:1672/941){
+
+  #stage{
+
+    width:100vw;
+
+    height:calc(100vw * 941 / 1672);
+
+    top:50%;
+
+    transform:translateY(-50%);
   }
 
-  .poster:hover,.poster:focus-visible,#exit:hover,#exit:focus-visible{
-    outline:2px solid rgba(255,205,95,.75);
-    outline-offset:-2px;
-    background:rgba(255,190,70,.05);
-  }
+}
 
-  #help{
-    position:absolute;left:50%;bottom:1.4%;transform:translateX(-50%);
-    color:#d6b978;background:rgba(0,0,0,.58);
-    border:1px solid rgba(214,185,120,.35);
-    padding:7px 12px;border-radius:999px;
-    font:12px Arial,sans-serif;opacity:0;transition:.25s;pointer-events:none;
-  }
-  #stage:hover #help{opacity:.85}
-
-  @media (max-aspect-ratio:1672/941){
-    /* При более узком окне фон получает поля сверху/снизу.
-       Вся интерактивная сцена масштабируется вместе с изображением. */
-    #stage{
-      width:calc(100vh * 1672 / 941);
-      height:100vh;
-      left:50%;transform:translateX(-50%);
-    }
-  }
-  @media (min-aspect-ratio:1672/941){
-    #stage{
-      width:100vw;
-      height:calc(100vw * 941 / 1672);
-      top:50%;transform:translateY(-50%);
-    }
-  }
 </style>
 </head>
+
+
 <body>
+
 <div id="stage">
+
+
+  <!-- ЭКРАН -->
+
   <div id="playerBox">
-    <div id="screenHint">выберите фильм справа</div>
+
+    <div id="screenHint">
+      КИНООБИТЕЛЬ
+    </div>
+
   </div>
 
-  <button class="poster" id="p1" aria-label="Коты" data-film="koty"></button>
-  <button class="poster" id="p2" aria-label="Чашечка тумана" data-film="tuman"></button>
-  <button class="poster" id="p3" aria-label="Сказки Некса" data-film="skazki"></button>
-  <button class="poster" id="p4" aria-label="Другие истории" data-film="other"></button>
 
-  <a id="exit" href="../index.html" aria-label="Выход во Дворец"></a>
-  <div id="help">Афиши справа — выбор фильма · дверь — выход во Дворец</div>
+  <!--
+       ДВЕРЬ НАЗАД
+
+       kinoobitel находится внутри:
+
+       kinozal/kinoobitel/
+
+       Поэтому ../cinema.html
+       возвращает нас на один уровень вверх.
+  -->
+
+  <a
+    id="exit"
+    href="../cinema.html"
+    aria-label="Вернуться в кинотеатр">
+  </a>
+
+
 </div>
 
-<script>
-/*
-  КИНОЗАЛ НЕКСА
-  ------------------------------------------------------------
-  ВАЖНО: сюда вставляются только ID роликов YouTube, НЕ целые ссылки.
-
-  Например:
-  https://www.youtube.com/watch?v=AbCdEf12345
-                                  ^^^^^^^^^^^
-  ID = AbCdEf12345
-
-  Для каждого нового фильма:
-  1. впишите youtubeId;
-  2. при желании поменяйте title;
-  3. ссылку на конкретный фильм можно давать так:
-     cinema.html?film=koty
-*/
-
-const films = {
-  koty:   { title: "КОТЫ",             youtubeId: "B8tudpNzLCk" },
-  tuman:  { title: "ЧАШЕЧКА ТУМАНА",   youtubeId: "" },
-  skazki: { title: "СКАЗКИ НЕКСА",     youtubeId: "" },
-  other:  { title: "ДРУГИЕ ИСТОРИИ",   youtubeId: "" }
-};
-
-const playerBox = document.getElementById("playerBox");
-
-function showEmpty(title){
-  playerBox.innerHTML = `
-    <div style="
-      width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-      flex-direction:column;background:#000;color:#b9a98d;text-align:center;padding:20px">
-      <div style="font-size:clamp(18px,2vw,34px);letter-spacing:.12em">${title}</div>
-      <div style="margin-top:14px;font:14px Arial,sans-serif;opacity:.6">
-        Впишите ID YouTube в cinema.html
-      </div>
-    </div>`;
-}
-
-function playFilm(key, push=true){
-  const film = films[key];
-  if(!film) return;
-
-  if(!film.youtubeId){
-    showEmpty(film.title);
-  } else {
-    const id = encodeURIComponent(film.youtubeId.trim());
-    playerBox.innerHTML = `
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&playsinline=1"
-        title="${film.title}"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen>
-      </iframe>`;
-  }
-
-  document.title = film.title + " — Кинозал Некса";
-  if(push){
-    const u = new URL(location.href);
-    u.searchParams.set("film", key);
-    history.replaceState(null,"",u);
-  }
-}
-
-document.querySelectorAll(".poster").forEach(btn=>{
-  btn.addEventListener("click",()=>playFilm(btn.dataset.film));
-});
-
-const requested = new URLSearchParams(location.search).get("film");
-if(requested && films[requested]) playFilm(requested,false);
-</script>
 </body>
 </html>
